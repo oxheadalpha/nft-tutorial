@@ -1,17 +1,16 @@
 {
-  "name": "tezos-nft-collection-tutorial",
+  "name": "@tqtezos/nft-tutorial",
   "version": "1.0.0",
   "keywords": [
     "tezos",
     "smart contracts",
-    "nft",
+    "NFT",
     "FA2"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tqtezos/smart-contracts.git",
-    "directory": "nft-tutorial"
+    "url": "https://github.com/tqtezos/nft-tutorial.git"
   },
   "scripts": {
     "build": "tsc -p .",

@@ -13,7 +13,7 @@
 ## Initial Setup
 
 1. To install the tutorial run
-   `npm install -g https://github.com/tqtezos/smart-contracts/tree/master/nft-tutorial`
+   `npm install -g https://github.com/tqtezos/nft-tutorial.git`
    command.
 
 2. Select Tezos network. Either testnet `tznft set-network testnet` or a local sandbox
