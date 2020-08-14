@@ -16,12 +16,18 @@
    `npm install -g https://github.com/tqtezos/nft-tutorial.git`
    command.
 
-2. Select Tezos network. Either testnet `tznft set-network testnet` or a local sandbox
-   (Flextesa) `tznft set-network sandbox`. You can always inspect selected net by running
-   command `tznft show-network`.
+2. Switch to your local tutorial directory and initialize tutorial config by running
+   `tznft config-init`.
 
-3. Each network comes with two preconfigured accounts `Bob` and `Alice`. The user
-   can manage the accounts by directly editing `tznft.json` or using
+3. Select Tezos network. Either testnet `tznft set-network testnet` or a local
+   sandbox (Flextesa) `tznft set-network sandbox`. You can always inspect selected
+   net by running command `tznft show-network`. By default, a sandbox network
+   is selected
+
+4. Bootstrap the network by running `tznft start`.
+
+5. Each network comes with two pre-configured aliases `Bob` and `Alice`. The user
+   can manage the aliases by directly editing `tznft.json` or using
    the following commands:
 
    - `tznft show-alias <alias>`, `npx show-alias --all`
@@ -29,7 +35,7 @@
    - `tznft add-alias <alias> <pk>`
    - `tznft remove-alias <alias>`
 
-4. You need to start a sandbox before you can originate the contracts:
+6. You need to start a sandbox before you can originate the contracts:
    `tznft start`
 
 ## Originate NFT Collection(s)
