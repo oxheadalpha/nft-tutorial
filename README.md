@@ -149,7 +149,7 @@ originated NFT collection KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh
 ### Inspecting The NFT Contract
 
 Using `KT1..` address of the NFT contract created by the `mint` command, we can
-inspect token token metadata and balances (i. e. what addresses own the tokens).
+inspect token metadata and balances (i. e. what addresses own the tokens).
 
 #### Inspect Token Metadata
 
@@ -196,7 +196,7 @@ owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 1
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
 ```
 
-Example 2, checx `alice` balances:
+Example 2, check `alice` balances:
 
 ```sh
 $ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
@@ -209,7 +209,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 
 ## Transferring Tokens
 
-Transfer command requires the following parameters:
+`transfer` command requires the following parameters:
 
 - `--nft` address of the FA2 NFT contract that holds tokens to be transferred
 - `--operator` alias or address that initiates transfer operation
@@ -253,7 +253,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 1
 
 It is also possible to transfer tokens on behalf of the owner.
 
-`bob` is trying to transfer one of the `alice` token back:
+`bob` is trying to transfer one of the `alice` tokens back:
 
 ```sh
 $ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
@@ -316,7 +316,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 ```
 
-WToken `1` now belongs to `bob`.
+Token `1` now belongs to `bob`.
 
 ### Configuration
 
