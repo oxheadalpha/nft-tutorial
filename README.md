@@ -13,7 +13,7 @@ implementation. The tutorial uses pre-compiled FA2 NFT contract written in
 FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
 on Tezos. FA2 proposes a unified token contract interface, supporting a wide range
 of token types. The FA2 standard provides a standard API to transfer tokens, check
-token balances,manage operators (an address that is permitted to manage tokens
+token balances, manage operators (an address that is permitted to transfer tokens
 on behalf of the token owner) and manage token metadata.
 
 ### What is NFT
@@ -23,7 +23,7 @@ something unique; non-fungible tokens are thus not mutually interchangeable.
 NFTs can represent ownership over digital or physical assets like virtual collectibles
 or unique art work.
 
-For each individual non-fungible token the FA2 implementation assigns a unique
+For each individual non-fungible token, the FA2 implementation assigns a unique
 token ID and associates it with the token owner address. The FA2 API allows to
 inspect token balances for the specific token ID and token owner address. For NFTs
 the balance can be either 0 (which means that the address does not own this particular
@@ -31,7 +31,7 @@ token) or 1 (the address owns the token).
 
 The FA2 contract also associates some metadata with each token. This tutorial supports
 token symbol and token name metadata attributes. However, the implementation can
-be easily extended to support custom metadata attributes such an associate image
+be easily extended to support custom metadata attributes such an associated image
 or document URL and its crypto-hash.
 
 ## Tutorial
@@ -39,9 +39,9 @@ or document URL and its crypto-hash.
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) must be installed. Node installation must also
-  include `npm` (Node package manager)
+  include `npm` (Node package manager).
 
-- [Docker](https://www.docker.com/) must be installed. You need a docker to run
+- [Docker](https://www.docker.com/) must be installed. You need docker to run
   Flextesa sandbox. You might skip docker installation if you plan to run this
   tutorial on the testnet (Carthagenet) only.
 
