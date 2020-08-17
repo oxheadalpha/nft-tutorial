@@ -45,23 +45,287 @@ or document URL and its crypto-hash.
   Flextesa sandbox. You might skip docker installation if you plan to run this
   tutorial on the testnet (Carthagenet) only.
 
+### The CLI Tool
+
+You will need to install `tznft` CLI tool. After the installation, you can invoke
+various commands in the form `tznft <command> [options]`. `tznft` provides the
+following commands:
+
+- Configuration commands to bootstrap Tezos network and configure address aliases
+- NFT mint (contract origination) and token inspection commands
+- NFT transfer command
+
+The commands will be explained in more details below. You can always run
+
+```sh
+$ tznft --help
+```
+
+to list all available commands.
+
 ### Initial Setup
 
-1. To install the tutorial run
-   `npm install -g https://github.com/tqtezos/nft-tutorial.git`
-   command.
+1. Create a new local directory to keep your tutorial configuration:
 
-2. Switch to your local tutorial directory and initialize tutorial config by running
-   `tznft config-init`.
+   ```sh
+   $ mkdir nft-tutorial
+   $ cd nft-tutorial
+   ```
 
-3. Select Tezos network. Either testnet `tznft set-network testnet` or a local
+2. Install `@tztezos/nft-tutorial` npm package:
+
+   ```sh
+   $ npm install -g https://github.com/tqtezos/nft-tutorial.git
+
+   /usr/local/bin/tznft -> /usr/local/lib/node_modules/@tqtezos/nft-tutorial/lib/tznft.js
+
+   + @tqtezos/nft-tutorial@1.0.0
+   added 3 packages from 1 contributor and updated 145 packages in 11.538s
+   ```
+
+   The command installs `tznft` CLI tool.
+
+3. Initialize tutorial config:
+
+   ```sh
+   $ tznft config-init
+
+   tznft.json config file created
+   ```
+
+4. Check that the default active network is `sandbox`:
+
+   ```sh
+   $ tznft show-network
+
+   active network: sandbox
+   ```
+
+5. Bootstrap Tezos network:
+
+   ```sh
+   $ tznft bootstrap
+
+   ebb03733415c6a8f6813a7b67905a448556e290335c5824ca567badc32757cf4
+
+   starting sandbox...
+   sandbox started
+   originating balance inspector contract...
+   originated balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+   ```
+
+   If you are bootstrapping `sandbox` network first time, Docker will download
+   Flextesa sandbox image as well.
+
+   Default configuration comes with two bootstrap aliases `bob` and `alice` that
+   can be used for token minting and transferring.
+
+### Mint NFT Token(s)
+
+This tutorial uses NFT collection contract. When the user mints a new set (collection)
+of tokens, a new NFT contract is created. The use cannot add more tokens or remove
+(burn) existing tokens within the contract. However tokens can be transferred to
+other owners.
+
+To originate a new NFT collection you need to provide the following parameters:
+
+- token owner
+- `--tokens` new tokens metadata. Each token metadata is represented as comma
+  delimited string: `'<token_id>, <token_symbol>, <token_name>'`:
+
+```sh
+$ tznft mint <owner_alias> <token_meta_list>`
+```
+
+Example:
+
+```sh
+$ tznft mint bob --tokens '0, T1, My Token One' '1, T2, My Token Two'
+
+originating new NFT contract...
+originated NFT collection KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh
+```
+
+### Inspecting The NFT Contract
+
+Using `KT1..` address of the NFT contract created by the `mint` command, we can
+inspect token token metadata and balances (i. e. what addresses own the tokens).
+
+#### Inspect Token Metadata
+
+`show-meta` command requires the following parameters:
+
+- `--nft` address of the FA2 NFT contract to inspect
+- `--operator` alias on behalf of which contract is inspected
+- `--tokens` a list of token IDs to inspect
+
+```sh
+$ tznft show-meta --nft <nft_address> --operator <alias> --tokens <token_id_list>
+```
+
+Example:
+
+```sh
+$ tznft show-meta --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --tokens 0 1
+
+token_id: 0	symbol: T1	name: My Token One	extras: { }
+token_id: 1	symbol: T2	name: My Token Two	extras: { }
+```
+
+#### Inspect Token Balances
+
+`show-balance` command requires the following parameters:
+
+- `--nft` address of the FA2 NFT contract to inspect
+- `--operator` alias on behalf of which contract is inspected
+- `--owner` alias of the token owner to check balances
+- `--tokens` a list of token IDs to inspect
+
+```sh
+$ tznft show-balance --nft <nft_address> --operator <alias> --owner <alias> --tokens <token_id_list>
+```
+
+Example 1, check `bob`'s balances:
+
+```sh
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner bob --tokens 0 1
+
+querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+requested NFT balances:
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 1
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
+```
+
+Example 2, checx `alice` balances:
+
+```sh
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
+
+querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+requested NFT balances:
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 0
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
+```
+
+## Transferring Tokens
+
+Transfer command requires the following parameters:
+
+- `--nft` address of the FA2 NFT contract that holds tokens to be transferred
+- `--operator` alias or address that initiates transfer operation
+- `--batch` a list of individual transfers. Each individual transfer is represented
+  as a comma delimited string: `<from_address_or_alias>, <to_address_or_alias>, <token_id>`.
+  We do not need to specify amount of the transfer for NFTs since we can only
+  transfer a single token for any NFT type.
+
+```sh
+$ tznft transfer --nft <nft_address> --operator <operator> --batch <batch_list>`
+```
+
+Example, `bob` transfers his own tokens `0` and `1` to `alice`:
+
+```sh
+$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'bob, alice, 0' 'bob, alice, 1'
+
+transferring tokens...
+tokens transferred
+```
+
+Now, we can check token balances after the transfer:
+
+```sh
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner bob --tokens 0 1
+
+querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+requested NFT balances:
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 0
+
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
+
+querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+requested NFT balances:
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 1
+```
+
+### Operator transfer
+
+It is also possible to transfer tokens on behalf of the owner.
+
+`bob` is trying to transfer one of the `alice` token back:
+
+```sh
+$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
+
+transferring tokens...
+Tezos operation error: FA2_NOT_OPERATOR
+```
+
+As we can see, this operation has failed. The default behavior of the FA2 token
+contract is to allow only token owners to transfer their tokens. In our example,
+bob (as operator) tries to transfer token `1` that belongs to `alice`.
+
+However, `alice` can add `bob` as an operator to allow him transfer any tokens on
+behalf of `alice`.
+
+`update-ops` command has the following parameters:
+
+- `<owner>` alias or address of the token owner to update operators for
+- `--nft` address of the FA2 NFT contract
+- `--add` list of aliases or addresses to add to the operator set
+- `--add` list of aliases or addresses to remove the operator set
+
+```sh
+$ tznft update-ops <owner> --nft <nft_address> --add [add_operators_list] --remove [add_operators_list]
+```
+
+Example, `alice` adds `bob` as an operator:
+
+```sh
+$ tznft update-ops alice --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --add bob
+
+updating operators...
+updated operators
+```
+
+Now `bob` can try to transfer a token on behalf of `alice` again:
+
+```sh
+$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
+
+transferring tokens...
+tokens transferred
+```
+
+Inspecting balances after the transfer:
+
+```sh
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner bob --tokens 0 1
+
+querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+requested NFT balances:
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
+
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
+
+querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+requested NFT balances:
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
+```
+
+WToken `1` now belongs to `bob`.
+
+### Configuration
+
+6. Select Tezos network. Either testnet `tznft set-network testnet` or a local
    sandbox (Flextesa) `tznft set-network sandbox`. You can always inspect selected
    net by running command `tznft show-network`. By default, a sandbox network
    is selected
 
-4. Bootstrap the network by running `tznft bootstrap`.
-
-5. Each network comes with two pre-configured aliases `bob` and `alice`. The user
+7. Each network comes with two pre-configured aliases `bob` and `alice`. The user
    can manage the aliases by directly editing `tznft.json` or using
    the following commands:
 
@@ -70,60 +334,10 @@ or document URL and its crypto-hash.
    - `tznft add-alias <alias> <pk>`
    - `tznft remove-alias <alias>`
 
-6. You need to start a sandbox before you can originate the contracts:
+8. You need to start a sandbox before you can originate the contracts:
    `tznft start`
 
-## Originate NFT Collection(s)
+### TBD
 
-To originate a new NFT collection you need to provide tokens metadata.
-`tznft mint <owner_alias> <token_meta_list>`.
-
-Example:
-
-`tznft mint bob --tokens '0, T1, My Token' '1, T2, My Token'`
-
-output:
-`nft contract created: KT1SFWBwUSwmk2xd148Ws6gWUeASwK4UpFfP`
-
-## Inspecting the NFT Contract
-
-1. Check token ownership:
-   `tznft show-balance --nft <nft> --owner <owner> --tokens <list_of_token_ids>`
-
-Example:
-`tznft --show-balance --nft KT1SFWBwUSwmk2xd148Ws6gWUeASwK4UpFfP --owner bob --tokens 0`
-
-output:
-`owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU token: 0 balance: 1`
-
-2. Get token metadata: `tznft show-meta --nft <nft> --tokens <list_of_token_ids>`
-
-Example:
-`tznft show-meta --nft KT1SFWBwUSwmk2xd148Ws6gWUeASwK4UpFfP --tokens 0`
-
-output: `token_id: 0 symbol: TZ0 name: token zero extras: { }`
-
-## Transferring Tokens
-
-1. Bob can transfer his own token to Alice:
-   `tznft transfer --nft <nft> --operator <operator> --batch <batch_list>`
-
-Example:
-`tznft transfer --nft KT1SFWBwUSwmk2xd148Ws6gWUeASwK4UpFfP --operator bob --batch 'bob, alice, 0'`
-
-2. It is also possible to transfer tokens on behalf of the owner.
-
-- Alice adds Bob as an operator:
-  `tznft update-operator <owner> --nft <nft> --add [add_list] --remove [remove_list]`
-
-Example:
-`tznft update-ops --nft KT1SFWBwUSwmk2xd148Ws6gWUeASwK4UpFfP alice -a bob`
-
-- Now Bob can transfer Alice's token
-  `tznft transfer --nft KT1SFWBwUSwmk2xd148Ws6gWUeASwK4UpFfP --operator bob --batch 'alice, bob, 0`
-
-## Modifying NFT Contract Code
-
-TBD
-
-Customizing existing NFT contract
+- Modifying NFT Contract Code
+- Extending token metadata

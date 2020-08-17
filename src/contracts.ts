@@ -8,7 +8,8 @@ import {
   loadUserConfig,
   loadFile,
   activeNetworkKey,
-  inspectorKey
+  inspectorKey,
+  suggestCommand
 } from './config-util';
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from './fa2-interface';
@@ -68,7 +69,7 @@ export async function mintNfts(
   );
   const storage = createNftStorage(tokens, ownerAddress);
 
-  console.log(kleur.yellow('originating new NFT contract'));
+  console.log(kleur.yellow('originating new NFT contract...'));
   const nftAddress = await originateContract(tz, code, storage, 'nft');
   console.log(
     kleur.yellow(`originated NFT collection ${kleur.green(nftAddress)}`)
@@ -120,11 +121,8 @@ export async function showBalances(
 
   const inspectorAddress = config.get(inspectorKey(config));
   if (!inspectorAddress || typeof inspectorAddress !== 'string') {
-    console.log(
-      kleur.red(
-        'Cannot find deployed balance inspector contract.\nTry to kill and start network again.'
-      )
-    );
+    console.log(kleur.red('Cannot find deployed balance inspector contract.'));
+    suggestCommand('bootstrap');
     return;
   }
 

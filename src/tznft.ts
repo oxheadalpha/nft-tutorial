@@ -31,7 +31,7 @@ program
     {'a': 'also shows all available networks'}
   )
   .option('-a --all', 'shows all available configured networks', false)
-  .action((options) => networkConf.showActiveNetwork(options.all)).passCommandToAction(false);
+  .action(async options => networkConf.showActiveNetwork(options.all)).passCommandToAction(false);
 
 //prettier-ignore
 program
@@ -101,7 +101,7 @@ program
     '-t, --tokens <tokens...>',
     'definitions of new tokens, a list of "id, symbol, name"',
     contracts.parseTokens, [])
-  .action((owner, options) => contracts.mintNfts(owner, options.tokens)).passCommandToAction(false);
+  .action(async (owner, options) => contracts.mintNfts(owner, options.tokens)).passCommandToAction(false);
 
 //prettier-ignore
 program
@@ -112,7 +112,7 @@ program
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-o, --owner <owner>', 'token owner to check balances')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
-  .action(options=>contracts.showBalances(
+  .action(async options=>contracts.showBalances(
     options.operator, options.nft, options.owner, options.tokens)).passCommandToAction(false);
 
 //prettier-ignore
@@ -123,7 +123,7 @@ program
   .requiredOption('-op, --operator <operator>', 'address that originates a query')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
-  .action(options=>contracts.showMetadata(
+  .action(async options=>contracts.showMetadata(
     options.operator, options.nft, options.tokens)).passCommandToAction(false);
 
 //prettier-ignore
@@ -137,7 +137,7 @@ program
     '-b, --batch <batch...>', 
     'definition of individual transfers, a list of "from, to, token_id"',
     contracts.parseTransfers, [])
-  .action(options=>contracts.transfer(
+  .action(async options=>contracts.transfer(
     options.operator, options.nft, options.batch)).passCommandToAction(false);
 
 //prettier-ignore
@@ -153,7 +153,7 @@ program
   .option(
     '-r, --remove [remove_operators...]',
     'list of the operators to be removed by the token owner')
-  .action((owner, options) => contracts.updateOperators(
+  .action(async (owner, options) => contracts.updateOperators(
     owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
 
 //debugging command

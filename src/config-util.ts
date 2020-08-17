@@ -71,7 +71,7 @@ export async function loadFile(filePath: string): Promise<string> {
   });
 }
 
-function suggestCommand(cmd: string) {
+export function suggestCommand(cmd: string) {
   console.log(
     `Try to run ${kleur.green(`tznft ${cmd}`)} command to create default config`
   );
