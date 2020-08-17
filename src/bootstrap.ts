@@ -1,18 +1,23 @@
 import * as child from 'child_process';
 import * as kleur from 'kleur';
 import { Tezos } from '@taquito/taquito';
-import { loadUserConfig, activeNetworkKey, inspectorKey } from './config-util';
+import {
+  loadUserConfig,
+  activeNetworkKey,
+  inspectorKey,
+  aliasKey
+} from './config-util';
 import { createToolkit, originateInspector } from './contracts';
 import Configstore from 'configstore';
 
-export async function start(bootstrap: string): Promise<void> {
+export async function bootstrap(): Promise<void> {
   try {
     const config = loadUserConfig();
 
     const network = config.get('activeNetwork');
     if (network === 'sandbox') await startSandbox();
 
-    await originateBalanceInspector(config, bootstrap);
+    await originateBalanceInspector(config, 'bob');
   } catch (err) {
     console.log(kleur.red('failed to start. ' + JSON.stringify(err)));
     return;

@@ -24,9 +24,9 @@
    net by running command `tznft show-network`. By default, a sandbox network
    is selected
 
-4. Bootstrap the network by running `tznft start`.
+4. Bootstrap the network by running `tznft bootstrap`.
 
-5. Each network comes with two pre-configured aliases `Bob` and `Alice`. The user
+5. Each network comes with two pre-configured aliases `bob` and `alice`. The user
    can manage the aliases by directly editing `tznft.json` or using
    the following commands:
 

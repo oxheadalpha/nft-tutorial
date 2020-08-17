@@ -43,20 +43,16 @@ program
 
 //prettier-ignore
 program
-  .command('start')
-  .alias('s')
-  .option(
-    '-b, --bootstrap <alias>',
-    'alias to use for the helper contract origination',
-    'bob')
-  .description('start and initialize network provider')
-  .action(options => bootstrap.start(options.bootstrap)).passCommandToAction(false);
+  .command('bootstrap')
+  .alias('b')
+  .description('bootstraps and initialize network provider')
+  .action(bootstrap.bootstrap).passCommandToAction(false);
 
 //prettier-ignore
 program
-  .command('kill')
+  .command('kill-sandbox')
   .alias('k')
-  .description('kill running network provider')
+  .description('kill running network sandbox. No effect on non-sandbox networks')
   .action(bootstrap.kill);
 
 //aliases
