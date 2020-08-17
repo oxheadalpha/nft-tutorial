@@ -1,5 +1,6 @@
 {
   "name": "@tqtezos/nft-tutorial",
+  "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
   "version": "1.0.0",
   "keywords": [
     "tezos",

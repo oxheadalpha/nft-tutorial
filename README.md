@@ -1,16 +1,51 @@
-# Tutorial Scripts (Draft)
+# FA2 NFT Tutorial
 
-## Prerequisites
+This tutorial shows how to originate and interact with the FA2 NFT contract
+implementation. The tutorial uses pre-compiled FA2 NFT contract written in
+[LIGO](https://ligolang.org/) smart contract language and command line interface
+(CLI) to originate and interact with the NFT contracts either on the
+[Flextesa sandbox](https://tezos.gitlab.io/flextesa/) or Tezos testnet (Carthagenet).
 
-- Docker must be installed
+## Introduction
 
-- LIGO must be installed.
+### What is FA2
 
-- Node.js and npm must be installed.
+FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
+on Tezos. FA2 proposes a unified token contract interface, supporting a wide range
+of token types. The FA2 standard provides a standard API to transfer tokens, check
+token balances,manage operators (an address that is permitted to manage tokens
+on behalf of the token owner) and manage token metadata.
 
-- Flextesa sandbox docker image will be installed when sandbox is used first time.
+### What is NFT
 
-## Initial Setup
+NFT (non-fungible token) is a special type of cryptographic token which represents
+something unique; non-fungible tokens are thus not mutually interchangeable.
+NFTs can represent ownership over digital or physical assets like virtual collectibles
+or unique art work.
+
+For each individual non-fungible token the FA2 implementation assigns a unique
+token ID and associates it with the token owner address. The FA2 API allows to
+inspect token balances for the specific token ID and token owner address. For NFTs
+the balance can be either 0 (which means that the address does not own this particular
+token) or 1 (the address owns the token).
+
+The FA2 contract also associates some metadata with each token. This tutorial supports
+token symbol and token name metadata attributes. However, the implementation can
+be easily extended to support custom metadata attributes such an associate image
+or document URL and its crypto-hash.
+
+## Tutorial
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) must be installed. Node installation must also
+  include `npm` (Node package manager)
+
+- [Docker](https://www.docker.com/) must be installed. You need a docker to run
+  Flextesa sandbox. You might skip docker installation if you plan to run this
+  tutorial on the testnet (Carthagenet) only.
+
+### Initial Setup
 
 1. To install the tutorial run
    `npm install -g https://github.com/tqtezos/nft-tutorial.git`
