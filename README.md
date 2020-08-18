@@ -129,7 +129,7 @@ other owners.
 
 To originate a new NFT collection you need to provide the following parameters:
 
-- token owner
+- <owner> alias or address of the new tokens owner
 - `--tokens` new tokens metadata. Each token metadata is represented as comma
   delimited string: `'<token_id>, <token_symbol>, <token_name>'`:
 
