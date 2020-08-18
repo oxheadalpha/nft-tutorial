@@ -388,7 +388,7 @@ every 5 seconds. It makes running the commands that interact with the network
 faster. However, all originated contracts will be lost after the sandbox is stopped.
 
 If you are using `testnet`, your originated contracts will remain on the blockchain
-and you can inspect them afterwards using indexer like [BCD](https://better-call.dev/).
+and you can inspect them afterwards using an indexer like [BCD](https://better-call.dev/).
 
 #### Alias Configuration Commands
 
