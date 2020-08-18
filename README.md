@@ -23,7 +23,7 @@ something unique; non-fungible tokens are thus not mutually interchangeable.
 NFTs can represent ownership over digital or physical assets like virtual collectibles
 or unique art work.
 
-For each individual non-fungible token, the FA2 implementation assigns a unique
+For each individual non-fungible token, the FA2 assigns a unique
 token ID and associates it with the token owner address. The FA2 API allows to
 inspect token balances for the specific token ID and token owner address. For NFTs
 the balance can be either 0 (which means that the address does not own this particular
@@ -48,12 +48,12 @@ or document URL and its crypto-hash.
 ### The CLI Tool
 
 You will need to install `tznft` CLI tool. After the installation, you can invoke
-various commands in the form `tznft <command> [options]`. `tznft` provides the
+various commands in the form of `tznft <command> [options]`. `tznft` provides the
 following commands:
 
-- Configuration commands to bootstrap Tezos network and configure address aliases
-- NFT mint (contract origination) and token inspection commands
+- NFT mint (contract origination) and token inspection command
 - NFT transfer command
+- Configuration commands to bootstrap Tezos network and configure address aliases
 
 The commands will be explained in more details below. You can always run
 
