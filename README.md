@@ -383,7 +383,12 @@ and `testnet` (Carthagenet). Each pre-configured network has two bootstrap alias
   killed sandbox.
   ```
 
-When using sandbox
+The sandbox network (selected by default) is configured to bake new Tezos blocks
+every 5 seconds. It makes running the commands that interact with the network
+faster. However, all originated contracts will be lost after the sandbox is stopped.
+
+If you are using `testnet`, your originated contracts will remain on the blockchain
+and you can inspect them afterwards using indexer like [BCD](https://better-call.dev/).
 
 #### Alias Configuration Commands
 
@@ -391,7 +396,7 @@ When using sandbox
    can manage the aliases by directly editing `tznft.json` or using
    the following commands:
 
-   - `tznft show-alias <alias>`, `npx show-alias --all`
+   - `tznft show-alias <alias>`, `tznft show-alias --all`
 
    - `tznft add-alias <alias> <pk>`
    - `tznft remove-alias <alias>`
