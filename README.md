@@ -134,7 +134,7 @@ be transferred to other owners.
   delimited string: `'<token_id>, <token_symbol>, <token_name>'`:
 
 ```sh
-$ tznft mint <owner_alias> <token_meta_list>`
+$ tznft mint <owner_alias> --tokens <token_meta_list>`
 ```
 
 Example:
@@ -212,7 +212,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 `transfer` command requires the following parameters:
 
 - `--nft` address of the FA2 NFT contract that holds tokens to be transferred
-- `--operator` alias or address that initiates transfer operation
+- `--operator` alias or address that initiates the transfer operation
 - `--batch` a list of individual transfers. Each individual transfer is represented
   as a comma delimited string: `<from_address_or_alias>, <to_address_or_alias>, <token_id>`.
   We do not need to specify amount of the transfer for NFTs since we can only
@@ -249,7 +249,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 1
 ```
 
-### Operator transfer
+### Operator Transfer
 
 It is also possible to transfer tokens on behalf of the owner.
 
@@ -264,7 +264,7 @@ Tezos operation error: FA2_NOT_OPERATOR
 
 As we can see, this operation has failed. The default behavior of the FA2 token
 contract is to allow only token owners to transfer their tokens. In our example,
-bob (as operator) tries to transfer token `1` that belongs to `alice`.
+bob (as an operator) tries to transfer token `1` that belongs to `alice`.
 
 However, `alice` can add `bob` as an operator to allow him transfer any tokens on
 behalf of `alice`.
@@ -274,7 +274,7 @@ behalf of `alice`.
 - `<owner>` alias or address of the token owner to update operators for
 - `--nft` address of the FA2 NFT contract
 - `--add` list of aliases or addresses to add to the operator set
-- `--add` list of aliases or addresses to remove the operator set
+- `--remove` list of aliases or addresses to remove from the operator set
 
 ```sh
 $ tznft update-ops <owner> --nft <nft_address> --add [add_operators_list] --remove [add_operators_list]
@@ -289,7 +289,7 @@ updating operators...
 updated operators
 ```
 
-Now `bob` can try to transfer a token on behalf of `alice` again:
+Now `bob` can transfer a token on behalf of `alice` again:
 
 ```sh
 $ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
