@@ -127,7 +127,7 @@ This tutorial uses NFT collection contract. Each time the user mints a new set
 tokens or remove (burn) existing tokens within the contract. However tokens can
 be transferred to other owners.
 
-To originate a new NFT collection you need to provide the following parameters:
+`mint` command requires the following parameters:
 
 - <owner> alias or address of the new tokens owner
 - `--tokens` new tokens metadata. Each token metadata is represented as comma
