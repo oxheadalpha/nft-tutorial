@@ -17,6 +17,11 @@ WIP     11. Complete readme
 DONE         11.1 Initial setup
 DONE         11.2 Major commands
 WIP          11.3 Configuration
+DONE             11.3.1 What is configured
+DONE             11.3.2 Network config
+WIP              11.3.3 sandbox vs testnet
+                 11.3.4 Aliases config
+                 11.3.5 types of aliases
 DONE    12. Inspect balances
 NA           12.1 print alias names when inspecting balance
 DONE    13. update operators

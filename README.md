@@ -320,12 +320,74 @@ Token `1` now belongs to `bob`.
 
 ### Configuration
 
-6. Select Tezos network. Either testnet `tznft set-network testnet` or a local
-   sandbox (Flextesa) `tznft set-network sandbox`. You can always inspect selected
-   net by running command `tznft show-network`. By default, a sandbox network
-   is selected
+`tznft` can be configured to interact with different Tezos networks. The user can
+also configure address aliases to sign Tezos operation and/or use them as command
+parameters when addresses are required. The default configuration that is created
+by `tznft config-init` command includes two pre-configured networks: `sandbox`
+and `testnet` (Carthagenet). Each pre-configured network has two bootstrap aliases:
+`bob` and `alice`.
 
-7. Each network comes with two pre-configured aliases `bob` and `alice`. The user
+#### Network Configuration Commands
+
+- `set-network <network>` selects specified pre-configured network as an active one.
+  All subsequent commands will operate on the active network
+
+  Example:
+
+  ```sh
+  $ tznft set-network sandbox
+
+  network sandbox is selected
+  ```
+
+- `show-network [--all]` show currently selected network. If `--all` flag is
+  specified, show all pre-configured networks
+
+  Example:
+
+  ```sh
+  $ tznft show-network --all
+
+  * sandbox
+    testnet
+  ```
+
+- `bootstrap` bootstrap selected network and deploy helper balance inspector contract.
+  If selected network is `sandbox` this command needs to be run each time sandbox
+  is restarted, for other public networks like `testnet` is it enough to run this
+  command once.
+
+  Example:
+
+  ```sh
+  $ tznft bootstrap
+
+  366b9f3ead158a086e8c397d542b2a2f81111a119f3bd6ddbf36574b325f1f03
+
+  starting sandbox...
+  sandbox started
+  originating balance inspector contract...
+  originated balance inspector KT1WDqPuRFMm2HwDRBotGmnWdkWm1WyG4TYE
+  ```
+
+- `kill-sandbox` stop Flextesa sandbox process if selected network is `sandbox`.
+  This command has no effect on other network types.
+
+  Example:
+
+  ```sh
+  $ tznft kill-sandbox
+
+  flextesa-sandbox
+
+  killed sandbox.
+  ```
+
+When using sandbox
+
+#### Alias Configuration Commands
+
+2. Each network comes with two pre-configured aliases `bob` and `alice`. The user
    can manage the aliases by directly editing `tznft.json` or using
    the following commands:
 
@@ -334,10 +396,7 @@ Token `1` now belongs to `bob`.
    - `tznft add-alias <alias> <pk>`
    - `tznft remove-alias <alias>`
 
-8. You need to start a sandbox before you can originate the contracts:
-   `tznft start`
+### Advanced Topics (TBD)
 
-### TBD
-
-- Modifying NFT Contract Code
+- Modifying NFT contract code
 - Extending token metadata
