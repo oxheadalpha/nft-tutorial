@@ -122,10 +122,10 @@ to list all available commands.
 
 ### Mint NFT Token(s)
 
-This tutorial uses NFT collection contract. When the user mints a new set (collection)
-of tokens, a new NFT contract is created. The user cannot add more tokens or remove
-(burn) existing tokens within the contract. However tokens can be transferred to
-other owners.
+This tutorial uses NFT collection contract. Each time the user mints a new set
+(collection) of tokens, a new NFT contract is created. The user cannot add more
+tokens or remove (burn) existing tokens within the contract. However tokens can
+be transferred to other owners.
 
 To originate a new NFT collection you need to provide the following parameters:
 
