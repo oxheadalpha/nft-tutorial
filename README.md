@@ -392,14 +392,91 @@ and you can inspect them afterwards using an indexer like [BCD](https://better-c
 
 #### Alias Configuration Commands
 
-2. Each network comes with two pre-configured aliases `bob` and `alice`. The user
-   can manage the aliases by directly editing `tznft.json` or using
-   the following commands:
+`tznft` allows user to configure and use short names (aliases) instead of typing
+in full Tezos addresses when invoking `tznft` commands.
+Each network comes with two pre-configured aliases `bob` and `alice`. The user
+can manage the aliases by directly editing `tznft.json` file or using
+the following commands:
 
-   - `tznft show-alias <alias>`, `tznft show-alias --all`
+- `show-alias [alias]` show address and private key (if configured) of the
+  specified `[alias]`. If `[alias]` option is not specified, show all configured
+  aliases.
 
-   - `tznft add-alias <alias> <pk>`
-   - `tznft remove-alias <alias>`
+  Example:
+
+  ```sh
+  $ tznft show-alias bob
+
+  bob	tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	edsk3RFgDiCt7tWB2oe96w1eRw72iYiiqZPLu9nnEY23MYRp2d8Kkx
+
+  $ tznft show-alias
+
+  bob	tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	edsk3RFgDiCt7tWB2oe96w1eRw72iYiiqZPLu9nnEY23MYRp2d8Kkx
+  alice	tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq
+  ```
+
+- `add-alias <alias> <private_key>` add alias using its private key. Aliases
+  than configured with the private key can be used to sign operations that
+  originate or call smart contracts on chain. `tznft` commands that require Tezos
+  operation signing have `--operator` option (not to be confused with the FA2
+  token operators).
+
+  Example:
+
+  ```sh
+  $ tznft add-alias jane edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq
+
+  alias jane has been added
+
+  $ tznft show-alias jane
+
+  jane	tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq
+  ```
+
+- `add-alias <alias> <address>` add alias using Tezos address (public key hash).
+  Such aliases do not have associated private key and cannot be used to sign
+  Tezos operations.
+
+  Example:
+
+  ```sh
+  $ tznft add-alias michael tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb
+
+  alias michael has been added
+
+  $ tznft show-alias michael
+
+  michael	tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb
+  ```
+
+- `add-alias-faucet <alias> <faucet_json_file_path>` add alias with private key
+  from faucet file (see [Tezos faucet](https://faucet.tzalpha.net/)). This command
+  will not work on `sandbox` network. Alias configured from the faucet has private
+  key and can be used to sign Tezos operations.
+
+  Example:
+
+  ```sh
+  $ tznft add-alias-faucet john ~/Downloads/tz1NfTBQM9QpZpEY6GSvdw3XBpyEjLLGhcEU.json
+
+  activating faucet account...
+  faucet account activated
+  alias john has been added
+
+  $ tznft show-alias john
+
+  john	tz1NfTBQM9QpZpEY6GSvdw3XBpyEjLLGhcEU	edskRzaCrGEDr1Ras1U55U73dXoLfQQJyuwE95rSkqbydxUS4oS3fGmWywbaVcYw7DLH34zedoJzwMQxzAXQdixi5QzYC5pGJ6
+  ```
+
+- `remove-alias <alias>` remove alias from network configuration.
+
+  Example:
+
+  ```sh
+  $ tznft remove-alias john
+
+  alias john has been deleted
+  ```
 
 ### Advanced Topics (TBD)
 
