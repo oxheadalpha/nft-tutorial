@@ -12,8 +12,8 @@ implementation. The tutorial uses pre-compiled FA2 NFT contract written in
 
 FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
 on Tezos. FA2 proposes a unified token contract interface, supporting a wide range
-of token types. The FA2 standard provides a standard API to transfer tokens, check
-token balances, manage operators (an address that is permitted to transfer tokens
+of token types. The FA2 provides a standard API to transfer tokens, check
+token balances, manage operators (addresses that are permitted to transfer tokens
 on behalf of the token owner) and manage token metadata.
 
 ### What is NFT
