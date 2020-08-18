@@ -329,7 +329,7 @@ and `testnet` (Carthagenet). Each pre-configured network has two bootstrap alias
 
 #### Network Configuration Commands
 
-- `set-network <network>` selects specified pre-configured network as an active one.
+- `set-network <network>` select specified pre-configured network as an active one.
   All subsequent commands will operate on the active network
 
   Example:
@@ -395,8 +395,8 @@ and you can inspect them afterwards using an indexer like [BCD](https://better-c
 `tznft` allows user to configure and use short names (aliases) instead of typing
 in full Tezos addresses when invoking `tznft` commands.
 Each network comes with two pre-configured aliases `bob` and `alice`. The user
-can manage the aliases by directly editing `tznft.json` file or using
-the following commands:
+can manage aliases by directly editing `tznft.json` file or using the following
+commands:
 
 - `show-alias [alias]` show address and private key (if configured) of the
   specified `[alias]`. If `[alias]` option is not specified, show all configured
@@ -416,10 +416,10 @@ the following commands:
   ```
 
 - `add-alias <alias> <private_key>` add alias using its private key. Aliases
-  than configured with the private key can be used to sign operations that
+  that configured with the private key can be used to sign operations that
   originate or call smart contracts on chain. `tznft` commands that require Tezos
   operation signing have `--operator` option (not to be confused with the FA2
-  token operators).
+  token operator).
 
   Example:
 
@@ -450,9 +450,9 @@ the following commands:
   ```
 
 - `add-alias-faucet <alias> <faucet_json_file_path>` add alias with private key
-  from faucet file (see [Tezos faucet](https://faucet.tzalpha.net/)). This command
-  will not work on `sandbox` network. Alias configured from the faucet has private
-  key and can be used to sign Tezos operations.
+  from the faucet file (see [Tezos Faucet](https://faucet.tzalpha.net/)). This
+  command will not work on `sandbox` network. Alias configured from the faucet
+  has the private key and can be used to sign Tezos operations.
 
   Example:
 
@@ -468,7 +468,7 @@ the following commands:
   john	tz1NfTBQM9QpZpEY6GSvdw3XBpyEjLLGhcEU	edskRzaCrGEDr1Ras1U55U73dXoLfQQJyuwE95rSkqbydxUS4oS3fGmWywbaVcYw7DLH34zedoJzwMQxzAXQdixi5QzYC5pGJ6
   ```
 
-- `remove-alias <alias>` remove alias from network configuration.
+- `remove-alias <alias>` remove alias from the selected network configuration.
 
   Example:
 
