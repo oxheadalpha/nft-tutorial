@@ -72,7 +72,7 @@ to list all available commands.
    $ cd nft-tutorial
    ```
 
-2. Install `@tztezos/nft-tutorial` npm package:
+2. Install `@tqtezos/nft-tutorial` npm package:
 
    ```sh
    $ npm install -g https://github.com/tqtezos/nft-tutorial.git
