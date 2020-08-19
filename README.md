@@ -253,7 +253,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 1
 
 It is also possible to transfer tokens on behalf of the owner.
 
-`bob` is trying to transfer one of the `alice` tokens back:
+`bob` is trying to transfer one of `alice`'s tokens back:
 
 ```sh
 $ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
