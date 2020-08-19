@@ -115,7 +115,7 @@ to list all available commands.
    ```
 
    If you are bootstrapping a `sandbox` network for the first time, Docker will download
-   Flextesa sandbox image as well.
+   the Flextesa docker-image as well.
 
    The default configuration comes with two bootstrap aliases `bob` and `alice`
    that can be used for token minting and transferring.
