@@ -115,6 +115,7 @@ export async function showBalances(
 
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
+  const nftAddress = await resolveAlias2Address(nft, config);
   const requests: fa2.BalanceOfRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
@@ -129,12 +130,12 @@ export async function showBalances(
   console.log(
     kleur.yellow(
       `querying NFT contract ${kleur.green(
-        nft
+        nftAddress
       )} using balance inspector ${kleur.green(inspectorAddress)}`
     )
   );
   const inspector = await tz.contract.at(inspectorAddress);
-  const balanceOp = await inspector.methods.query(nft, requests).send();
+  const balanceOp = await inspector.methods.query(nftAddress, requests).send();
   await balanceOp.confirmation();
   const storage = await inspector.storage<InspectorStorage>();
   if (Array.isArray(storage)) printBalances(storage);
@@ -165,7 +166,8 @@ export async function showMetadata(
   const config = loadUserConfig();
 
   const tz = await createToolkit(operator, config);
-  const nftContract = await tz.contract.at(nft);
+  const nftAddress = await resolveAlias2Address(nft, config);
+  const nftContract = await tz.contract.at(nftAddress);
   const storage = await nftContract.storage<any>();
   const meta: MichelsonMap<BigNumber, fa2.TokenMetadata> =
     storage.token_metadata;
@@ -231,8 +233,9 @@ export async function transfer(
 ): Promise<void> {
   const config = loadUserConfig();
   const txs = await resolveTxAddresses(batch, config);
+  const nftAddress = await resolveAlias2Address(nft, config);
   const tz = await createToolkit(operator, config);
-  await fa2.transfer(nft, tz, txs);
+  await fa2.transfer(nftAddress, tz, txs);
 }
 
 async function resolveTxAddresses(
@@ -272,7 +275,8 @@ export async function updateOperators(
   const tz = await createToolkit(owner, config);
   const resolvedAdd = await resolveOperators(addOperators, config);
   const resolvedRemove = await resolveOperators(removeOperators, config);
-  await fa2.updateOperators(nft, tz, resolvedAdd, resolvedRemove);
+  const nftAddress = await resolveAlias2Address(nft, config);
+  await fa2.updateOperators(nftAddress, tz, resolvedAdd, resolvedRemove);
 }
 
 async function resolveOperators(
