@@ -149,7 +149,7 @@ originated NFT collection KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh
 ### Inspecting The NFT Contract
 
 Using `KT1..` address of the NFT contract created by the `mint` command, we can
-inspect token metadata and balances (i. e. what addresses own the tokens).
+inspect token metadata and balances (i. e. which addresses own the tokens).
 
 #### Inspect Token Metadata
 
