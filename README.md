@@ -114,7 +114,7 @@ to list all available commands.
    originated balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
    ```
 
-   If you are bootstrapping `sandbox` network first time, Docker will download
+   If you are bootstrapping a `sandbox` network for the first time, Docker will download
    Flextesa sandbox image as well.
 
    The default configuration comes with two bootstrap aliases `bob` and `alice`
