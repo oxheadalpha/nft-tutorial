@@ -1,7 +1,7 @@
 # FA2 NFT Tutorial
 
 This tutorial shows how to originate and interact with the FA2 NFT contract
-implementation. The tutorial uses pre-compiled FA2 NFT contract written in
+implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
 [LIGO](https://ligolang.org/) smart contract language and command line interface
 (CLI) to originate and interact with the NFT contracts either on the
 [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Carthagenet).
