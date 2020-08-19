@@ -38,7 +38,7 @@ or document URL and its crypto-hash.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) must be installed. Node installation must also
+- [Node.js](https://nodejs.org/) must be installed. The Node installation must also
   include `npm` (Node package manager).
 
 - [Docker](https://www.docker.com/) must be installed. You need docker to run
