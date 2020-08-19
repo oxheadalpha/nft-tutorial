@@ -156,17 +156,17 @@ inspect token metadata and balances (i. e. which addresses own the tokens).
 `show-meta` command requires the following parameters:
 
 - `--nft` address of the FA2 NFT contract to inspect
-- `--operator` alias on behalf of which contract is inspected
+- `--signer` alias on behalf of which contract is inspected
 - `--tokens` a list of token IDs to inspect
 
 ```sh
-$ tznft show-meta --nft <nft_address> --operator <alias> --tokens <token_id_list>
+$ tznft show-meta --nft <nft_address> --signer <alias> --tokens <token_id_list>
 ```
 
 Example:
 
 ```sh
-$ tznft show-meta --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --tokens 0 1
+$ tznft show-meta --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --tokens 0 1
 
 token_id: 0	symbol: T1	name: My Token One	extras: { }
 token_id: 1	symbol: T2	name: My Token Two	extras: { }
@@ -177,18 +177,18 @@ token_id: 1	symbol: T2	name: My Token Two	extras: { }
 `show-balance` command requires the following parameters:
 
 - `--nft` address of the FA2 NFT contract to inspect
-- `--operator` alias on behalf of which contract is inspected
+- `--signer` alias on behalf of which contract is inspected
 - `--owner` alias of the token owner to check balances
 - `--tokens` a list of token IDs to inspect
 
 ```sh
-$ tznft show-balance --nft <nft_address> --operator <alias> --owner <alias> --tokens <token_id_list>
+$ tznft show-balance --nft <nft_address> --signer <alias> --owner <alias> --tokens <token_id_list>
 ```
 
 Example 1, check `bob`'s balances:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner bob --tokens 0 1
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
 
 querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
 requested NFT balances:
@@ -199,7 +199,7 @@ owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
 Example 2, check `alice` balances:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
 
 querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
 requested NFT balances:
@@ -212,20 +212,20 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 `transfer` command requires the following parameters:
 
 - `--nft` address of the FA2 NFT contract that holds tokens to be transferred
-- `--operator` alias or address that initiates the transfer operation
+- `--signer` alias or address that initiates the transfer operation
 - `--batch` a list of individual transfers. Each individual transfer is represented
   as a comma delimited string: `<from_address_or_alias>, <to_address_or_alias>, <token_id>`.
   We do not need to specify amount of the transfer for NFTs since we can only
   transfer a single token for any NFT type.
 
 ```sh
-$ tznft transfer --nft <nft_address> --operator <operator> --batch <batch_list>`
+$ tznft transfer --nft <nft_address> --signer <signer> --batch <batch_list>`
 ```
 
 Example, `bob` transfers his own tokens `0` and `1` to `alice`:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'bob, alice, 0' 'bob, alice, 1'
+$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'bob, alice, 0' 'bob, alice, 1'
 
 transferring tokens...
 tokens transferred
@@ -234,14 +234,14 @@ tokens transferred
 Now, we can check token balances after the transfer:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner bob --tokens 0 1
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
 
 querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
 requested NFT balances:
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 0
 
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
 
 querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
 requested NFT balances:
@@ -256,7 +256,7 @@ It is also possible to transfer tokens on behalf of the owner.
 `bob` is trying to transfer one of `alice`'s tokens back:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
+$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'alice, bob, 1'
 
 transferring tokens...
 Tezos operation error: FA2_NOT_OPERATOR
@@ -292,7 +292,7 @@ updated operators
 Now `bob` can transfer a token on behalf of `alice` again:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --batch 'alice, bob, 1'
+$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'alice, bob, 1'
 
 transferring tokens...
 tokens transferred
@@ -301,14 +301,14 @@ tokens transferred
 Inspecting balances after the transfer:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner bob --tokens 0 1
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
 
 querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
 requested NFT balances:
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
 
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --operator bob --owner alice --tokens 0 1
+$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
 
 querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
 requested NFT balances:
@@ -418,8 +418,7 @@ commands:
 - `add-alias <alias> <private_key>` add alias using its private key. Aliases
   that configured with the private key can be used to sign operations that
   originate or call smart contracts on chain. `tznft` commands that require Tezos
-  operation signing have `--operator` option (not to be confused with the FA2
-  token operator).
+  operation signing have `--signer` option.
 
   Example:
 

@@ -108,37 +108,37 @@ program
   .command('show-balance')
   .alias('shb')
   .description('show NFT balances for the specified owner')
-  .requiredOption('-op, --operator <operator>', 'address that originates a query')
+  .requiredOption('-s, --signer <signer>', 'address that originates a query')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-o, --owner <owner>', 'token owner to check balances')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
   .action(async options=>contracts.showBalances(
-    options.operator, options.nft, options.owner, options.tokens)).passCommandToAction(false);
+    options.signer, options.nft, options.owner, options.tokens)).passCommandToAction(false);
 
 //prettier-ignore
 program
   .command('show-meta')
   .alias('shm')
   .description('show metadata for all tokens in the NFT contract')
-  .requiredOption('-op, --operator <operator>', 'address that originates a query')
+  .requiredOption('-s, --signer <signer>', 'address that originates a query')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
   .action(async options=>contracts.showMetadata(
-    options.operator, options.nft, options.tokens)).passCommandToAction(false);
+    options.signer, options.nft, options.tokens)).passCommandToAction(false);
 
 //prettier-ignore
 program
   .command('transfer')
   .alias('tx')
   .description('transfer NFT tokens')
-  .requiredOption('-op, --operator <operator>', 'address that originates a transfer')
+  .requiredOption('-s, --signer <signer>', 'address that originates a transfer')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption(
     '-b, --batch <batch...>', 
     'definition of individual transfers, a list of "from, to, token_id"',
     contracts.parseTransfers, [])
   .action(async options=>contracts.transfer(
-    options.operator, options.nft, options.batch)).passCommandToAction(false);
+    options.signer, options.nft, options.batch)).passCommandToAction(false);
 
 //prettier-ignore
 program

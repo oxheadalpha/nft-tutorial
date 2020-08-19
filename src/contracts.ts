@@ -106,15 +106,15 @@ function createNftStorage(tokens: fa2.TokenMetadata[], owner: string) {
 }
 
 export async function showBalances(
-  operator: string,
+  signer: string,
   nft: string,
   owner: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(owner, config);
-  const ownerAddress = await tz.signer.publicKeyHash();
+  const tz = await createToolkit(signer, config);
+  const ownerAddress = await resolveAlias2Address(owner, config);
   const nftAddress = await resolveAlias2Address(nft, config);
   const requests: fa2.BalanceOfRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
@@ -159,13 +159,13 @@ function printBalances(balances: fa2.BalanceOfResponse[]): void {
 }
 
 export async function showMetadata(
-  operator: string,
+  signer: string,
   nft: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(operator, config);
+  const tz = await createToolkit(signer, config);
   const nftAddress = await resolveAlias2Address(nft, config);
   const nftContract = await tz.contract.at(nftAddress);
   const storage = await nftContract.storage<any>();
@@ -227,14 +227,14 @@ export function parseTransfers(
 }
 
 export async function transfer(
-  operator: string,
+  signer: string,
   nft: string,
   batch: fa2.Fa2Transfer[]
 ): Promise<void> {
   const config = loadUserConfig();
   const txs = await resolveTxAddresses(batch, config);
   const nftAddress = await resolveAlias2Address(nft, config);
-  const tz = await createToolkit(operator, config);
+  const tz = await createToolkit(signer, config);
   await fa2.transfer(nftAddress, tz, txs);
 }
 
@@ -302,6 +302,6 @@ async function originateContract(
   } catch (error) {
     const jsonError = JSON.stringify(error, null, 2);
     console.log(kleur.red(`${name} origination error ${jsonError}`));
-    return Promise.reject(jsonError);
+    return Promise.reject(error);
   }
 }
