@@ -55,7 +55,7 @@ following commands:
 - NFT transfer command
 - Configuration commands to bootstrap Tezos network and configure address aliases
 
-The commands will be explained in more details below. You can always run
+The commands will be explained in more detail below. You can always run
 
 ```sh
 $ tznft --help
