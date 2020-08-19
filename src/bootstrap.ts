@@ -20,7 +20,7 @@ export async function bootstrap(): Promise<void> {
     await originateBalanceInspector(config, 'bob');
   } catch (err) {
     console.log(kleur.red('failed to start. ' + JSON.stringify(err)));
-    return;
+    return Promise.reject(err);
   }
 }
 
@@ -62,7 +62,7 @@ async function killSandbox(): Promise<void> {
         if (err) {
           console.log(kleur.red('failed to stop sandbox'));
           console.log(kleur.red().dim(errout));
-          reject();
+          reject(err);
         } else {
           console.log(kleur.yellow().dim(stdout));
           resolve();
