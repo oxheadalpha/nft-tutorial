@@ -21,7 +21,7 @@ on behalf of the token owner) and manage token metadata.
 NFT (non-fungible token) is a special type of cryptographic token which represents
 something unique; non-fungible tokens are thus not mutually interchangeable.
 NFTs can represent ownership over digital or physical assets like virtual collectibles
-or unique art work.
+or unique artwork.
 
 For each individual non-fungible token, the FA2 assigns a unique
 token ID and associates it with the token owner address. The FA2 API allows to
