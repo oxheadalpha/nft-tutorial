@@ -15,8 +15,8 @@ program.version(packageJson.version);
 
 //prettier-ignore
 program
-  .command('config-init')
-  .alias('ci')
+  .command('init-config')
+  .alias('ic')
   .description('create tznft.config file')
   .action(initUserConfig);
 

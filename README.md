@@ -88,7 +88,7 @@ to list all available commands.
 3. Initialize tutorial config:
 
    ```sh
-   $ tznft config-init
+   $ tznft init-config
 
    tznft.json config file created
    ```
@@ -323,7 +323,7 @@ Token `1` now belongs to `bob`.
 `tznft` can be configured to interact with different Tezos networks. The user can
 also configure address aliases to sign Tezos operation and/or use them as command
 parameters when addresses are required. The default configuration that is created
-by `tznft config-init` command includes two pre-configured networks: `sandbox`
+by `tznft init-config` command includes two pre-configured networks: `sandbox`
 and `testnet` (Carthagenet). Each pre-configured network has two bootstrap aliases:
 `bob` and `alice`.
 
