@@ -16,7 +16,11 @@ export function initUserConfig(): void {
       path.join(__dirname, '../tznft.json'),
       userConfigFileWithExt
     );
-    console.log(`${kleur.green('tznft.json')} config file created`);
+    console.log(
+      `${kleur.green(
+        path.join(process.cwd(), 'tznft.json')
+      )} config file created`
+    );
   }
 }
 
