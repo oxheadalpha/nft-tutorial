@@ -31,6 +31,10 @@ export async function kill(): Promise<void> {
   if (network === 'sandbox') await killSandbox();
 }
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function startSandbox(): Promise<void> {
   await new Promise<void>((resolve, reject) =>
     //start and wait
@@ -53,6 +57,7 @@ async function startSandbox(): Promise<void> {
 
   const config = loadUserConfig();
   const toolkit = await createToolkit('bob', config);
+  await sleep(10000);
   await retry(
     async () => {
       console.log('rpc...');
@@ -60,6 +65,7 @@ async function startSandbox(): Promise<void> {
     },
     { retries: 6 }
   );
+  await Tezos.rpc.getBlockHeader({ block: '1' });
   console.log(kleur.green('sandbox started'));
 }
 
