@@ -122,7 +122,7 @@ to list all available commands.
 
 ### Mint NFT Token(s)
 
-This tutorial uses NFT collection contract. Each time the user mints a new set
+This tutorial uses an NFT collection contract. Each time the user mints a new set
 (collection) of tokens, a new NFT contract is created. The user cannot add more
 tokens or remove (burn) existing tokens within the contract. However tokens can
 be transferred to other owners.
@@ -321,7 +321,7 @@ Token `1` now belongs to `bob`.
 ### Configuration
 
 `tznft` can be configured to interact with different Tezos networks. The user can
-also configure address aliases to sign Tezos operation and/or use them as command
+also configure address aliases to sign Tezos operations and/or use them as command
 parameters when addresses are required. The default configuration that is created
 by `tznft init-config` command includes two pre-configured networks: `sandbox`
 and `testnet` (Carthagenet). Each pre-configured network has two bootstrap aliases:
