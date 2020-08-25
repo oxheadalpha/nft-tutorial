@@ -1,6 +1,7 @@
 import * as child from 'child_process';
 import * as kleur from 'kleur';
-import { Tezos } from '@taquito/taquito';
+import retry from 'async-retry';
+import { Tezos, TezosToolkit } from '@taquito/taquito';
 import {
   loadUserConfig,
   activeNetworkKey,
@@ -49,7 +50,16 @@ async function startSandbox(): Promise<void> {
     )
   );
   console.log(kleur.yellow('starting sandbox...'));
-  await Tezos.rpc.getBlockHeader({ block: '1' });
+
+  const config = loadUserConfig();
+  const toolkit = await createToolkit('bob', config);
+  await retry(
+    async () => {
+      console.log('rpc...');
+      await toolkit.rpc.getBlockHeader({ block: '1' });
+    },
+    { retries: 6 }
+  );
   console.log(kleur.green('sandbox started'));
 }
 
