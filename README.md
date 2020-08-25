@@ -24,10 +24,10 @@ NFTs can represent ownership over digital or physical assets like virtual collec
 or unique artwork.
 
 For each individual non-fungible token, the FA2 assigns a unique
-token ID and associates it with the token owner address. The FA2 API allows to
-inspect token balances for the specific token ID and token owner address. For NFTs
-the balance can be either 0 (which means that the address does not own this particular
-token) or 1 (the address owns the token).
+token ID and associates it with the token owner address. The FA2 API enables the
+inspection of token balances for the specific token ID and token owner address.
+For NFTs the balance can be either 0 (which means that the address does not own
+this particular token) or 1 (the address owns the token).
 
 The FA2 contract also associates some metadata with each token. This tutorial supports
 token symbol and token name metadata attributes. However, the implementation can
