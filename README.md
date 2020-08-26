@@ -8,7 +8,7 @@ implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
 
 ## Introduction
 
-### What is FA2
+### What is FA2 (TZIP-12)?
 
 FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
 on Tezos. FA2 proposes a unified token contract interface, supporting a wide range
@@ -16,7 +16,7 @@ of token types. The FA2 provides a standard API to transfer tokens, check
 token balances, manage operators (addresses that are permitted to transfer tokens
 on behalf of the token owner) and manage token metadata.
 
-### What is NFT
+### What is a Non-Fungible Token (NFT)?
 
 NFT (non-fungible token) is a special type of cryptographic token which represents
 something unique; non-fungible tokens are thus not mutually interchangeable.
