@@ -19,9 +19,6 @@ export function showAlias(alias: string): void {
 
 function printAllAliases(config: Configstore) {
   const allAliasesCfg = config.get(allAliasesKey(config));
-  console.log('ALIASES');
-  console.log(config.get('availableNetworks.testnet.aliases'));
-  // console.log(allAliasesCfg);
   if (allAliasesCfg) {
     const allAliases = Object.getOwnPropertyNames(allAliasesCfg);
     for (let a of allAliases) {

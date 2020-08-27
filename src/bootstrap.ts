@@ -1,6 +1,7 @@
 import * as child from 'child_process';
 import * as kleur from 'kleur';
-import { Tezos } from '@taquito/taquito';
+import retry from 'async-retry';
+import { Tezos, TezosToolkit } from '@taquito/taquito';
 import {
   loadUserConfig,
   activeNetworkKey,
@@ -20,7 +21,7 @@ export async function bootstrap(): Promise<void> {
     await originateBalanceInspector(config, 'bob');
   } catch (err) {
     console.log(kleur.red('failed to start. ' + JSON.stringify(err)));
-    return;
+    return Promise.reject(err);
   }
 }
 
@@ -49,7 +50,16 @@ async function startSandbox(): Promise<void> {
     )
   );
   console.log(kleur.yellow('starting sandbox...'));
-  await Tezos.rpc.getBlockHeader({ block: '1' });
+
+  const config = loadUserConfig();
+  const toolkit = await createToolkit('bob', config);
+  await retry(
+    async () => {
+      console.log('rpc...');
+      await toolkit.rpc.getBlockHeader({ block: '2' });
+    },
+    { retries: 8 }
+  );
   console.log(kleur.green('sandbox started'));
 }
 
@@ -62,7 +72,7 @@ async function killSandbox(): Promise<void> {
         if (err) {
           console.log(kleur.red('failed to stop sandbox'));
           console.log(kleur.red().dim(errout));
-          reject();
+          reject(err);
         } else {
           console.log(kleur.yellow().dim(stdout));
           resolve();

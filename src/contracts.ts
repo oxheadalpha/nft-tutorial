@@ -8,7 +8,8 @@ import {
   loadUserConfig,
   loadFile,
   activeNetworkKey,
-  inspectorKey
+  inspectorKey,
+  suggestCommand
 } from './config-util';
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from './fa2-interface';
@@ -68,7 +69,7 @@ export async function mintNfts(
   );
   const storage = createNftStorage(tokens, ownerAddress);
 
-  console.log(kleur.yellow('originating new NFT contract'));
+  console.log(kleur.yellow('originating new NFT contract...'));
   const nftAddress = await originateContract(tz, code, storage, 'nft');
   console.log(
     kleur.yellow(`originated NFT collection ${kleur.green(nftAddress)}`)
@@ -105,38 +106,36 @@ function createNftStorage(tokens: fa2.TokenMetadata[], owner: string) {
 }
 
 export async function showBalances(
-  operator: string,
+  signer: string,
   nft: string,
   owner: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(owner, config);
-  const ownerAddress = await tz.signer.publicKeyHash();
+  const tz = await createToolkit(signer, config);
+  const ownerAddress = await resolveAlias2Address(owner, config);
+  const nftAddress = await resolveAlias2Address(nft, config);
   const requests: fa2.BalanceOfRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
   const inspectorAddress = config.get(inspectorKey(config));
   if (!inspectorAddress || typeof inspectorAddress !== 'string') {
-    console.log(
-      kleur.red(
-        'Cannot find deployed balance inspector contract.\nTry to kill and start network again.'
-      )
-    );
+    console.log(kleur.red('Cannot find deployed balance inspector contract.'));
+    suggestCommand('bootstrap');
     return;
   }
 
   console.log(
     kleur.yellow(
       `querying NFT contract ${kleur.green(
-        nft
+        nftAddress
       )} using balance inspector ${kleur.green(inspectorAddress)}`
     )
   );
   const inspector = await tz.contract.at(inspectorAddress);
-  const balanceOp = await inspector.methods.query(nft, requests).send();
+  const balanceOp = await inspector.methods.query(nftAddress, requests).send();
   await balanceOp.confirmation();
   const storage = await inspector.storage<InspectorStorage>();
   if (Array.isArray(storage)) printBalances(storage);
@@ -160,14 +159,15 @@ function printBalances(balances: fa2.BalanceOfResponse[]): void {
 }
 
 export async function showMetadata(
-  operator: string,
+  signer: string,
   nft: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(operator, config);
-  const nftContract = await tz.contract.at(nft);
+  const tz = await createToolkit(signer, config);
+  const nftAddress = await resolveAlias2Address(nft, config);
+  const nftContract = await tz.contract.at(nftAddress);
   const storage = await nftContract.storage<any>();
   const meta: MichelsonMap<BigNumber, fa2.TokenMetadata> =
     storage.token_metadata;
@@ -227,14 +227,15 @@ export function parseTransfers(
 }
 
 export async function transfer(
-  operator: string,
+  signer: string,
   nft: string,
   batch: fa2.Fa2Transfer[]
 ): Promise<void> {
   const config = loadUserConfig();
   const txs = await resolveTxAddresses(batch, config);
-  const tz = await createToolkit(operator, config);
-  await fa2.transfer(nft, tz, txs);
+  const nftAddress = await resolveAlias2Address(nft, config);
+  const tz = await createToolkit(signer, config);
+  await fa2.transfer(nftAddress, tz, txs);
 }
 
 async function resolveTxAddresses(
@@ -274,7 +275,8 @@ export async function updateOperators(
   const tz = await createToolkit(owner, config);
   const resolvedAdd = await resolveOperators(addOperators, config);
   const resolvedRemove = await resolveOperators(removeOperators, config);
-  await fa2.updateOperators(nft, tz, resolvedAdd, resolvedRemove);
+  const nftAddress = await resolveAlias2Address(nft, config);
+  await fa2.updateOperators(nftAddress, tz, resolvedAdd, resolvedRemove);
 }
 
 async function resolveOperators(
@@ -300,6 +302,6 @@ async function originateContract(
   } catch (error) {
     const jsonError = JSON.stringify(error, null, 2);
     console.log(kleur.red(`${name} origination error ${jsonError}`));
-    return Promise.reject(jsonError);
+    return Promise.reject(error);
   }
 }

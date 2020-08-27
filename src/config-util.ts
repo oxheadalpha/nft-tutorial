@@ -16,7 +16,11 @@ export function initUserConfig(): void {
       path.join(__dirname, '../tznft.json'),
       userConfigFileWithExt
     );
-    console.log(`${kleur.green('tznft.json')} config file created`);
+    console.log(
+      `${kleur.green(
+        path.join(process.cwd(), 'tznft.json')
+      )} config file created`
+    );
   }
 }
 
@@ -71,7 +75,7 @@ export async function loadFile(filePath: string): Promise<string> {
   });
 }
 
-function suggestCommand(cmd: string) {
+export function suggestCommand(cmd: string) {
   console.log(
     `Try to run ${kleur.green(`tznft ${cmd}`)} command to create default config`
   );

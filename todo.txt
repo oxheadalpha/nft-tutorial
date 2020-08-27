@@ -13,7 +13,15 @@ DONE    8. transfer tokens
 DONE    9. substitute aliases with addresses/signers
 DONE    10. create testnet config with bootstrap faucet accounts
 DONE        10.1 add alias from the faucet file (activate if necessary)
-        11. Complete readme
+WIP     11. Complete readme
+DONE         11.1 Initial setup
+DONE         11.2 Major commands
+WIP          11.3 Configuration
+DONE             11.3.1 What is configured
+DONE             11.3.2 Network config
+DONE             11.3.3 sandbox vs testnet
+DONE             11.3.4 Aliases config
+DONE             11.3.5 types of aliases
 DONE    12. Inspect balances
 NA           12.1 print alias names when inspecting balance
 DONE    13. update operators
