@@ -149,10 +149,10 @@ program
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .option(
     '-a, --add [add_operators...]',
-    'list of the operators to be added by the token owner')
+    'list of the operators and token ID pairs to be added by the token owner')
   .option(
     '-r, --remove [remove_operators...]',
-    'list of the operators to be removed by the token owner')
+    'list of the operators and token ID pairs to be removed by the token owner')
   .action(async (owner, options) => contracts.updateOperators(
     owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
 

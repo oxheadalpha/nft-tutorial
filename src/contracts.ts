@@ -273,17 +273,45 @@ export async function updateOperators(
 ): Promise<void> {
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
-  const resolvedAdd = await resolveOperators(addOperators, config);
-  const resolvedRemove = await resolveOperators(removeOperators, config);
+  const ownerAddress = await tz.signer.publicKeyHash();
+  const resolvedAdd = await resolveOperators(
+    ownerAddress,
+    addOperators,
+    config
+  );
+  const resolvedRemove = await resolveOperators(
+    ownerAddress,
+    removeOperators,
+    config
+  );
   const nftAddress = await resolveAlias2Address(nft, config);
   await fa2.updateOperators(nftAddress, tz, resolvedAdd, resolvedRemove);
 }
 
 async function resolveOperators(
+  owner: string,
   operators: string[],
   config: Configstore
-): Promise<string[]> {
-  const resolved = operators.map(async o => resolveAlias2Address(o, config));
+): Promise<fa2.OperatorParam[]> {
+  const resolved = operators.map(async o => {
+    try {
+      const [op, token] = o.split(',');
+      const operator = await resolveAlias2Address(op, config);
+      const token_id = new BigNumber(token);
+
+      return { owner, operator, token_id };
+    } catch (e) {
+      console.log(
+        kleur.red(`cannot parse operator definition ${kleur.yellow(o)}`)
+      );
+      console.log(
+        kleur.red(
+          "correct operator format is 'operator_alias_or_address, token_id'"
+        )
+      );
+      throw e;
+    }
+  });
   return Promise.all(resolved);
 }
 

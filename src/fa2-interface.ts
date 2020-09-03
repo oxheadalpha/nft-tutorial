@@ -48,9 +48,10 @@ export async function transfer(
   console.log(kleur.green('tokens transferred'));
 }
 
-interface OperatorParam {
+export interface OperatorParam {
   owner: address;
   operator: address;
+  token_id: nat;
 }
 interface AddOperator {
   add_operator: OperatorParam;
@@ -64,27 +65,16 @@ type UpdateOperator = AddOperator | RemoveOperator;
 export async function updateOperators(
   fa2: address,
   owner: TezosToolkit,
-  addOperators: address[],
-  removeOperators: address[]
+  addOperators: OperatorParam[],
+  removeOperators: OperatorParam[]
 ): Promise<void> {
   console.log(kleur.yellow('updating operators...'));
   const fa2WithOwner = await owner.contract.at(fa2);
-  const ownerAddress = await owner.signer.publicKeyHash();
-  const addParams: UpdateOperator[] = addOperators.map(operator => {
-    return {
-      add_operator: {
-        owner: ownerAddress,
-        operator
-      }
-    };
+  const addParams: UpdateOperator[] = addOperators.map(param => {
+    return { add_operator: param };
   });
-  const removeParams: UpdateOperator[] = removeOperators.map(operator => {
-    return {
-      remove_operator: {
-        owner: ownerAddress,
-        operator
-      }
-    };
+  const removeParams: UpdateOperator[] = removeOperators.map(param => {
+    return { remove_operator: param };
   });
   const allOperators = addParams.concat(removeParams);
 

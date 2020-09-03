@@ -273,8 +273,8 @@ behalf of `alice`.
 
 - `<owner>` alias or address of the token owner to update operators for
 - `--nft` address of the FA2 NFT contract
-- `--add` list of aliases or addresses to add to the operator set
-- `--remove` list of aliases or addresses to remove from the operator set
+- `--add` list of pairs aliases or addresses and token id to add to the operator set
+- `--remove` list of aliases or addresses and token id to remove from the operator set
 
 ```sh
 $ tznft update-ops <owner> --nft <nft_address> --add [add_operators_list] --remove [add_operators_list]
@@ -283,7 +283,7 @@ $ tznft update-ops <owner> --nft <nft_address> --add [add_operators_list] --remo
 Example, `alice` adds `bob` as an operator:
 
 ```sh
-$ tznft update-ops alice --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --add bob
+$ tznft update-ops alice --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --add 'bob, 1'
 
 updating operators...
 updated operators
