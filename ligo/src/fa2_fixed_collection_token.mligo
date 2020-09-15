@@ -29,15 +29,15 @@ type collection_storage = {
 Update leger balances according to the specified transfers. Fails if any of the
 permissions or constraints are violated.
 @param txs transfers to be applied to the ledger
-@param owner_validator function that validates of the tokens from the particular owner can be transferred. 
+@param validate function that validates of the tokens from the particular owner can be transferred. 
  *)
-let transfer (txs, owner_validator, ops_storage, ledger
-    : (transfer list) * ((address * operator_storage) -> unit) * operator_storage * ledger) : ledger =
+let transfer (txs, validate, ops_storage, ledger
+    : (transfer list) * operator_validator * operator_storage * ledger) : ledger =
   (* process individual transfer *)
   let make_transfer = (fun (l, tx : ledger * transfer) ->
-    let u = owner_validator (tx.from_, ops_storage) in
     List.fold 
       (fun (ll, dst : ledger * transfer_destination) ->
+        let u = validate (tx.from_, Tezos.sender, dst.token_id, ops_storage) in
         if dst.amount = 0n
         then ll (* zero amount transfer, do nothing *)
         else if dst.amount <> 1n (* for NFTs only one token per token type is available *)
@@ -79,8 +79,7 @@ let fa2_collection_main (param, storage : fa2_entry_points * collection_storage)
   match param with
   | Transfer txs_michelson ->
     let txs = transfers_from_michelson txs_michelson in
-    let validator = make_default_operator_validator Tezos.sender in
-    let new_ledger = transfer (txs, validator, storage.operators, storage.ledger) in
+    let new_ledger = transfer (txs, default_operator_validator, storage.operators, storage.ledger) in
     let new_storage = { storage with ledger = new_ledger; } in
     ([] : operation list), new_storage
   
