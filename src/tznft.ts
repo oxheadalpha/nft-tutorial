@@ -99,7 +99,7 @@ program
   .arguments('<owner>')
   .requiredOption(
     '-t, --tokens <tokens...>',
-    'definitions of new tokens, a list of "id, symbol, name"',
+    'definitions of new tokens, a list of "id, symbol, name" or "id, symbol, name, ipfc_cid"',
     contracts.parseTokens, [])
   .action(async (owner, options) => contracts.mintNfts(owner, options.tokens)).passCommandToAction(false);
 
