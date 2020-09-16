@@ -211,20 +211,20 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 
 Token metadata can store a reference to some external document and/or image.
 This tutorial supports storing external data on [IPFS](https://ipfs.io) and keeping
-IPFS hash as a part of the token metadata.
+an IPFS hash as a part of the token metadata.
 
 Let's create a single NFT token which references an image on IPFS.
 
-1. Upload your image to IPFS and obtain image file hash. There are
-   multiple ways to do that. One of the possible solutions is to install
+1. Upload your image to IPFS and obtain an image file hash. There are
+   multiple ways to do that. One of the possible solutions is to install the
    [IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) web plugin and
    upload an image file from there. You can upload multiple images and/or documents
    if you plan to create a collection of multiple NFTs.
 
-2. Copy IPFS file hash code (`CID`). For this example we will use
+2. Copy the IPFS file hash code (`CID`). For this example we will use
    `QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj`
 
-3. Execute `tznft mint` command adding IPFS hash as a forth parameter in the token
+3. Execute `tznft mint` command adding IPFS hash as a fourth parameter in the token
    description.
 
 ```sh
@@ -234,8 +234,8 @@ originating new NFT contract...
 originated NFT collection KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8
 ```
 
-4. Now we can inspect new token metadata and see that IPFS hash (`ipfs_cid`) is
-   there.
+4. Now we can inspect new token metadata and see that the IPFS hash (`ipfs_cid`)
+   is there.
 
 ```sh
 $ tznft show-meta -s bob --nft KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8 --tokens 0
