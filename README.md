@@ -6,6 +6,10 @@ implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
 (CLI) to originate and interact with the NFT contracts either on the
 [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Carthagenet).
 
+**Disclaimer:** We highly recommend users read the additional resources above and 
+take necessary precautions before following this tutorial and interacting with 
+experimental technology. Use this tutorial at your own risk.
+
 ## Introduction
 
 ### What is FA2 (TZIP-12)?
