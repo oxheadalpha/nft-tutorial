@@ -430,6 +430,12 @@ faster. However, all originated contracts will be lost after the sandbox is stop
 If you are using `testnet`, your originated contracts will remain on the blockchain
 and you can inspect them afterwards using an block explorer like [BCD](https://better-call.dev/).
 
+_Note: Although `testnet` configuration already has two aliases `bob` and `alice`,
+it is a good practice to create your own alias from the faucet file (see
+`tznft add-alias-faucet` command described below) and use it as a signer for the
+commands like `mint`, `transfer` and `show_balance`. This way your Tezos operations
+will not interfere with the operations initiated by other users._
+
 #### Alias Configuration Commands
 
 `tznft` allows user to configure and use short names (aliases) instead of typing
