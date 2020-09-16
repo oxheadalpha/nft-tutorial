@@ -207,7 +207,47 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 0
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 ```
 
-## Transferring Tokens
+### Tokens With External Metadata
+
+Token metadata can store a reference to some external document and/or image.
+This tutorial supports storing external data on [IPFS](https://ipfs.io) and keeping
+IPFS hash as a part of the token metadata.
+
+Let's create a single NFT token which references an image on IPFS.
+
+1. Upload your image to IPFS and obtain image file hash. There are
+   multiple ways to do that. One of the possible solutions is to install
+   [IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) web plugin and
+   upload an image file from there. You can upload multiple images and/or documents
+   if you plan to create a collection of multiple NFTs.
+
+2. Copy IPFS file hash code (`CID`). For this example we will use
+   `QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj`
+
+3. Execute `tznft mint` command adding IPFS hash as a forth parameter in the token
+   description.
+
+```sh
+$ tznft mint bob -t '0, TZT, Tezos Token, QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj'
+
+originating new NFT contract...
+originated NFT collection KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8
+```
+
+4. Now we can inspect new token metadata and see that IPFS hash (`ipfs_cid`) is
+   there.
+
+```sh
+$ tznft show-meta -s bob --nft KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8 --tokens 0
+
+token_id: 0	symbol: TZT	name: Tezos Token	extras: { ipfs_cid=QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj }
+```
+
+5. You can inspect the file on the web by opening a URL `https://ipfs.io/ipfs/<ipfs_cid>`.
+   For our example, the URL would be
+   [https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj](https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj)
+
+### Transferring Tokens
 
 `transfer` command requires the following parameters:
 
