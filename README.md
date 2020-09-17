@@ -6,8 +6,8 @@ implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
 (CLI) to originate and interact with the NFT contracts either on the
 [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Carthagenet).
 
-**Disclaimer:** We highly recommend users read the additional resources above and 
-take necessary precautions before following this tutorial and interacting with 
+**Disclaimer:** We highly recommend users read the additional resources above and
+take necessary precautions before following this tutorial and interacting with
 experimental technology. Use this tutorial at your own risk.
 
 ## Introduction
@@ -55,7 +55,8 @@ You will need to install `tznft` CLI tool. After the installation, you can invok
 various commands in the form of `tznft <command> [options]`. `tznft` provides the
 following commands:
 
-- NFT mint (contract origination) and token inspection command
+- mint (contract origination) NFT with metadata command
+- token inspection commands
 - NFT transfer command
 - Configuration commands to bootstrap Tezos network and configure address aliases
 
