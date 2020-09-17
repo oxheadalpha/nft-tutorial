@@ -1,4 +1,4 @@
-# Tutorial: Non-Fungible Tokens on Tezos Using the FA2 Standard
+# Tutorial: Non-Fungible Tokens on Tezos Using FA2
 
 This tutorial shows how to originate and interact with the FA2 NFT contract
 implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
