@@ -80,7 +80,7 @@ export function parseTokens(
   descriptor: string,
   tokens: fa2.TokenMetadata[]
 ): fa2.TokenMetadata[] {
-  const [id, symbol, name] = descriptor.split(',').map(p => p.trim());
+  const [id, symbol, name, ipfcCid] = descriptor.split(',').map(p => p.trim());
   const token: fa2.TokenMetadata = {
     token_id: new BigNumber(id),
     symbol,
@@ -88,6 +88,7 @@ export function parseTokens(
     decimals: new BigNumber(0),
     extras: new MichelsonMap()
   };
+  if (ipfcCid) token.extras.set('ipfs_cid', ipfcCid);
   return [token].concat(tokens);
 }
 
