@@ -35,8 +35,8 @@ this particular token) or 1 (the address owns the token).
 
 The FA2 contract also associates some metadata with each token. This tutorial supports
 token symbol and token name metadata attributes. However, the implementation can
-be easily extended to support custom metadata attributes such an associated image
-or document URL and its crypto-hash.
+be easily extended to support custom metadata attributes such as an associated
+image or document URL and its crypto-hash.
 
 ## Tutorial
 
