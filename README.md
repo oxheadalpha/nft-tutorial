@@ -22,7 +22,7 @@ on behalf of the token owner) and manage token metadata.
 
 ### What is a Non-Fungible Token (NFT)?
 
-NFT (non-fungible token) is a special type of cryptographic token which represents
+An NFT (non-fungible token) is a special type of cryptographic token which represents
 something unique; non-fungible tokens are thus not mutually interchangeable.
 NFTs can represent ownership over digital or physical assets like virtual collectibles
 or unique artwork.
