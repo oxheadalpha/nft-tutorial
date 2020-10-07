@@ -34,7 +34,7 @@ export function loadUserConfig(): Configstore {
   } else {
     const msg = 'no tznft.json config file found';
     console.log(kleur.red(msg));
-    suggestCommand('config-int');
+    suggestCommand('init-config');
     throw new Error(msg);
   }
 }
@@ -76,7 +76,5 @@ export async function loadFile(filePath: string): Promise<string> {
 }
 
 export function suggestCommand(cmd: string) {
-  console.log(
-    `Try to run ${kleur.green(`tznft ${cmd}`)} command to create default config`
-  );
+  console.log(`Try to run ${kleur.green(`tznft ${cmd}`)} command first`);
 }
