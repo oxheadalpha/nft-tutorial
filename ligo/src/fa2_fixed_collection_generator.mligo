@@ -33,8 +33,7 @@ let generate_asset_storage (tokens, owner
           extras = Map.add "token_uri" uri m0.extras;
         }
       in
-      let m_michelson = Layout.convert_to_right_comb (m1 : token_metadata) in
-      Big_map.add td.id m_michelson meta
+      Big_map.add td.id m1 meta
   ) tokens (Big_map.empty : token_metadata_storage) in
 
   {
@@ -60,5 +59,6 @@ let generate_rainbow_collection_storage (owner : address) : collection_storage =
 
 (*
 CLI:
-ligo compile-storage ligo/src/fa2_fixed_collection_generator.mligo fa2_collection_main 'generate_rainbow_collection_storage ("tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU" : address)'
+ligo compile-storage ligo/src/fa2_fixed_collection_generator.mligo fa2_collection_main '
+generate_rainbow_collection_storage ("tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU" : address)'
 *)

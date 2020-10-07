@@ -13,7 +13,7 @@ Metadata may/should contain URLs for token images and images hashes.
 
 
 (* token_id -> token_metadata *)
-type token_metadata_storage = (token_id, token_metadata_michelson) big_map
+type token_metadata_storage = (token_id, token_metadata) big_map
 
 (*  token_id -> owner_address *)
 type ledger = (token_id, address) big_map
@@ -63,13 +63,11 @@ Retrieve the balances for the specified tokens and owners
 let get_balance (p, ledger : balance_of_param * ledger) : operation =
   let to_balance = fun (r : balance_of_request) ->
     let owner = Big_map.find_opt r.token_id ledger in
-    let response = match owner with
+    match owner with
     | None -> (failwith fa2_token_undefined : balance_of_response)
     | Some o ->
       let bal = if o = r.owner then 1n else 0n in
       { request = r; balance = bal; }
-    in
-    balance_of_response_to_michelson response
   in
   let responses = List.map to_balance p.requests in
   Operation.transaction responses 0mutez p.callback
@@ -77,19 +75,17 @@ let get_balance (p, ledger : balance_of_param * ledger) : operation =
 let fa2_collection_main (param, storage : fa2_entry_points * collection_storage)
     :  (operation list) * collection_storage =
   match param with
-  | Transfer txs_michelson ->
-    let txs = transfers_from_michelson txs_michelson in
+  | Transfer txs ->
     let new_ledger = transfer (txs, default_operator_validator, storage.operators, storage.ledger) in
     let new_storage = { storage with ledger = new_ledger; } in
     ([] : operation list), new_storage
   
-  | Balance_of pm ->
-    let p = balance_of_param_from_michelson pm in
+  | Balance_of p ->
     let op = get_balance (p, storage.ledger) in
     [op], storage
 
-  | Update_operators updates_michelson ->
-    let new_operators = fa2_update_operators (updates_michelson, storage.operators) in
+  | Update_operators updates ->
+    let new_operators = fa2_update_operators (updates, storage.operators) in
     let new_storage = { storage with operators = new_operators; } in
     ([] : operation list), new_storage
 
