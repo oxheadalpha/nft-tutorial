@@ -1,13 +1,7 @@
 import * as child from 'child_process';
 import * as kleur from 'kleur';
 import retry from 'async-retry';
-import { Tezos, TezosToolkit } from '@taquito/taquito';
-import {
-  loadUserConfig,
-  activeNetworkKey,
-  inspectorKey,
-  aliasKey
-} from './config-util';
+import { loadUserConfig, inspectorKey } from './config-util';
 import { createToolkit, originateInspector } from './contracts';
 import Configstore from 'configstore';
 

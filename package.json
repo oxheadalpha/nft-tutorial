@@ -1,7 +1,7 @@
 {
-  "name": "@tqtezos/nft-tutorial",
+  "name": "@oxheadalpha/nft-tutorial",
   "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "keywords": [
     "tezos",
     "smart contracts",
@@ -23,7 +23,8 @@
     "tznft": "./lib/tznft.js"
   },
   "dependencies": {
-    "@taquito/taquito": "^6.3.5-beta.0",
+    "@taquito/taquito": "^11.0.2",
+    "@taquito/signer": "^11.0.2",
     "async-retry": "^1.3.1",
     "bignumber.js": "^9.0.0",
     "child_process": "^1.0.2",

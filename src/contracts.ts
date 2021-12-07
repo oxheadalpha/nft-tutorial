@@ -38,7 +38,7 @@ export function createToolkitFromSigner(
     throw new Error(msg);
   }
 
-  const toolkit = new TezosToolkit();
+  const toolkit = new TezosToolkit(providerUrl);
   toolkit.setProvider({
     signer,
     rpc: providerUrl,
