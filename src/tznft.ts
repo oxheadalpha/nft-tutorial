@@ -161,7 +161,7 @@ program
 //prettier-ignore
 program
   .command('config-show-all')
-  .description('shows whole raw config')
+  .description('shows whole raw config!!!!')
   .action(networkConf.showConfig);
 
 program.parseAsync().catch(error => {
