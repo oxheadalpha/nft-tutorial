@@ -77,7 +77,7 @@ export async function addAliasFromFaucet(
     faucet.password,
     faucet.mnemonic.join(' ')
   );
-  await activateFaucet(signer, faucet.secret);
+  await activateFaucet(signer, faucet.activation_code);
 
   const secretKey = await signer.secretKey();
   await addAlias(alias, secretKey);

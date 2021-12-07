@@ -15,15 +15,15 @@
 			}
 		},
 		"testnet": {
-			"providerUrl": "https://testnet-tezos.giganode.io",
+			"providerUrl": "https://hangzhounet.smartpy.io",
 			"aliases": {
-				"bob": {
-					"address": "tz1f6LtT8nER9aYaaNb7PPJq7rkhwpcXexU6",
-					"secret": "edskRfLsHb49bP4dTpYzAZ7qHCX4ByK2g6Cwq2LWqRYAQSeRpziaZGBW72vrJnp1ahLGKd9rXUf7RHzm8EmyPgseUi3VS9putT"
+        "bob": {
+					"address": "tz1TKc3zQBMv7Rez77sX4JNdqMvG33LQrURk",
+					"secret": "edskS2b1NYNdRhmge37u9gYqw7vDqBmm7Sd5LDU4dTx6Xd4XF5XSQ7P1DFggR8qVoVJwRHXtgeYa2HDQviABoCqJaEySVdHFJQ"
 				},
 				"alice": {
-					"address": "tz1cbWPEd7vuwTS4XkJsMVmm8ZDN7xhRsnDk",
-					"secret": "edskRqb8GgnD4d2B7nR3ofJajDU7kwooUzXz7yMwRdLDP9j7Z1DvhaeBcs8WkJ4ELXXJgVkq5tGwrFibojDjYVaG7n4Tq1qDxZ"
+					"address": "tz1Wbj2pUCCt7w18BMvcuq6DtUjTAVDniZuW",
+					"secret": "edskRgnCAbzDb1nagnzH17VH2WoNnBpGHz93jbsTZihT6YSqKDH5NRRbokFvm2rPTtSdwUzY9EU6W2eF6VbDti8oRRbBjPGEKL"
 				}
 			}
 		}
