@@ -500,7 +500,7 @@ commands:
   ```
 
 - `add-alias-faucet <alias> <faucet_json_file_path>` add alias with private key
-  from the faucet file (see [Tezos Faucet](https://faucet.tzalpha.net/)). This
+  from the faucet file (see [Tezos Faucet](https://teztnets.xyz/)). This
   command will not work on `sandbox` network. An alias configured from the faucet
   has the private key and can be used to sign Tezos operations.
 
