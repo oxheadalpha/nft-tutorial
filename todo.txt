@@ -19,7 +19,7 @@ VERSION TWO
               1.2.3.1 Provide and validate TZIP-16 metadata during contract origination
               1.2.3.2 Originate two types of NFT contracts
               1.2.3.3 Originate user-written contract
-          1.3. NPM build and publishing
+WIP       1.3. NPM build and publishing
         2. Enhance metadata
           2.1. TZIP-16 contract metadata
           2.2. TZIP-21 rich token metadata

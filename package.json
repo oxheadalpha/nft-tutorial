@@ -1,18 +1,22 @@
 {
-  "name": "@oxheadalpha/nft-tutorial",
+  "name": "@oxheadalpha/nft-tutorial-ws",
   "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "keywords": [
     "tezos",
     "smart contracts",
     "NFT",
-    "FA2"
+    "FA2",
+    "TZIP-12",
+    "TZIP-21"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tqtezos/nft-tutorial.git"
+    "url": "https://github.com/oxheadalpha/nft-tutorial.git"
   },
+  "private": true,
+  "workspaces": ["packages/*"],
   "scripts": {
     "build": "tsc -p .",
     "build:watch": "tsc -w -p .",
