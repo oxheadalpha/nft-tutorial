@@ -12,7 +12,6 @@
     "TZIP-21"
   ],
   "license": "MIT",
-  "private": false,
   "scripts": {
     "build": "tsc -p ."
   },
