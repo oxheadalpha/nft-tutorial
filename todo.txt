@@ -1,3 +1,46 @@
+VERSION TWO
+============================================================================
+
+        1. Upgrade project environment
+          1.1. New version of Typescript and compilation
+          1.2. Multiple packages (yarn workspaces vs. lerna)
+            1.2.1. Contracts
+              1.2.1.1 Contracts sources and ligo compilation
+              1.2.2.2 Generate contract storage Typescript type
+              1.2.2.3 Contract origination (???)
+              1.2.2.4. Standard contracts source code
+              1.2.2.5. Contract tests
+            1.2.2.  Typescript contract interfaces
+              1.2.2.1  FA2
+              1.2.2.2  FA2/NFT
+              1.2.2.3  Admin entry points
+              1.2.2.4  Custom mint entry points
+            1.2.3. CLI
+              1.2.3.1 Provide and validate TZIP-16 metadata during contract origination
+              1.2.3.2 Originate two types of NFT contracts
+              1.2.3.3 Originate user-written contract
+          1.3. NPM build and publishing
+        2. Enhance metadata
+          2.1. TZIP-16 contract metadata
+          2.2. TZIP-21 rich token metadata
+          2.3. validate user-provided metadata
+        3. Standard Contracts: 
+        
+        Q: do we really need two contracts or just one??
+
+          3.1. NFT fixed collection (create tokens in storage during origination)
+          3.2. NFT contract with minting
+        4. Ability to support custom contracts
+          4.1. LIGO contract compilation toolkit (CLI)
+          4.2. Generate contract storage Typescript type (CLI)
+        5. FA2 Typescript contract type interface
+
+
+
+
+VERSION ONE
+============================================================================
+
 DONE    1. Pick CLI parser (yargs, meow, commander). Commander it is
 DONE    2. Pick config library (configstore, conf). conf
 DONE    3. Initial CLI for config manipulation
@@ -32,10 +75,4 @@ DONE    16. Replace conf with configstore (maybe)
 DONE    17. catch unhandled rejected promise
 DONE    18. Research using ASCII art as token image stored in metadata extras
             asciify-image, ascii-cats
-
-PHASE TWO
-        1. write tutorial
-        2. Editable contracts
-        3. custom contract origination
-        4. custom metadata
         
