@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/nft-contracts",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Ligo FA2 non-fungible token contracts on Tezos",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
