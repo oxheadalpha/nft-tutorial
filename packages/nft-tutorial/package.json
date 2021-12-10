@@ -3,6 +3,7 @@
   "version": "2.0.3",
   "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
+  "homepage": "https://github.com/oxheadalpha/nft-tutorial/packages/nft-tutorial#README.md",
   "keywords": [
     "tezos",
     "smart contracts",
@@ -20,6 +21,9 @@
     "./dist/**/*",
     "./ligo/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/async-retry": "^1.4.3",
     "@types/configstore": "^5.0.1",
