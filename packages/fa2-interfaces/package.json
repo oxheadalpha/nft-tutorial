@@ -13,6 +13,7 @@
   ],
   "license": "MIT",
   "types": "./dist/index.d.ts",
+  "files": ["./dist/**/*"],
   "scripts": {
     "build": "tsc -p .",
     "prepare" : "yarn build"

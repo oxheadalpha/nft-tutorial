@@ -11,6 +11,7 @@
     "TZIP-12",
     "TZIP-21"
   ],
+  "files": ["./dist/**/*", "./flextesa/*"],
   "license": "MIT",
   "devDependencies": {
     "prettier": "^2.5.1",

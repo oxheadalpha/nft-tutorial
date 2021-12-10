@@ -13,8 +13,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "prepare": "yarn build"
   },
+  "files": ["./dist/**/*", "./ligo/**/*"],
   "devDependencies": {
     "@types/async-retry": "^1.4.3",
     "@types/configstore": "^5.0.1",
