@@ -20,7 +20,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -p .",
+    "build": "yarn lerna run build",
     "build:watch": "tsc -w -p .",
     "test": "jest",
     "tznft": "./lib/tznft.js"

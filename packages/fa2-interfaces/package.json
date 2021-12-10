@@ -12,7 +12,7 @@
     "TZIP-21"
   ],
   "license": "MIT",
-  "types": "./dist/fa2-interface.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p .",
     "prepare" : "yarn build"
