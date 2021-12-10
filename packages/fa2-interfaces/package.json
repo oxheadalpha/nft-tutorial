@@ -12,8 +12,18 @@
     "TZIP-21"
   ],
   "license": "MIT",
+  "types": "./dist/fa2-interface.d.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "prepare" : "yarn build"
+  },
   "devDependencies": {
     "prettier": "^2.5.1",
     "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@taquito/taquito": "^11.0.2",
+    "bignumber": "^1.1.0",
+    "kleur": "^4.1.4"
   }
 }
