@@ -12,8 +12,8 @@
     "TZIP-21"
   ],
   "files": [
-    "./dist/**/*",
-    "./flextesa/*"
+    "dist/*",
+    "flextesa/*"
   ],
   "publishConfig": {
     "access": "public"

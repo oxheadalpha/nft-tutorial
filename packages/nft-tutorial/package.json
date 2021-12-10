@@ -18,8 +18,8 @@
     "prepare": "yarn build"
   },
   "files": [
-    "./dist/**/*",
-    "./ligo/**/*"
+    "dist/*",
+    "ligo/*"
   ],
   "publishConfig": {
     "access": "public"
