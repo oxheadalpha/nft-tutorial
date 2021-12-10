@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/nft-contracts",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Ligo FA2 non-fungible token contracts on Tezos",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
@@ -11,7 +11,10 @@
     "TZIP-12",
     "TZIP-21"
   ],
-  "files": ["./dist/**/*", "./flextesa/*"],
+  "files": [
+    "./dist/**/*",
+    "./flextesa/*"
+  ],
   "license": "MIT",
   "devDependencies": {
     "prettier": "^2.5.1",
