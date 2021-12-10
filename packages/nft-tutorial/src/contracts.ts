@@ -12,7 +12,7 @@ import {
   suggestCommand
 } from './config-util';
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
-import * as fa2 from './fa2-interface';
+import * as fa2 from '@oxheadalpha/fa2-interfaces';
 
 type InspectorStorage = fa2.BalanceOfResponse[] | {};
 
