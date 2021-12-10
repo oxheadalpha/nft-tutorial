@@ -27,5 +27,8 @@
   },
   "bin": {
     "tznft": "./lib/tznft.js"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
   }
 }
