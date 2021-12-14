@@ -82,3 +82,40 @@ export async function updateOperators(
   await op.confirmation();
   console.log(kleur.green('updated operators'));
 }
+
+export interface BalanceOfRequest {
+  owner: address;
+  token_id: nat;
+}
+
+export interface BalanceOfResponse {
+  balance: nat;
+  request: BalanceOfRequest;
+}
+
+export const queryBalances = async (
+  fa2: address,
+  owner: TezosToolkit,
+  requests: BalanceOfRequest[],
+  lambdaView?: address
+): Promise<BalanceOfResponse[]> => {
+  const contract = await owner.contract.at(fa2);
+  return contract.views.balance_of(requests).read(lambdaView);
+}
+
+export async function hasNftTokens(
+  fa2: address,
+  owner: TezosToolkit,
+  requests: BalanceOfRequest[],
+  lambdaView?: address
+): Promise<boolean[]> {
+  const responses = await queryBalances(fa2, owner, requests, lambdaView);
+  const results = responses.map(r => {
+    if (r.balance.eq(1)) return true;
+    else if (r.balance.eq(0)) return false;
+    else throw new Error(`Invalid NFT balance ${r.balance}`);
+  });
+  return results;
+}
+
+

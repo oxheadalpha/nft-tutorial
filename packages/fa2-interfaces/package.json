@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "@taquito/taquito": "^11.0.2",
+    "@taquito/tzip12": "^11.0.2",
+    "@taquito/tzip16": "^11.0.2",
     "bignumber": "^1.1.0",
     "kleur": "^4.1.4"
   },
