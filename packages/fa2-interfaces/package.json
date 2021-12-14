@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/fa2-interfaces",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Typescript interfaces for FA2 Tezos smart contracts",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
@@ -12,9 +12,9 @@
     "TZIP-21"
   ],
   "license": "MIT",
-  "types": "./dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
-    "./dist/**/*"
+    "dist/*"
   ],
   "publishConfig": {
     "access": "public"
