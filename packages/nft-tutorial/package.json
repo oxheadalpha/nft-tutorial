@@ -40,7 +40,7 @@
     "bignumber.js": "^9.0.1",
     "child_process": "^1.0.2",
     "commander": "^6.0.0",
-    "configstore": "^6.0.0",
+    "configstore": "^5.0.1",
     "fs": "^0.0.1-security",
     "kleur": "^4.1.4",
     "path": "^0.12.7",
