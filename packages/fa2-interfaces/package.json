@@ -14,7 +14,8 @@
   "license": "MIT",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/*"
+    "dist/*",
+    "ligo/*"
   ],
   "publishConfig": {
     "access": "public"
