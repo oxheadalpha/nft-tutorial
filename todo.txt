@@ -2,8 +2,8 @@ VERSION TWO
 ============================================================================
 
         1. Upgrade project environment
-      1.1. New version of Typescript and compilation
-          1.2. Multiple packages (yarn workspaces vs. lerna)
+DONE      1.1. New version of Typescript and compilation
+DONE      1.2. Multiple packages (yarn workspaces vs. lerna)
             1.2.1. Contracts
               1.2.1.1 Contracts sources and ligo compilation
               1.2.2.2 Generate contract storage Typescript type

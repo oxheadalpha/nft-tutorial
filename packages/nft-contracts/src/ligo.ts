@@ -43,33 +43,27 @@ export const defaultLigoEnv2 = (): LigoEnv => {
   return new LigoEnv('.', src, out);
 };
 
-export const compileAndLoadContract = async (
-  env: LigoEnv,
-  srcFile: string,
-  main: string,
-  dstFile: string
-): Promise<string> => {
-  const src = env.srcFilePath(srcFile);
-  const out = env.outFilePath(dstFile);
-  await compileContractImpl(env.cwd, src, main, out);
+const compileAndLoadContract =
+  (env: LigoEnv) =>
+  async (srcFile: string, main: string, dstFile: string): Promise<string> => {
+    const src = env.srcFilePath(srcFile);
+    const out = env.outFilePath(dstFile);
+    await compileContractImpl(env.cwd, src, main, out);
 
-  return new Promise<string>((resolve, reject) =>
-    fs.readFile(out, (err, buff) =>
-      err ? reject(err) : resolve(buff.toString())
-    )
-  );
-};
+    return new Promise<string>((resolve, reject) =>
+      fs.readFile(out, (err, buff) =>
+        err ? reject(err) : resolve(buff.toString())
+      )
+    );
+  };
 
-export const compileContract = async (
-  env: LigoEnv,
-  srcFile: string,
-  main: string,
-  dstFile: string
-): Promise<void> => {
-  const src = env.srcFilePath(srcFile);
-  const out = env.outFilePath(dstFile);
-  return compileContractImpl(env.cwd, src, main, out);
-};
+const compileContract =
+  (env: LigoEnv) =>
+  async (srcFile: string, main: string, dstFile: string): Promise<void> => {
+    const src = env.srcFilePath(srcFile);
+    const out = env.outFilePath(dstFile);
+    return compileContractImpl(env.cwd, src, main, out);
+  };
 
 const compileContractImpl = async (
   cwd: string,
@@ -81,17 +75,7 @@ const compileContractImpl = async (
   await runCmd(cwd, cmd);
 };
 
-export const compileExpression = async (
-  env: LigoEnv,
-  srcFile: string,
-  expression: string
-): Promise<string> => {
-  const srcFilePath = env.srcFilePath(srcFile);
-  const cmd = `${ligoCmd} compile expression '${expression}' --init-file ${srcFilePath}`;
-  return runCmd(env.cwd, cmd);
-};
-
-export const printLigoVersion = async (env: LigoEnv) => {
+const printLigoVersion = (env: LigoEnv) => async () => {
   const cmd = `${ligoCmd} --version`;
   const output = await runCmd(env.cwd, cmd);
   console.log(kleur.green(`ligo version ${output}`));
@@ -139,4 +123,13 @@ export const originateContract = async (
     console.log(kleur.red(`${name} origination error ${jsonError}`));
     return Promise.reject(error);
   }
+};
+
+export const ligo = (env: LigoEnv) => {
+  return {
+    compileContract: compileContract(env),
+    compileAndLoadContract: compileAndLoadContract(env),
+    printLigoVersion: printLigoVersion(env),
+    originateContract
+  };
 };
