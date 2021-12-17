@@ -14,7 +14,7 @@ import {
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from './fa2-interface';
 
-type InspectorStorage = fa2.BalanceOfResponse[] | {};
+type InspectorStorage = {state: fa2.BalanceOfResponse[]};
 
 export async function createToolkit(
   address_or_alias: string,
@@ -127,7 +127,6 @@ export async function showBalances(
     suggestCommand('bootstrap');
     return;
   }
-
   console.log(
     kleur.yellow(
       `querying NFT contract ${kleur.green(
@@ -139,7 +138,7 @@ export async function showBalances(
   const balanceOp = await inspector.methods.query(nftAddress, requests).send();
   await balanceOp.confirmation();
   const storage = await inspector.storage<InspectorStorage>();
-  if (Array.isArray(storage)) printBalances(storage);
+  if (Array.isArray(storage.state)) printBalances(storage.state);
   else {
     console.log(kleur.red('invalid inspector storage state'));
     return Promise.reject('Invalid inspector storage state Empty.');
