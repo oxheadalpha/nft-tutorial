@@ -12,8 +12,7 @@
 					"address": "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
 					"secret": "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
 				}
-			},
-			"inspector": "KT1Hc81GRmNw7irPiKJFRgGirqn21kYdJcwM"
+			}
 		},
 		"testnet": {
 			"providerUrl": "https://hangzhounet.smartpy.io",
