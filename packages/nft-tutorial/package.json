@@ -20,7 +20,8 @@
   },
   "files": [
     "dist/*",
-    "ligo/*"
+    "ligo/*",
+    "tznft.json"
   ],
   "publishConfig": {
     "access": "public"

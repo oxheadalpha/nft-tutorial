@@ -10,17 +10,15 @@ export const userConfigFileWithExt = userConfigFile + '.json';
 
 export function initUserConfig(): void {
   if (fs.existsSync(userConfigFileWithExt)) {
-    console.log(kleur.yellow('tznft.json config file already exists'));
+    console.log(
+      kleur.yellow(`${userConfigFileWithExt} config file already exists`)
+    );
   } else {
     fs.copyFileSync(
       path.join(__dirname, '../tznft.json'),
       userConfigFileWithExt
     );
-    console.log(
-      `${kleur.green(
-        path.join(process.cwd(), 'tznft.json')
-      )} config file created`
-    );
+    console.log(`${kleur.green(userConfigFileWithExt)} config file created`);
   }
 }
 
