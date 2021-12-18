@@ -24,8 +24,11 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsc -p . && chmod +x ./dist/export-ligo.js",
     "prepare": "yarn build"
+  },
+  "bin": {
+    "export-ligo": "./dist/export-ligo.js"
   },
   "devDependencies": {
     "prettier": "^2.5.1",
@@ -36,7 +39,9 @@
     "@taquito/tzip12": "^11.0.2",
     "@taquito/tzip16": "^11.0.2",
     "bignumber": "^1.1.0",
-    "kleur": "^4.1.4"
+    "fs": "^0.0.1-security",
+    "kleur": "^4.1.4",
+    "process": "^0.11.10"
   },
   "gitHead": "1c80cc3e323b7dcadaf1ff8c3b80ebfe8d407369"
 }
