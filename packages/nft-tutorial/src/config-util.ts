@@ -30,7 +30,7 @@ export function loadUserConfig(): Configstore {
       { configPath: userConfigFileWithExt }
     );
   } else {
-    const msg = 'no tznft.json config file found';
+    const msg = `Config file ${userConfigFileWithExt} does not exist`;
     console.log(kleur.red(msg));
     suggestCommand('init-config');
     throw new Error(msg);
