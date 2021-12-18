@@ -8,47 +8,16 @@ import { Contract } from '@oxheadalpha/fa2-interfaces';
 const ligoVersion = '0.31.0';
 const ligoCmd = `docker run --rm -v "$PWD":"$PWD" -w "$PWD" ligolang/ligo:${ligoVersion} "$@"`;
 
-export class LigoEnv {
-  readonly cwd: string;
-  readonly srcDir: string;
-  readonly outDir: string;
 
-  constructor(cwd: string, srcDir: string, outDir: string) {
-    this.cwd = cwd;
-    this.srcDir = srcDir;
-    this.outDir = outDir;
-  }
-
-  srcFilePath(srcFileName: string): string {
-    return path.join(this.srcDir, srcFileName);
-  }
-
-  outFilePath(outFileName: string): string {
-    return path.join(this.outDir, outFileName);
-  }
-}
-
-export const defaultLigoEnv = (
-  cwd: string,
-  ligoDir: string = 'ligo'
-): LigoEnv => {
-  const src = path.join(ligoDir, 'src');
-  const out = path.join(ligoDir, 'out');
-  return new LigoEnv(path.resolve(cwd), path.resolve(src), path.resolve(out));
-};
-
-export const defaultLigoEnv2 = (): LigoEnv => {
-  const src = 'src/ligo';
-  const out = 'src/ligo/out';
-  return new LigoEnv('.', src, out);
-};
+const resolveFilePath = (cwd: string, filePath: string) =>
+  path.isAbsolute(filePath) ? filePath : path.join(cwd, filePath);
 
 const compileAndLoadContract =
-  (env: LigoEnv) =>
+  (cwd: string) =>
   async (srcFile: string, main: string, dstFile: string): Promise<string> => {
-    const src = env.srcFilePath(srcFile);
-    const out = env.outFilePath(dstFile);
-    await compileContractImpl(env.cwd, src, main, out);
+    const src = resolveFilePath(cwd, srcFile);
+    const out = resolveFilePath(cwd, dstFile);
+    await compileContractImpl(cwd, src, main, out);
 
     return new Promise<string>((resolve, reject) =>
       fs.readFile(out, (err, buff) =>
@@ -58,11 +27,11 @@ const compileAndLoadContract =
   };
 
 const compileContract =
-  (env: LigoEnv) =>
+  (cwd: string) =>
   async (srcFile: string, main: string, dstFile: string): Promise<void> => {
-    const src = env.srcFilePath(srcFile);
-    const out = env.outFilePath(dstFile);
-    return compileContractImpl(env.cwd, src, main, out);
+    const src = resolveFilePath(cwd, srcFile);
+    const out = resolveFilePath(cwd, dstFile);
+    return compileContractImpl(cwd, src, main, out);
   };
 
 const compileContractImpl = async (
@@ -75,9 +44,9 @@ const compileContractImpl = async (
   await runCmd(cwd, cmd);
 };
 
-const printLigoVersion = (env: LigoEnv) => async () => {
+const printLigoVersion = (cwd: string) => async () => {
   const cmd = `${ligoCmd} --version`;
-  const output = await runCmd(env.cwd, cmd);
+  const output = await runCmd(cwd, cmd);
   console.log(kleur.green(`ligo version ${output}`));
 };
 
@@ -125,11 +94,13 @@ export const originateContract = async (
   }
 };
 
-export const ligo = (env: LigoEnv) => {
+export const ligo = (cwd?: string) => {
+  const cwd_ = cwd ? cwd : process.cwd();
+  const fullCwd = path.resolve(cwd_);
   return {
-    compileContract: compileContract(env),
-    compileAndLoadContract: compileAndLoadContract(env),
-    printLigoVersion: printLigoVersion(env),
+    compileContract: compileContract(fullCwd),
+    compileAndLoadContract: compileAndLoadContract(fullCwd),
+    printLigoVersion: printLigoVersion(fullCwd),
     originateContract
   };
 };
