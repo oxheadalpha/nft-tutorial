@@ -41,6 +41,7 @@
     "bignumber": "^1.1.0",
     "fs": "^0.0.1-security",
     "kleur": "^4.1.4",
+    "path": "^0.12.7",
     "process": "^0.11.10"
   },
   "gitHead": "1c80cc3e323b7dcadaf1ff8c3b80ebfe8d407369"
