@@ -29,7 +29,7 @@ async function startSandbox(): Promise<void> {
   await new Promise<void>((resolve, reject) =>
     //start and wait
     child.exec(
-      'sh ../flextesa/start-sandbox.sh',
+      'sh ../../nft-contracts/flextesa/start-sandbox.sh',
       { cwd: __dirname },
       (err, stdout, errout) => {
         if (err) {
@@ -60,7 +60,7 @@ async function startSandbox(): Promise<void> {
 async function killSandbox(): Promise<void> {
   await new Promise<void>((resolve, reject) =>
     child.exec(
-      'sh ../flextesa/kill-sandbox.sh',
+      'sh ../../nft-contracts/flextesa/kill-sandbox.sh',
       { cwd: __dirname },
       (err, stdout, errout) => {
         if (err) {
