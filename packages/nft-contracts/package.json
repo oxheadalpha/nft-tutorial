@@ -23,6 +23,10 @@
     "build": "tsc -p .",
     "prepare": "yarn build"
   },
+  "bin": {
+    "kill-sandbox": "./flextesa/kill-sandbox.sh",
+    "start-sandbox": "./flextesa/start-sandbox.sh"
+  },
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^2.0.7",
     "kleur": "^4.1.4"
