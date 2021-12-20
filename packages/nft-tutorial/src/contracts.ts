@@ -8,8 +8,7 @@ import {
   loadUserConfig,
   loadFile,
   activeNetworkKey,
-  inspectorKey,
-  suggestCommand
+  lambdaViewKey
 } from './config-util';
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
@@ -45,12 +44,6 @@ export function createToolkitFromSigner(
     config: { confirmationPollingIntervalSecond: 5 }
   });
   return toolkit;
-}
-
-export async function originateInspector(tezos: TezosToolkit): Promise<string> {
-  const code = await loadFile(path.join(__dirname, '../ligo/out/inspector.tz'));
-  const storage = `(Left Unit)`;
-  return originateContract(tezos, code, storage, 'inspector');
 }
 
 export async function mintNfts(
@@ -121,29 +114,14 @@ export async function showBalances(
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const inspectorAddress = config.get(inspectorKey(config));
-  if (!inspectorAddress || typeof inspectorAddress !== 'string') {
-    console.log(kleur.red('Cannot find deployed balance inspector contract.'));
-    suggestCommand('bootstrap');
-    return;
-  }
+  console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
+  const nftContract = await tz.contract.at(nftAddress);
+  const lambdaView = config.get(lambdaViewKey(config));
+  const balances: fa2.BalanceOfResponse[] = await nftContract.views
+    .balance_of(requests)
+    .read(lambdaView);
 
-  console.log(
-    kleur.yellow(
-      `querying NFT contract ${kleur.green(
-        nftAddress
-      )} using balance inspector ${kleur.green(inspectorAddress)}`
-    )
-  );
-  const inspector = await tz.contract.at(inspectorAddress);
-  const balanceOp = await inspector.methods.query(nftAddress, requests).send();
-  await balanceOp.confirmation();
-  const storage = await inspector.storage<InspectorStorage>();
-  if (Array.isArray(storage)) printBalances(storage);
-  else {
-    console.log(kleur.red('invalid inspector storage state'));
-    return Promise.reject('Invalid inspector storage state Empty.');
-  }
+  printBalances(balances);
 }
 
 function printBalances(balances: fa2.BalanceOfResponse[]): void {
