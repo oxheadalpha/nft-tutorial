@@ -5,9 +5,9 @@ const main = async () => {
   await ligoEnv.printLigoVersion();
 
   await ligoEnv.compileContract(
-    './ligo/src/fa2_nft_token.mligo',
-    'main',
-    './ligo/out/fa2_nft_token.tz'
+    './ligo/src/fa2_nft_asset.mligo',
+    'nft_asset_main',
+    './dist/fa2_nft_asset.tz'
   );
 };
 

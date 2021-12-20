@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p . && chmod +x dist/tznft.js",
+    "build": "tsc -p . && chmod +x dist/tznft.js && yarn compile-contract",
     "prepare": "yarn build",
     "compile-contract": "ts-node ./src/compile-contract.ts",
     "tznft": "./dist/tznft.js"
