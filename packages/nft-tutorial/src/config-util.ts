@@ -60,8 +60,8 @@ export const allAliasesKey = (config: Configstore) =>
 export const aliasKey = (alias: string, config: Configstore) =>
   `${allAliasesKey(config)}.${alias}`;
 
-export const inspectorKey = (config: Configstore) =>
-  `${activeNetworkKey(config)}.inspector`;
+export const lambdaViewKey = (config: Configstore) =>
+  `${activeNetworkKey(config)}.lambdaView`;
 
 export async function loadFile(filePath: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
