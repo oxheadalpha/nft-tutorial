@@ -13,8 +13,6 @@ import {
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 
-type InspectorStorage = fa2.BalanceOfResponse[] | {};
-
 export async function createToolkit(
   address_or_alias: string,
   config: Configstore
