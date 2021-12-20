@@ -47,7 +47,7 @@ let fa2_update_operators (updates, storage
     : (update_operator list) * operator_storage) : operator_storage =
   let updater = Tezos.sender in
   let process_update = (fun (ops, update : operator_storage * update_operator) ->
-    let u = validate_update_operators_by_owner (update, updater) in
+    let _ = validate_update_operators_by_owner (update, updater) in
     update_operators (update, ops)
   ) in
   List.fold process_update updates storage

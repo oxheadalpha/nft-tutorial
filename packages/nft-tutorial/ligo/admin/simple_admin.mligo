@@ -44,12 +44,12 @@ let fail_if_paused (storage : admin_storage) : unit =
 
 (*Only callable by admin*)
 let set_admin (new_admin, storage : address * admin_storage) : admin_storage =
-  let u = fail_if_not_admin storage in
+  let _ = fail_if_not_admin storage in
   { storage with pending_admin = Some new_admin; }
     
 (*Only callable by admin*)
 let pause (paused, storage: bool * admin_storage) : admin_storage =
-  let u = fail_if_not_admin storage in
+  let _ = fail_if_not_admin storage in
   { storage with paused = paused; }
 
 let admin_main(param, storage : admin_entrypoints * admin_storage)

@@ -46,21 +46,21 @@ let fail_if_paused (storage : admin_storage) : unit =
 
 (*Only callable by admin*)
 let set_admin (new_admin, storage : address * admin_storage) : admin_storage =
-  let u = fail_if_not_admin storage in
+  let _ = fail_if_not_admin storage in
   { storage with 
     pending_admins = Big_map.add new_admin unit storage.pending_admins; 
   }
 
 (*Only callable by admin*)
 let remove_admin (old_admin, storage : address * admin_storage) : admin_storage =
-  let u = fail_if_not_admin storage in
+  let _ = fail_if_not_admin storage in
   if(Set.size storage.admins = 1n)
   then (failwith "LAST_ADMIN" : admin_storage)
   else { storage with admins = Set.remove old_admin storage.admins; }
     
 (*Only callable by admin*)
 let pause (paused, storage: bool * admin_storage) : admin_storage =
-  let u = fail_if_not_admin storage in
+  let _ = fail_if_not_admin storage in
   { storage with paused = paused; }
 
 let admin_main(param, storage : admin_entrypoints * admin_storage)

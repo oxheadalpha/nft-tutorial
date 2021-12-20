@@ -21,12 +21,12 @@ type entrypoints =
 let main(p, s : entrypoints * storage) =
   match p with
   | Increment n ->
-    let u = fail_if_paused s.admin in
+    let _ = fail_if_paused s.admin in
     let new_s = { s with number = s.number + n; } in
     ([] : operation list), new_s
 
   | Admin a ->
-    let u = fail_if_not_admin s.admin in
-    (* let u = fail_if_not_admin_ext (s.admin, "BOO") in *)
+    let _ = fail_if_not_admin s.admin in
+    (* let _ = fail_if_not_admin_ext (s.admin, "BOO") in *)
     let ops, new_admin = admin_main (a, s.admin) in
     ops, {s with admin = new_admin; }

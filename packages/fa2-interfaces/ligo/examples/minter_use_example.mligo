@@ -55,24 +55,24 @@ let transfer (storage, tx : storage * tx) : storage =
 let main(p, s : entrypoints * storage) : (operation list) * storage =
   match p with
   | Transfer t ->
-    let u = fail_if_paused s.admin in
+    let _ = fail_if_paused s.admin in
     let new_s = transfer (s, t) in
     ([] : operation list), new_s
 
 
   | Mint amt -> 
-    let u1 = fail_if_paused s.admin in
-    let u2 = fail_if_not_minter s in
+    let _ = fail_if_paused s.admin in
+    let _ = fail_if_not_minter s in
     let new_ledger = mint (s.ledger, amt) in
     ([] : operation list), {s with ledger = new_ledger; }
 
   | Admin a ->
-    let u = fail_if_not_admin s.admin in
+    let _ = fail_if_not_admin s.admin in
     let ops, new_admin = admin_main (a, s.admin) in
     ops, {s with admin = new_admin; }
 
   | MinterAdmin a -> 
-    let u = fail_if_not_admin_ext (s.admin, "ONLY_ADMIN_CAN_CHANGE_MINTER") in
+    let _ = fail_if_not_admin_ext (s.admin, "ONLY_ADMIN_CAN_CHANGE_MINTER") in
     let ops, new_admin = minter_admin_main (a, s.minter_admin) in
     ops, {s with minter_admin = new_admin; }
 
