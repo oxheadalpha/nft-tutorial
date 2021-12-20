@@ -50,7 +50,7 @@ let admin_main(param, storage : admin_entrypoints * admin_storage)
       let new_s = set_admin (new_admin, storage) in
       (([] : operation list), new_s)
 
-  | Confirm_admin u ->
+  | Confirm_admin _ ->
       let new_s = confirm_new_admin storage in
       (([]: operation list), new_s)
 
