@@ -54,5 +54,22 @@ let nft_asset_main(param, storage : asset_entrypoints * asset_storage)
     } in
     ([] : operation list), new_s
 
+let sample_storage : asset_storage = {
+  assets = {
+    token_metadata = (Big_map.empty : token_metadata_storage);
+    ledger = (Big_map.empty : ledger);
+    operators = (Big_map.empty : operator_storage);
+  };
+  admin = {
+    admin = ("tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU" : address);
+    pending_admin = (None : address option);
+    paused = false;
+  };
+  metadata = Big_map.literal [
+    ("", Bytes.pack "tezos-storage:content" );
+    ("content", 0x00) (* bytes encoded UTF-8 JSON *)
+  ];
+  mint_freeze = false ;
+}
 
 #endif
