@@ -8,7 +8,6 @@ import { Contract } from '@oxheadalpha/fa2-interfaces';
 const ligoVersion = '0.31.0';
 const ligoCmd = `docker run --rm -v "$PWD":"$PWD" -w "$PWD" ligolang/ligo:${ligoVersion} "$@"`;
 
-
 const resolveFilePath = (cwd: string, filePath: string) =>
   path.isAbsolute(filePath) ? filePath : path.join(cwd, filePath);
 
@@ -71,14 +70,13 @@ const runCmd = (cwd: string, cmd: string): Promise<string> => {
 export const originateContract = async (
   tz: TezosToolkit,
   code: string,
-  storage: any,
+  storage: string | object,
   name: string
 ): Promise<Contract> => {
   try {
-    const originationOp = await tz.contract.originate({
-      code,
-      init: storage
-    });
+    const origParam =
+      typeof storage === 'string' ? { code, init: storage } : { code, storage };
+    const originationOp = await tz.contract.originate(origParam);
     const contract = await originationOp.contract();
     console.log(
       kleur.green(

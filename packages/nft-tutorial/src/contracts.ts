@@ -2,7 +2,7 @@ import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { TezosToolkit, MichelsonMap, UnitValue } from '@taquito/taquito';
 import { InMemorySigner } from '@taquito/signer';
 import {
   loadUserConfig,
@@ -12,6 +12,8 @@ import {
 } from './config-util';
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
+import { bytes } from '@oxheadalpha/fa2-interfaces';
+import { ligo } from '@oxheadalpha/nft-contracts';
 
 export async function createToolkit(
   address_or_alias: string,
@@ -55,15 +57,14 @@ export async function mintNfts(
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
-  const code = await loadFile(
-    path.join(__dirname, '../ligo/out/fa2_fixed_collection_token.tz')
-  );
-  const storage = createNftStorage(tokens, ownerAddress);
+  const code = await loadFile(path.join(__dirname, './fa2_nft_asset.tz'));
+  // const storage = createNftStorage(tokens, ownerAddress);
+  const storage = createNftStorage2(ownerAddress);
 
   console.log(kleur.yellow('originating new NFT contract...'));
-  const nftAddress = await originateContract(tz, code, storage, 'nft');
+  const nft = await ligo().originateContract(tz, code, storage, 'nft');
   console.log(
-    kleur.yellow(`originated NFT collection ${kleur.green(nftAddress)}`)
+    kleur.yellow(`originated NFT collection ${kleur.green(nft.address)}`)
   );
 }
 
@@ -94,6 +95,27 @@ function createNftStorage(tokens: fa2.TokenMetadata[], owner: string) {
     ledger,
     operators: new MichelsonMap(),
     token_metadata
+  };
+}
+
+function createNftStorage2(owner: string) {
+  const assets = {
+    ledger: new MichelsonMap(),
+    operators: new MichelsonMap(),
+    token_metadata: new MichelsonMap()
+  };
+  const admin = {
+    admin: owner,
+    pending_admin: undefined,
+    paused: false
+  };
+  const metadata = new MichelsonMap<string, bytes>();
+
+  return {
+    assets,
+    admin,
+    metadata,
+    mint_freeze: false
   };
 }
 
@@ -290,23 +312,4 @@ async function resolveOperators(
     }
   });
   return Promise.all(resolved);
-}
-
-async function originateContract(
-  tz: TezosToolkit,
-  code: string,
-  storage: string | object,
-  name: string
-): Promise<string> {
-  const origParam =
-    typeof storage === 'string' ? { code, init: storage } : { code, storage };
-  try {
-    const originationOp = await tz.contract.originate(origParam);
-    const contract = await originationOp.contract();
-    return contract.address;
-  } catch (error) {
-    const jsonError = JSON.stringify(error, null, 2);
-    console.log(kleur.red(`${name} origination error ${jsonError}`));
-    return Promise.reject(error);
-  }
 }
