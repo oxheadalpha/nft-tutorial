@@ -7,6 +7,7 @@ import * as networkConf from './config-network';
 import * as aliasConf from './config-aliases';
 import * as bootstrap from './bootstrap';
 import * as contracts from './contracts';
+import { fileURLToPath } from 'url';
 const packageJson = require('../package.json');
 
 // configuration
@@ -97,7 +98,25 @@ program
   .alias('ccm')
   .description('Creates a new NFT collection (contract) metadata file')
   .arguments('<collection_name>')
-  .action(async (name) => contracts.createCollectionMeta(name))
+  .action((name) => contracts.createCollectionMeta(name))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
+  .command('create-collection')
+  .storeOptionsAsProperties(false)
+  .alias('cc')
+  .description('Creates a new NFT collection (contract)')
+  .arguments('<owner>')
+  .requiredOption(
+    '-mf, --meta_file <file>',
+    'path to a new collection metadata file'
+  )
+  .option(
+    '-a, --alias <alias>', 
+    'optional alias for a new collection contract address')
+  .action(async (owner, options) => 
+    contracts.createCollection(owner, options.meta_file, options.alias))
   .passCommandToAction(false);
 
 //prettier-ignore

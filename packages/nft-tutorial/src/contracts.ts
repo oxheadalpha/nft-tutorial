@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { BigNumber } from 'bignumber.js';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import {
   loadUserConfig,
@@ -11,10 +12,11 @@ import {
   activeNetworkKey,
   lambdaViewKey
 } from './config-util';
-import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
+import { resolveAlias2Signer, resolveAlias2Address, addAlias } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { bytes } from '@oxheadalpha/fa2-interfaces';
 import { originateContract } from '@oxheadalpha/nft-contracts';
+import { json } from 'stream/consumers';
 
 export async function createToolkit(
   address_or_alias: string,
@@ -47,7 +49,7 @@ export function createToolkitFromSigner(
   return toolkit;
 }
 
-export async function createCollectionMeta(name: string) {
+export function createCollectionMeta(name: string): void {
   const meta = {
     name,
     description: "",
@@ -55,8 +57,8 @@ export async function createCollectionMeta(name: string) {
     authors: [],
     version: "1.0.0",
     license: {name: "MIT"},
-    interfaces: ["TZIP-16", "TZIP-12", "TZIP-21"],
-    sources:{
+    interfaces: ["TZIP-016", "TZIP-012", "TZIP-021"],
+    source:{
       tools: ["LIGO"],
       location: "https://github.com/oxheadalpha/nft-tutorial"
     }
@@ -65,6 +67,24 @@ export async function createCollectionMeta(name: string) {
   const fileName = path.join(process.cwd(), name + '.json');
   fs.writeFileSync(fileName, json);
   console.log(kleur.green(`Create collection metadata file ${fileName}`));
+}
+
+export async function createCollection(owner: string, metaFile: string, alias?: string): Promise<void> {
+  const config = loadUserConfig();
+  const tz = await createToolkit(owner, config);
+  const ownerAddress = await tz.signer.publicKeyHash();
+
+  const code = await loadFile(path.join(__dirname, './fa2_nft_asset.tz'));
+  const metaJson = await loadFile(metaFile);
+  const storage = createNftStorage2(ownerAddress, metaJson);
+
+  console.log(kleur.yellow('originating new NFT contract...'));
+  const nft = await originateContract(tz, code, storage, 'nft');
+
+  if(alias) {
+    const meta = JSON.parse(metaJson);
+    await addAlias(alias, nft.address);
+  }
 }
 
 export async function mintNfts(
@@ -80,7 +100,7 @@ export async function mintNfts(
 
   const code = await loadFile(path.join(__dirname, './fa2_nft_asset.tz'));
   // const storage = createNftStorage(tokens, ownerAddress);
-  const storage = createNftStorage2(ownerAddress);
+  const storage = createNftStorage2(ownerAddress, '');
 
   console.log(kleur.yellow('originating new NFT contract...'));
   const nft = await originateContract(tz, code, storage, 'nft');
@@ -119,7 +139,7 @@ function createNftStorage(tokens: fa2.TokenMetadata[], owner: string) {
   };
 }
 
-function createNftStorage2(owner: string) {
+function createNftStorage2(owner: string, metaJson: string) {
   const assets = {
     ledger: new MichelsonMap(),
     operators: new MichelsonMap(),
@@ -131,6 +151,8 @@ function createNftStorage2(owner: string) {
     paused: false
   };
   const metadata = new MichelsonMap<string, bytes>();
+  metadata.set('', char2Bytes('tezos-storage:content'));
+  metadata.set('content', char2Bytes(metaJson));
 
   return {
     assets,

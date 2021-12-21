@@ -2,7 +2,6 @@ import * as kleur from 'kleur';
 import { TezosToolkit } from '@taquito/taquito';
 import { Contract } from '@oxheadalpha/fa2-interfaces';
 
-
 export const originateContract = async (
   tz: TezosToolkit,
   code: string,
@@ -15,11 +14,13 @@ export const originateContract = async (
     const originationOp = await tz.contract.originate(origParam);
     const contract = await originationOp.contract();
     console.log(
-      kleur.green(
-        `originated contract ${name} with address ${contract.address}`
+      kleur.yellow(
+        `originated contract ${name} with address ${kleur.green(
+          contract.address
+        )}`
       )
     );
-    console.log(kleur.green(`consumed gas: ${originationOp.consumedGas}`));
+    console.log(kleur.yellow(`consumed gas: ${originationOp.consumedGas}`));
     return Promise.resolve(contract);
   } catch (error) {
     const jsonError = JSON.stringify(error, null, 2);
