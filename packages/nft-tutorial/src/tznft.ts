@@ -135,6 +135,14 @@ program
 
 //prettier-ignore
 program
+    .command('mint-freeze')
+    .alias('mf')
+    .description('freeze minting for nft collection (contract)')
+    .arguments('<owner> <collection>')
+    .action(contracts.mintFreeze).passCommandToAction(false);
+
+//prettier-ignore
+program
   .command('show-balance')
   .alias('shb')
   .description('show NFT balances for the specified owner')

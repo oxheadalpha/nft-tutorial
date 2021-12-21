@@ -25,7 +25,7 @@ export async function freezeCollection(nftAddress: address, tz: TezosToolkit) {
   console.log(kleur.yellow('freezing nft collection...'));
 
   const contract = await tz.contract.at(nftAddress);
-  const op = await contract.methods.freeze().send();
+  const op = await contract.methods.mint_freeze().send();
   await op.confirmation();
 
   console.log(kleur.green('nft collection frozen'));

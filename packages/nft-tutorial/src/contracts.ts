@@ -84,7 +84,7 @@ export async function createCollection(
 
   const code = await loadFile(path.join(__dirname, './fa2_nft_asset.tz'));
   const metaJson = await loadFile(metaFile);
-  const storage = createNftStorage2(ownerAddress, metaJson);
+  const storage = createNftStorage(ownerAddress, metaJson);
 
   console.log(kleur.yellow('originating new NFT contract...'));
   const contract = await originateContract(tz, code, storage, 'nft');
@@ -113,6 +113,16 @@ export async function mintNfts(
   ]);
 }
 
+export async function mintFreeze(
+  owner: string,
+  collection: string
+): Promise<void> {
+  const config = loadUserConfig();
+  const tz = await createToolkit(owner, config);
+  const collectionAddress = await resolveAlias2Address(collection, config);
+  await nft.freezeCollection(collectionAddress, tz);
+}
+
 export function parseTokens(
   descriptor: string,
   tokens: fa2.TokenMetadata[]
@@ -126,7 +136,7 @@ export function parseTokens(
   return [token].concat(tokens);
 }
 
-function createNftStorage2(owner: string, metaJson: string) {
+function createNftStorage(owner: string, metaJson: string) {
   const assets = {
     ledger: new MichelsonMap(),
     operators: new MichelsonMap(),
@@ -217,9 +227,7 @@ export async function showMetadata(
 }
 
 function printTokenMetadata(m: fa2.TokenMetadata) {
-  console.log(
-    kleur.yellow(`token ${m.token_id.toNumber()} metedata here`)
-  );
+  console.log(kleur.yellow(`token ${m.token_id.toNumber()} metedata here`));
 }
 
 function formatMichelsonMap(m: MichelsonMap<string, string>): string {
