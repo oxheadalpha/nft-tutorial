@@ -29,6 +29,13 @@ DONE      2.1. TZIP-16 contract metadata
           4.1. LIGO contract compilation toolkit (CLI)
           4.2. Generate contract storage Typescript type (CLI)
 
+        5. Metadata
+          5.1. generate TZIP-021 metadata template
+          5.2. validate user-provided token metadata schema
+          5.3. validate user-provided TZIP-016 metadata schema
+          5.4. Retrieve token metadata using Taquito Tzip12 provider
+
+
 
 
 
