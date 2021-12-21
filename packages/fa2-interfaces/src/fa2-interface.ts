@@ -1,6 +1,7 @@
 import * as kleur from 'kleur';
 import { BigNumber } from 'bignumber.js';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { bytes } from './type-aliases';
 
 type address = string;
 type nat = BigNumber;
@@ -28,10 +29,7 @@ export interface BalanceOfResponse {
 
 export interface TokenMetadata {
   token_id: nat;
-  symbol: string;
-  name: string;
-  decimals: nat;
-  extras: MichelsonMap<string, string>;
+  token_info: MichelsonMap<string, bytes>;
 }
 
 export async function transfer(

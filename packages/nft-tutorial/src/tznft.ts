@@ -124,12 +124,13 @@ program
   .command('mint')
   .alias('m')
   .description('create a new NFT contract and mint new tokens')
-  .arguments('<owner>')
+  .arguments('<owner> <collection>')
   .requiredOption(
     '-t, --tokens <tokens...>',
-    'definitions of new tokens, a list of "id, symbol, name" or "id, symbol, name, ipfc_cid"',
+    'definitions of new tokens, a list of pairs "id, tokenMetadataUri"',
     contracts.parseTokens, [])
-  .action(async (owner, options) => contracts.mintNfts(owner, options.tokens))
+  .action(async (owner, collection, options) => 
+    contracts.mintNfts(owner, collection, options.tokens))
   .passCommandToAction(false);
 
 //prettier-ignore
