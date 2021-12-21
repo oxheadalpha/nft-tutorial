@@ -4,7 +4,7 @@ This tutorial shows how to originate and interact with the FA2 NFT contract
 implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
 [LIGO](https://ligolang.org/) smart contract language and a command line interface
 (CLI) to originate and interact with the NFT contracts either on the
-[Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Carthagenet).
+[Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Hangzhou2net).
 
 **Disclaimer:** We highly recommend users read the additional resources above and
 take necessary precautions before following this tutorial and interacting with
@@ -14,7 +14,7 @@ experimental technology. Use this tutorial at your own risk.
 
 ### What is FA2 (TZIP-12)?
 
-FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
+FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
 on Tezos. FA2 proposes a unified token contract interface, supporting a wide range
 of token types. The FA2 provides a standard API to transfer tokens, check
 token balances, manage operators (addresses that are permitted to transfer tokens
