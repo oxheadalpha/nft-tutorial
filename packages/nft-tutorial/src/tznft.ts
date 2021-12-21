@@ -7,6 +7,7 @@ import * as networkConf from './config-network';
 import * as aliasConf from './config-aliases';
 import * as bootstrap from './bootstrap';
 import * as contracts from './contracts';
+import { fileURLToPath } from 'url';
 const packageJson = require('../package.json');
 
 // configuration
@@ -15,9 +16,9 @@ program.version(packageJson.version);
 
 //prettier-ignore
 program
-  .command('init-config')
-  .alias('ic')
-  .description('create tznft.config file')
+  .command('init')
+  .alias('i')
+  .description('Create tznft.config file')
   .action(initUserConfig);
 
 // selecting network
@@ -93,15 +94,52 @@ program
 
 //prettier-ignore
 program
+  .command('create-collection-meta')
+  .alias('ccm')
+  .description('Creates a new NFT collection (contract) metadata file')
+  .arguments('<collection_name>')
+  .action((name) => contracts.createCollectionMeta(name))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
+  .command('create-collection')
+  .storeOptionsAsProperties(false)
+  .alias('cc')
+  .description('Creates a new NFT collection (contract)')
+  .arguments('<owner>')
+  .requiredOption(
+    '-mf, --meta_file <file>',
+    'path to a new collection metadata file'
+  )
+  .option(
+    '-a, --alias <alias>', 
+    'optional alias for a new collection contract address')
+  .action(async (owner, options) => 
+    contracts.createCollection(owner, options.meta_file, options.alias))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
   .command('mint')
   .alias('m')
   .description('create a new NFT contract and mint new tokens')
-  .arguments('<owner>')
+  .arguments('<owner> <collection>')
   .requiredOption(
     '-t, --tokens <tokens...>',
-    'definitions of new tokens, a list of "id, symbol, name" or "id, symbol, name, ipfc_cid"',
+    'definitions of new tokens, a list of pairs "id, tokenMetadataUri"',
     contracts.parseTokens, [])
-  .action(async (owner, options) => contracts.mintNfts(owner, options.tokens)).passCommandToAction(false);
+  .action(async (owner, collection, options) => 
+    contracts.mintNfts(owner, collection, options.tokens))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
+    .command('mint-freeze')
+    .alias('mf')
+    .description('freeze minting for nft collection (contract)')
+    .arguments('<owner> <collection>')
+    .action(contracts.mintFreeze).passCommandToAction(false);
 
 //prettier-ignore
 program

@@ -60,14 +60,18 @@ export const allAliasesKey = (config: Configstore) =>
 export const aliasKey = (alias: string, config: Configstore) =>
   `${allAliasesKey(config)}.${alias}`;
 
-export const inspectorKey = (config: Configstore) =>
-  `${activeNetworkKey(config)}.inspector`;
+export const lambdaViewKey = (config: Configstore) =>
+  `${activeNetworkKey(config)}.lambdaView`;
 
 export async function loadFile(filePath: string): Promise<string> {
+  const resolvedPath = path.isAbsolute(filePath)
+    ? filePath
+    : path.join(process.cwd(), filePath);
+  
   return new Promise<string>((resolve, reject) => {
-    if (!fs.existsSync(filePath)) reject(`file ${filePath} does not exist`);
+    if (!fs.existsSync(resolvedPath)) reject(`file ${resolvedPath} does not exist`);
     else
-      fs.readFile(filePath, (err, buff) =>
+      fs.readFile(resolvedPath, (err, buff) =>
         err ? reject(err) : resolve(buff.toString())
       );
   });

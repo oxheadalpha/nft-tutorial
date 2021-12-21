@@ -65,10 +65,7 @@ export async function addAliasFromFaucet(
   faucetFile: string
 ): Promise<void> {
   //load file
-  const filePath = path.isAbsolute(faucetFile)
-    ? faucetFile
-    : path.join(process.cwd(), faucetFile);
-  const faucetContent = await loadFile(filePath);
+  const faucetContent = await loadFile(faucetFile);
   const faucet = JSON.parse(faucetContent);
 
   //create signer

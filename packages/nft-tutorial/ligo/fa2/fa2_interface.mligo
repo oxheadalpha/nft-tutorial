@@ -56,12 +56,19 @@ type token_metadata =
 [@layout:comb]
 {
   token_id : token_id;
-  symbol : string;
-  name : string;
-  decimals : nat;
-  extras : (string, string) map;
+  token_info : (string, bytes) map;
 }
 
+(*
+One of the options to make token metadata discoverable is to declare
+`token_metadata : token_metadata_storage` field inside the FA2 contract storage
+*)
+type token_metadata_storage = (token_id, token_metadata) big_map
+
+(**
+Optional type to define view entry point to expose token_metadata on chain or
+as an external view
+ *)
 type token_metadata_param = 
 [@layout:comb]
 {
@@ -73,48 +80,15 @@ type fa2_entry_points =
   | Transfer of transfer list
   | Balance_of of balance_of_param
   | Update_operators of update_operator list
-  | Token_metadata_registry of address contract
 
-type fa2_token_metadata =
-  | Token_metadata of token_metadata_param
-
-(* permission policy definition *)
-
-type operator_transfer_policy =
-  [@layout:comb]
-  | No_transfer
-  | Owner_transfer
-  | Owner_or_operator_transfer
-
-type owner_hook_policy =
-  [@layout:comb]
-  | Owner_no_hook
-  | Optional_owner_hook
-  | Required_owner_hook
-
-type custom_permission_policy =
-[@layout:comb]
-{
-  tag : string;
-  config_api: address option;
-}
-
-type permissions_descriptor =
-[@layout:comb]
-{
-  operator : operator_transfer_policy;
-  receiver : owner_hook_policy;
-  sender : owner_hook_policy;
-  custom : custom_permission_policy option;
-}
-
-(* permissions descriptor entrypoint
-type fa2_entry_points_custom =
-  ...
-  | Permissions_descriptor of permissions_descriptor contract
-
+(* 
+ TZIP-16 contract metadata storage field type. 
+ The contract storage MUST have a field
+ `metadata : contract_metadata`
 *)
+type contract_metadata = (string, bytes) big_map
 
+(* FA2 hooks interface *)
 
 type transfer_destination_descriptor =
 [@layout:comb]
