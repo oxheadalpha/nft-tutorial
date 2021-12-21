@@ -13,7 +13,7 @@ import {
 import { resolveAlias2Signer, resolveAlias2Address } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { bytes } from '@oxheadalpha/fa2-interfaces';
-import { ligo } from '@oxheadalpha/nft-contracts';
+import { originateContract } from '@oxheadalpha/nft-contracts';
 
 export async function createToolkit(
   address_or_alias: string,
@@ -62,7 +62,7 @@ export async function mintNfts(
   const storage = createNftStorage2(ownerAddress);
 
   console.log(kleur.yellow('originating new NFT contract...'));
-  const nft = await ligo().originateContract(tz, code, storage, 'nft');
+  const nft = await originateContract(tz, code, storage, 'nft');
   console.log(
     kleur.yellow(`originated NFT collection ${kleur.green(nft.address)}`)
   );
