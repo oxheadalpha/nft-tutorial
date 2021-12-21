@@ -2,7 +2,7 @@ import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap, UnitValue } from '@taquito/taquito';
+import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import { InMemorySigner } from '@taquito/signer';
 import {
   loadUserConfig,
@@ -130,16 +130,18 @@ export async function showBalances(
   const tz = await createToolkit(signer, config);
   const ownerAddress = await resolveAlias2Address(owner, config);
   const nftAddress = await resolveAlias2Address(nft, config);
+  const lambdaView = config.get(lambdaViewKey(config));
   const requests: fa2.BalanceOfRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
-  const nftContract = await tz.contract.at(nftAddress);
-  const lambdaView = config.get(lambdaViewKey(config));
-  const balances: fa2.BalanceOfResponse[] = await nftContract.views
-    .balance_of(requests)
-    .read(lambdaView);
+  const balances: fa2.BalanceOfResponse[] = await fa2.queryBalances(
+    nftAddress,
+    tz,
+    requests,
+    lambdaView
+  );
 
   printBalances(balances);
 }
