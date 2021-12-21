@@ -15,9 +15,9 @@ program.version(packageJson.version);
 
 //prettier-ignore
 program
-  .command('init-config')
-  .alias('ic')
-  .description('create tznft.config file')
+  .command('init')
+  .alias('i')
+  .description('Create tznft.config file')
   .action(initUserConfig);
 
 // selecting network
@@ -93,6 +93,15 @@ program
 
 //prettier-ignore
 program
+  .command('create-collection-meta')
+  .alias('ccm')
+  .description('Creates a new NFT collection (contract) metadata file')
+  .arguments('<collection_name>')
+  .action(async (name) => contracts.createCollectionMeta(name))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
   .command('mint')
   .alias('m')
   .description('create a new NFT contract and mint new tokens')
@@ -101,7 +110,8 @@ program
     '-t, --tokens <tokens...>',
     'definitions of new tokens, a list of "id, symbol, name" or "id, symbol, name, ipfc_cid"',
     contracts.parseTokens, [])
-  .action(async (owner, options) => contracts.mintNfts(owner, options.tokens)).passCommandToAction(false);
+  .action(async (owner, options) => contracts.mintNfts(owner, options.tokens))
+  .passCommandToAction(false);
 
 //prettier-ignore
 program
