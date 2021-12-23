@@ -27,14 +27,17 @@ export const validateUri =
   (meta: { [key: string]: string }) => (propertyName: string) => {
     const value = meta[propertyName];
     if (!value) return [];
-
-    if (validUrl.isWebUri(value)) return [];
-    if (value.startsWith('ipfs://')) {
-      const ipfsPath = '/ipfs/' + value.substring('ipfs://'.length);
-      if(isIPFS.ipfsPath(ipfsPath)) return [];
-    }
-
+    if(isValidUri(value)) return [];
     return [
       `Error: URI format for "${propertyName}": "${value}" seems to be invalid`
     ];
   };
+
+export const isValidUri = (uri: string): boolean => {
+  if (validUrl.isWebUri(uri)) return true;
+  if (uri.startsWith('ipfs://')) {
+    const ipfsPath = '/ipfs/' + uri.substring('ipfs://'.length);
+    if(isIPFS.ipfsPath(ipfsPath)) true;
+  }
+  return false;
+}

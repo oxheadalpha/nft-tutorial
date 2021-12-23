@@ -57,12 +57,14 @@ export async function validateCollectionMeta(metaFile: string) {
   const meta = JSON.parse(metaJson);
   const results = validateTzip16(meta);
 
-  if (results.length === 0)
+  if (results.length === 0) {
     console.log(kleur.green('TZIP-016 metadata seems to be valid.'));
+  }
   else {
     results
       .map(colorCodeMsg)
       .forEach(msg => console.log(msg));
+    process.exit(-1);
   }
 }
 
