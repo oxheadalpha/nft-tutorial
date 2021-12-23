@@ -52,18 +52,22 @@ export async function createNftMeta(
   console.log(kleur.green(`Created token metadata sample file ${fileName}`));
 }
 
-export async function validateCollectionMeta(metaFile: string) {
+export async function validateCollectionMeta(
+  metaFile: string,
+  errorsOnly?: boolean
+) {
   const metaJson = await loadFile(metaFile);
   const meta = JSON.parse(metaJson);
   const results = validateTzip16(meta);
 
-  if (results.length === 0) {
+  const filteredResults = errorsOnly
+    ? results.filter(r => r.startsWith('Error'))
+    : results;
+
+  if (filteredResults.length === 0) {
     console.log(kleur.green('TZIP-016 metadata seems to be valid.'));
-  }
-  else {
-    results
-      .map(colorCodeMsg)
-      .forEach(msg => console.log(msg));
+  } else {
+    filteredResults.map(colorCodeMsg).forEach(msg => console.log(msg));
     process.exit(-1);
   }
 }

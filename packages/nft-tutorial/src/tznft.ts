@@ -107,7 +107,11 @@ program
   .alias('vcm')
   .description('validate NFT collection (contract) metadata file format')
   .arguments('<metadata_file>')
-  .action(metadata.validateCollectionMeta)
+  .option(
+    '-e, --errors_only', 
+    'optional alias for a new collection contract address')
+  .action(async (metaFile, options) =>
+    metadata.validateCollectionMeta(metaFile, options.errors_only))
   .passCommandToAction(false);
 
 //prettier-ignore
