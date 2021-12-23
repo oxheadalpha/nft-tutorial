@@ -38,6 +38,7 @@
     "@taquito/taquito": "^11.0.2",
     "@taquito/tzip12": "^11.0.2",
     "@taquito/tzip16": "^11.0.2",
+    "ajv": "^8.8.2",
     "bignumber": "^1.1.0",
     "fs": "^0.0.1-security",
     "kleur": "^4.1.4",
