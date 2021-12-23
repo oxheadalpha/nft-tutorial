@@ -96,7 +96,7 @@ program
 program
   .command('create-collection-meta')
   .alias('ccm')
-  .description('Creates a new NFT collection (contract) metadata file')
+  .description('create a new NFT collection (contract) metadata file')
   .arguments('<collection_name>')
   .action((name) => contracts.createCollectionMeta(name))
   .passCommandToAction(false);
@@ -106,7 +106,7 @@ program
   .command('create-collection')
   .storeOptionsAsProperties(false)
   .alias('cc')
-  .description('Creates a new NFT collection (contract)')
+  .description('create a new NFT collection (contract)')
   .arguments('<owner>')
   .requiredOption(
     '-mf, --meta_file <file>',
@@ -117,6 +117,15 @@ program
     'optional alias for a new collection contract address')
   .action(async (owner, options) => 
     contracts.createCollection(owner, options.meta_file, options.alias))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
+  .command('create-token-meta')
+  .alias('ctm')
+  .description('create a new NFT token metadata template file')
+  .arguments('<nft_name> <creator> <uri>')
+  .action(contracts.createNftMeta)
   .passCommandToAction(false);
 
 //prettier-ignore

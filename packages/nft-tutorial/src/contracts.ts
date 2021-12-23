@@ -70,7 +70,7 @@ export function createCollectionMeta(name: string): void {
   const json = JSON.stringify(meta, undefined, 2);
   const fileName = path.join(process.cwd(), name + '.json');
   fs.writeFileSync(fileName, json);
-  console.log(kleur.green(`Create collection metadata file ${fileName}`));
+  console.log(kleur.green(`Created collection metadata file ${fileName}`));
 }
 
 export async function createCollection(
@@ -93,6 +93,33 @@ export async function createCollection(
     const meta = JSON.parse(metaJson);
     await addAlias(alias, contract.address);
   }
+}
+
+export async function createNftMeta(
+  name: string,
+  minter: string,
+  artifactUri: string
+): Promise<void> {
+  const config = loadUserConfig();
+  const minterAddress = await resolveAlias2Address(minter, config);
+  const meta = {
+    decimals: 0,
+    isBooleanAmount: true,
+    name,
+    description: '',
+    tags: ['awsome', 'nft'],
+    minter: minterAddress,
+    artifactUri,
+    displayUri: artifactUri,
+    thumbnailUri: artifactUri,
+    creators: [],
+    rights: "",
+    attributes: [{ name: 'sample attribute', value: 'sample value' }]
+  };
+  const json = JSON.stringify(meta, undefined, 2);
+  const fileName = path.join(process.cwd(), name + '.json');
+  fs.writeFileSync(fileName, json);
+  console.log(kleur.green(`Created token metadata sample file ${fileName}`));
 }
 
 export async function mintNfts(
