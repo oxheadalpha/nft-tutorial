@@ -25,6 +25,10 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   yield v.validateUri(meta)('homepage');
   yield nonEmptyString('version');
   yield [...validateAuthors(meta)].flat();
+
+  const ifaceFmtValidation = [...validateInterfaces(meta)].flat();
+  if (ifaceFmtValidation.length > 0) yield ifaceFmtValidation;
+  else yield [...validateMissingInterfaces(meta)].flat();
 }
 
 const sampleAuthor = 'john.doe@johndoe.com';
@@ -40,6 +44,49 @@ function* validateAuthors(meta: any): Generator<string[]> {
   yield authors
     .filter(a => !isEmail(a) && !v.isValidUri(a))
     .map(
-      a => `Error: Author '${a}' in 'authors' has invalid format. Author should be e-mail or URL`
+      a =>
+        `Error: Author '${a}' in 'authors' has invalid format. Author should be e-mail or URL`
     );
+}
+
+function* validateInterfaces(meta: any): Generator<string[]> {
+  if (!meta.interfaces || meta.interfaces.length === 0)
+    return ['Warning: consider adding "inrefaces": ["TZIP-012", "TZIP-021"]'];
+
+  yield meta.interfaces.flatMap(validateInterface);
+}
+
+function validateInterface(iface: string): string[] {
+  const invalidFormat = `Error: Invalid interface spec format in "${iface}".`;
+  if (!iface.startsWith('TZIP-'))
+    return [`${invalidFormat} Required format is TZIP-XXX`];
+
+  const ifaceSpec = iface.substring('TZIP-'.length);
+  const [ifaceNumber, extra] = ifaceSpec.split(' ');
+  if (ifaceNumber.length !== 3) 
+    return [`${invalidFormat} Required format is TZIP-XXX`];
+  
+  const num = Number.parseInt(ifaceNumber);
+  if (Number.isNaN(num))
+    return [
+      `${invalidFormat} Interface specification must be a 3 digit number as TZIP-XXX [<extra>]`
+    ];
+
+  return [];
+}
+
+function* validateMissingInterfaces(meta: any): Generator<string[]> {
+  const ifaceNums: number[] = meta.interfaces.map(parseInterfaceNumber);
+  if (!ifaceNums.find(s => s === 12))
+    yield ['Warning: consider specifying FA2 interface TZIP-012'];
+  if (!ifaceNums.find(s => s === 21))
+    yield [
+      'Warning: consider specifying rich token metadata interface TZIP-021'
+    ];
+}
+
+function parseInterfaceNumber(iface: string): number {
+  const prefixLength = 'TZIP-'.length;
+  const spec = iface.substring(prefixLength, prefixLength + 3);
+  return Number.parseInt(spec);
 }
