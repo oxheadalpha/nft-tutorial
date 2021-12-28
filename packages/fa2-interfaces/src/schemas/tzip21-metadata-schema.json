@@ -7,13 +7,24 @@
       "type": "object",
       "additionalProperties": true,
       "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display token name"
+        },
+        "symbol": {
+          "type": "string",
+          "description": "Display token symbol"
+        },
+        "decimals": {
+          "type": "number",
+          "description": "Display decimal points for token amount. Must be 0 for NFTs"
+        },
         "description": {
           "type": "string",
           "description": "General notes, abstracts, or summaries about the contents of an asset."
         },
         "minter": {
           "type": "string",
-          "format": "tzaddress",
           "description": "The tz address responsible for minting the asset."
         },
         "creators": {
@@ -71,7 +82,6 @@
         },
         "language": {
           "type": "string",
-          "format": "https://tools.ietf.org/html/rfc1766",
           "description": "The language of the intellectual content of the asset as defined in RFC 1776."
         },
         "identifier": {
@@ -139,7 +149,8 @@
           },
           "description": "Facilitates the description of collections and other types of resources that contain multiple assets."
         }
-      }
+      },
+      "required": ["decimals", "name"]
     },
     "format": {
       "type": "object",
