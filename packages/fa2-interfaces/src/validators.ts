@@ -28,7 +28,7 @@ export const validateNonEmptyString =
 export const validateUri =
   (meta: { [key: string]: string }) => (propertyName: string) => {
     const value = meta[propertyName];
-    if (!value) return [];
+    if (value === undefined) return [];
     if (isValidUri(value)) return [];
     return [
       `Error: URI format for "${propertyName}": "${value}" seems to be invalid`
