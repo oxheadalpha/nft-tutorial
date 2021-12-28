@@ -55,7 +55,7 @@ export async function createNftMeta(
 export const validateCollectionMeta = async (
   metaFile: string,
   errorsOnly?: boolean
-) => validateMeta(validateTzip21, 'TZIP-021', metaFile, errorsOnly);
+) => validateMeta(validateTzip16, 'TZIP-016', metaFile, errorsOnly);
 
 export const validateNftMeta = async (metaFile: string, errorsOnly?: boolean) =>
   validateMeta(validateTzip21, 'TZIP-021', metaFile, errorsOnly);
