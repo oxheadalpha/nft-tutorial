@@ -36,10 +36,13 @@ export const validateUri =
   };
 
 export const isValidUri = (uri: string): boolean => {
-  if (validUrl.isWebUri(uri)) return true;
+  const parts = uri.split('://');
+  const fullUri = parts.length == 1 ? 'http://' + uri : uri;
+  if (validUrl.isWebUri(fullUri)) return true;
   if (uri.startsWith('ipfs://')) {
-    const ipfsPath = '/ipfs/' + uri.substring('ipfs://'.length);
-    if (isIPFS.ipfsPath(ipfsPath)) true;
+    const ipfsPath = '/ipfs/' + parts[1];
+    console.log('IPFS', ipfsPath, isIPFS.ipfsPath(ipfsPath));
+    if (isIPFS.ipfsPath(ipfsPath)) return true;
   }
   return false;
 };
