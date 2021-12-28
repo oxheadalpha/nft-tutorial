@@ -21,6 +21,7 @@ export function validateTzip21(meta: object): string[] {
 function* validateHeuristic(meta: any): Generator<string[]> {
   const nonEmptyString = v.validateNonEmptyString(meta);
   const required = v.validateRequired(meta);
+  const validateUri = v.validateUri(meta);
 
   yield required('name');
   yield required('decimals');
@@ -35,10 +36,10 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   yield nonEmptyString('symbol');
 
   yield required('artifactUri');
-  yield v.validateUri(meta)('artifactUri');
-  yield v.validateUri(meta)('thumbnailUri');
-  yield v.validateUri(meta)('displayUri');
-  yield v.validateUri(meta)('externalUri');
+  yield validateUri('artifactUri');
+  yield validateUri('thumbnailUri');
+  yield validateUri('displayUri');
+  yield validateUri('externalUri');
 
   yield nonEmptyString('rights');
   yield validateTags(meta);
