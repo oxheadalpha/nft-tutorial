@@ -3,7 +3,7 @@ import path from 'path';
 import * as fs from 'fs';
 import { loadFile, loadUserConfig } from './config-util';
 import { resolveAlias2Address } from './config-aliases';
-import { validateTzip16 } from '@oxheadalpha/fa2-interfaces';
+import { validateTzip16, validateTzip21 } from '@oxheadalpha/fa2-interfaces';
 
 export function createCollectionMeta(name: string): void {
   const meta = {
@@ -52,20 +52,30 @@ export async function createNftMeta(
   console.log(kleur.green(`Created token metadata sample file ${fileName}`));
 }
 
-export async function validateCollectionMeta(
+export const validateCollectionMeta = async (
+  metaFile: string,
+  errorsOnly?: boolean
+) => validateMeta(validateTzip21, 'TZIP-021', metaFile, errorsOnly);
+
+export const validateNftMeta = async (metaFile: string, errorsOnly?: boolean) =>
+  validateMeta(validateTzip21, 'TZIP-021', metaFile, errorsOnly);
+
+async function validateMeta(
+  validate: (meta: any) => string[],
+  standardName: string,
   metaFile: string,
   errorsOnly?: boolean
 ) {
   const metaJson = await loadFile(metaFile);
   const meta = JSON.parse(metaJson);
-  const results = validateTzip16(meta);
+  const results = validate(meta);
 
   const filteredResults = errorsOnly
     ? results.filter(r => r.startsWith('Error'))
     : results;
 
   if (filteredResults.length === 0) {
-    console.log(kleur.green('TZIP-016 metadata seems to be valid.'));
+    console.log(kleur.green(`${standardName} metadata seems to be valid.`));
   } else {
     filteredResults.map(colorCodeMsg).forEach(msg => console.log(msg));
     process.exit(-1);

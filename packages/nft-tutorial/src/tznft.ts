@@ -109,7 +109,7 @@ program
   .arguments('<metadata_file>')
   .option(
     '-e, --errors_only', 
-    'optional alias for a new collection contract address')
+    'show only validation error and suppres warnings')
   .action(async (metaFile, options) =>
     metadata.validateCollectionMeta(metaFile, options.errors_only))
   .passCommandToAction(false);
@@ -139,6 +139,19 @@ program
   .description('create a new NFT token metadata template file')
   .arguments('<nft_name> <creator> <uri>')
   .action(metadata.createNftMeta)
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
+  .command('validate-nft-meta')
+  .alias('vnm')
+  .description('validate individual NFT token metadata file format')
+  .arguments('<metadata_file>')
+  .option(
+    '-e, --errors_only', 
+    'show only validation error and suppres warnings')
+  .action(async (metaFile, options) =>
+    metadata.validateNftMeta(metaFile, options.errors_only))
   .passCommandToAction(false);
 
 //prettier-ignore
