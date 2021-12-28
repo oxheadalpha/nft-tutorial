@@ -1,3 +1,5 @@
+import { TezosToolkit } from '@taquito/taquito';
+import { validateAddress, ValidationResult } from '@taquito/utils';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import schema from './schemas/tzip21-metadata-schema.json';
@@ -11,5 +13,81 @@ export function validateTzip21(meta: object): string[] {
     ? ajv.errors.map(e => `Error: ${e.instancePath} ${e.message}`)
     : [];
 
-  return schemaErrors;
+  const heuristics = validateHeuristic(meta);
+  const heuristicErrors = [...heuristics].flat();
+  return [...schemaErrors, ...heuristicErrors];
+}
+
+function* validateHeuristic(meta: any): Generator<string[]> {
+  const nonEmptyString = v.validateNonEmptyString(meta);
+  const required = v.validateRequired(meta);
+
+  yield required('name');
+  yield required('decimals');
+  if (meta.decimals !== 0)
+    yield ['Error: "decimals" must have value 0 for NFTs'];
+  yield required('isBooleanAmount');
+  if (meta.isBooleanAmount !== true)
+    yield ['Error: "isBooleanAmount" must have value true for NFTs'];
+  yield nonEmptyString('name');
+  yield v.validateRecommended(meta)('description');
+  yield nonEmptyString('description');
+  yield nonEmptyString('symbol');
+
+  yield required('artifactUri');
+  yield v.validateUri(meta)('artifactUri');
+  yield v.validateUri(meta)('thumbnailUri');
+  yield v.validateUri(meta)('displayUri');
+  yield v.validateUri(meta)('externalUri');
+
+  yield nonEmptyString('rights');
+  yield validateTags(meta);
+  yield validateAttributes(meta);
+  yield validateMinter(meta);
+}
+
+function validateTags(meta: any): string[] {
+  const tags: string[] | undefined = meta.tags;
+  if (tags === undefined || tags.length == 0) return [];
+
+  if (tags.find(t => t === 'awsome') && tags.find(t => t === 'nft'))
+    return [
+      'Warning: It looks like "tags" property contains sample values "awsome", "nft". Remove or replace them with actual tag values'
+    ];
+
+  return [];
+}
+
+function validateAttributes(meta: any): string[] {
+  const attributes: { name: string; value: string }[] | undefined =
+    meta.attributes;
+  if (attributes === undefined || attributes.length == 0) return [];
+
+  if (
+    attributes.find(
+      a => a.name === 'sample attribute' && a.value === 'sample value'
+    )
+  )
+    return [
+      'Warning: It looks like "attributes" property contans sample attribute. Remove or replace it with actual attributes'
+    ];
+
+  return [];
+}
+
+function validateMinter(meta: any): string[] {
+  const minter: string | undefined = meta.minter;
+  if (minter === undefined) return [];
+
+  const instruction =
+    'Specify prope minter tz1 address or remove the attribute';
+  if (minter === '')
+    return [`Error: "minter" attribute is empty. ${instruction}`];
+
+  if (validateAddress(minter) !== ValidationResult.VALID)
+    return [
+      `Error: "minter": "${minter}" is not a valid Tezos address. ${instruction}`
+    ];
+
+  return [];
 }
