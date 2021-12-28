@@ -41,7 +41,6 @@ export const isValidUri = (uri: string): boolean => {
   if (validUrl.isWebUri(fullUri)) return true;
   if (uri.startsWith('ipfs://')) {
     const ipfsPath = '/ipfs/' + parts[1];
-    console.log('IPFS', ipfsPath, isIPFS.ipfsPath(ipfsPath));
     if (isIPFS.ipfsPath(ipfsPath)) return true;
   }
   return false;
