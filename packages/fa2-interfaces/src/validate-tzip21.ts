@@ -3,7 +3,7 @@ import { validateAddress, ValidationResult } from '@taquito/utils';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import schema from './schemas/tzip21-metadata-schema.json';
-import * as v from './validators';
+import * as v from './meta-validators';
 
 export function validateTzip21(meta: object): string[] {
   const ajv = new Ajv();
