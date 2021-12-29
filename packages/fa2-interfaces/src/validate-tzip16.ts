@@ -26,9 +26,9 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   yield nonEmptyString('version');
   yield [...validateAuthors(meta)].flat();
 
-  const ifaceFmtValidation = [...validateInterfaces(meta)].flat();
+  const ifaceFmtValidation = validateInterfaces(meta);
   if (ifaceFmtValidation.length > 0) yield ifaceFmtValidation;
-  else yield [...validateMissingInterfaces(meta)].flat();
+  else yield validateMissingInterfaces(meta);
 }
 
 const sampleAuthor = 'john.doe@johndoe.com';
@@ -49,11 +49,11 @@ function* validateAuthors(meta: any): Generator<string[]> {
     );
 }
 
-function* validateInterfaces(meta: any): Generator<string[]> {
+function validateInterfaces(meta: any): string[] {
   if (!meta.interfaces || meta.interfaces.length === 0)
     return ['Warning: consider adding "inrefaces": ["TZIP-012", "TZIP-021"]'];
 
-  yield meta.interfaces.flatMap(validateInterface);
+  return meta.interfaces.flatMap(validateInterface);
 }
 
 function validateInterface(iface: string): string[] {
@@ -75,14 +75,16 @@ function validateInterface(iface: string): string[] {
   return [];
 }
 
-function* validateMissingInterfaces(meta: any): Generator<string[]> {
+function validateMissingInterfaces(meta: any): string[] {
   const ifaceNums: number[] = meta.interfaces.map(parseInterfaceNumber);
   if (!ifaceNums.find(s => s === 12))
-    yield ['Warning: consider specifying FA2 interface TZIP-012'];
+    return ['Warning: consider specifying FA2 interface TZIP-012'];
   if (!ifaceNums.find(s => s === 21))
-    yield [
+    return [
       'Warning: consider specifying rich token metadata interface TZIP-021'
     ];
+
+  return [];
 }
 
 function parseInterfaceNumber(iface: string): number {
