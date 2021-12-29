@@ -45,7 +45,7 @@ function* validateAuthors(meta: any): Generator<string[]> {
     .filter(a => !isEmail(a) && !v.isValidUri(a))
     .map(
       a =>
-        `Error: Author '${a}' in 'authors' has invalid format. Author should be e-mail or URL`
+        `Error: Author "${a}" in "authors" has invalid format. Author should be e-mail or URL`
     );
 }
 
