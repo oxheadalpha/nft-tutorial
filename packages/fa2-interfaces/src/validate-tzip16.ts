@@ -49,7 +49,7 @@ function* validateAuthors(meta: any): Generator<string[]> {
     );
 }
 
-function validateAuthor(author: string): boolean {
+export function validateAuthor(author: string): boolean {
   const parts = author
     .split(' ')
     .map(p => p.trim())
@@ -66,7 +66,6 @@ function validateAuthor(author: string): boolean {
     1,
     quoted_email_or_url.length - 1
   );
-  console.log('EMAIL', email_or_url);
 
   return isEmail(email_or_url) || v.isValidUri(email_or_url);
 }
