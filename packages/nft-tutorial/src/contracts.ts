@@ -1,7 +1,6 @@
 import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
-import * as fs from 'fs';
 import { BigNumber } from 'bignumber.js';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
@@ -51,26 +50,6 @@ export function createToolkitFromSigner(
     config: { confirmationPollingIntervalSecond: 5 }
   });
   return toolkit;
-}
-
-export function createCollectionMeta(name: string): void {
-  const meta = {
-    name,
-    description: '',
-    homepage: '',
-    authors: ['john.doe@johndoe.com'],
-    version: '1.0.0',
-    license: { name: 'MIT' },
-    interfaces: ['TZIP-016', 'TZIP-012', 'TZIP-021'],
-    source: {
-      tools: ['LIGO'],
-      location: 'https://github.com/oxheadalpha/nft-tutorial'
-    }
-  };
-  const json = JSON.stringify(meta, undefined, 2);
-  const fileName = path.join(process.cwd(), name + '.json');
-  fs.writeFileSync(fileName, json);
-  console.log(kleur.green(`Create collection metadata file ${fileName}`));
 }
 
 export async function createCollection(
