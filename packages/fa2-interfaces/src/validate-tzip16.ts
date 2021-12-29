@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import schema from './schemas/tzip16-metadata-schema.json';
-import * as v from './validators';
+import * as v from './meta-validators';
 import isEmail from 'is-email';
 
 export function validateTzip16(meta: object): string[] {
