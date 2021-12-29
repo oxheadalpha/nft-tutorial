@@ -49,7 +49,7 @@ function* validateAuthors(meta: any): Generator<string[]> {
     );
 }
 
-function validateInterfaces(meta: any): string[] {
+export function validateInterfaces(meta: any): string[] {
   if (!meta.interfaces || meta.interfaces.length === 0)
     return ['Warning: consider adding "inrefaces": ["TZIP-012", "TZIP-021"]'];
 
@@ -63,9 +63,9 @@ function validateInterface(iface: string): string[] {
 
   const ifaceSpec = iface.substring('TZIP-'.length);
   const [ifaceNumber, extra] = ifaceSpec.split(' ');
-  if (ifaceNumber.length !== 3) 
+  if (ifaceNumber.length !== 3)
     return [`${invalidFormat} Required format is TZIP-XXX`];
-  
+
   const num = Number.parseInt(ifaceNumber);
   if (Number.isNaN(num))
     return [
@@ -75,8 +75,10 @@ function validateInterface(iface: string): string[] {
   return [];
 }
 
-function validateMissingInterfaces(meta: any): string[] {
-  const ifaceNums: number[] = meta.interfaces.map(parseInterfaceNumber);
+export function validateMissingInterfaces(meta: any): string[] {
+  const ifaceNums: number[] = meta.interfaces
+    ? meta.interfaces.map(parseInterfaceNumber)
+    : [];
   if (!ifaceNums.find(s => s === 12))
     return ['Warning: consider specifying FA2 interface TZIP-012'];
   if (!ifaceNums.find(s => s === 21))
