@@ -53,7 +53,7 @@ async function originateLambdaViewContract(
   if (a) return;
 
   console.log(
-    kleur.yellow(`originating balance Taquito lambda view contract...`)
+    kleur.yellow(`originating Taquito lambda view contract...`)
   );
   const op = await tezos.contract.originate({
     code: VIEW_LAMBDA.code,
