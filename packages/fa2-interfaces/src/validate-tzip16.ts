@@ -31,7 +31,7 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   else yield validateMissingInterfaces(meta);
 }
 
-const sampleAuthor = 'john.doe@johndoe.com';
+const sampleAuthor = 'John Doe <john.doe@johndoe.com>';
 
 function* validateAuthors(meta: any): Generator<string[]> {
   const authors = meta.authors as string[];
@@ -42,11 +42,33 @@ function* validateAuthors(meta: any): Generator<string[]> {
     ];
 
   yield authors
-    .filter(a => !isEmail(a) && !v.isValidUri(a))
+    .filter(a => !validateAuthor(a))
     .map(
       a =>
-        `Error: Author "${a}" in "authors" has invalid format. Author should be e-mail or URL`
+        `Error: Author "${a}" in "authors" has invalid format. Author should be in form "Print Name <e-mail_or_url>"`
     );
+}
+
+function validateAuthor(author: string): boolean {
+  const parts = author
+    .split(' ')
+    .map(p => p.trim())
+    .filter(p => p !== '');
+  if (parts.length < 2) return false;
+  const quoted_email_or_url = parts.at(-1);
+  if (
+    !quoted_email_or_url?.startsWith('<') &&
+    !quoted_email_or_url?.endsWith('>')
+  )
+    return false;
+
+  const email_or_url = quoted_email_or_url.substring(
+    1,
+    quoted_email_or_url.length - 1
+  );
+  console.log('EMAIL', email_or_url);
+
+  return isEmail(email_or_url) || v.isValidUri(email_or_url);
 }
 
 export function validateInterfaces(meta: any): string[] {
