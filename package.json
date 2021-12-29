@@ -22,7 +22,7 @@
   "scripts": {
     "build": "yarn lerna run build",
     "build:watch": "tsc -w -p .",
-    "test": "jest"
+    "test": "yarn lerna run test"
   },
   "devDependencies": {
     "lerna": "^4.0.0"
