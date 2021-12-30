@@ -1,10 +1,10 @@
-import { address, TokenMetadata } from '@oxheadalpha/fa2-interfaces';
+import { address, TokenMetadataInternal } from '@oxheadalpha/fa2-interfaces';
 import { TezosToolkit } from '@taquito/taquito';
 import kleur from 'kleur';
 
 export interface MintParam {
   owner: address;
-  tokens: TokenMetadata[];
+  tokens: TokenMetadataInternal[];
 }
 
 export async function mintTokens(
