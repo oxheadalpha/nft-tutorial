@@ -10,7 +10,7 @@ export function createCollectionMeta(name: string): void {
     name,
     description: '',
     homepage: '',
-    authors: ['john.doe@johndoe.com'],
+    authors: ['John Doe <john.doe@johndoe.com>'],
     version: '1.0.0',
     license: { name: 'MIT' },
     interfaces: ['TZIP-016', 'TZIP-012', 'TZIP-021'],
