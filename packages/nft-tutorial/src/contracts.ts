@@ -106,7 +106,7 @@ export async function mintFreeze(
 export function parseTokens(
   descriptor: string,
   tokens: fa2.TokenMetadataInternal[]
-): fa2.TokenMetadata[] {
+): fa2.TokenMetadataInternal[] {
   const [id, tokenMetadataUri] = descriptor.split(',').map(p => p.trim());
   const token: fa2.TokenMetadataInternal = {
     token_id: new BigNumber(id),
