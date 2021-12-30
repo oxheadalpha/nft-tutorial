@@ -2,6 +2,7 @@ import * as kleur from 'kleur';
 import { BigNumber } from 'bignumber.js';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import { bytes } from './type-aliases';
+import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
 
 type address = string;
 type nat = BigNumber;
@@ -27,7 +28,8 @@ export interface BalanceOfResponse {
   request: BalanceOfRequest;
 }
 
-export interface TokenMetadata {
+// this is how token metadata stored withing the contract internally
+export interface TokenMetadataInternal {
   token_id: nat;
   token_info: MichelsonMap<string, bytes>;
 }
@@ -99,7 +101,7 @@ export const queryBalances = async (
 ): Promise<BalanceOfResponse[]> => {
   const contract = await owner.contract.at(fa2);
   return contract.views.balance_of(requests).read(lambdaView);
-}
+};
 
 export async function hasNftTokens(
   fa2: address,
@@ -116,4 +118,15 @@ export async function hasNftTokens(
   return results;
 }
 
-
+export const tokenMetadata = async (
+  fa2: address,
+  owner: TezosToolkit,
+  tokenIds: number[]
+): Promise<TokenMetadata[]> => {
+  owner.addExtension(new Tzip12Module());
+  const contract = await owner.contract.at(fa2, tzip12);
+  const metaRequests = tokenIds.map(id =>
+    contract.tzip12().getTokenMetadata(id)
+  );
+  return Promise.all(metaRequests);
+};

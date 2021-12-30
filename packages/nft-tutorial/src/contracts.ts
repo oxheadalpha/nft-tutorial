@@ -5,6 +5,7 @@ import { BigNumber } from 'bignumber.js';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
+import { TokenMetadata} from '@taquito/tzip12';
 import {
   loadUserConfig,
   loadFile,
@@ -77,7 +78,7 @@ export async function createCollection(
 export async function mintNfts(
   owner: string,
   collection: string,
-  tokens: fa2.TokenMetadata[]
+  tokens: fa2.TokenMetadataInternal[]
 ): Promise<void> {
   if (tokens.length === 0)
     return Promise.reject('there are no token definitions provided');
@@ -104,10 +105,10 @@ export async function mintFreeze(
 
 export function parseTokens(
   descriptor: string,
-  tokens: fa2.TokenMetadata[]
+  tokens: fa2.TokenMetadataInternal[]
 ): fa2.TokenMetadata[] {
   const [id, tokenMetadataUri] = descriptor.split(',').map(p => p.trim());
-  const token: fa2.TokenMetadata = {
+  const token: fa2.TokenMetadataInternal = {
     token_id: new BigNumber(id),
     token_info: new MichelsonMap()
   };
@@ -187,33 +188,14 @@ export async function showMetadata(
 
   const tz = await createToolkit(signer, config);
   const nftAddress = await resolveAlias2Address(contract, config);
-  const nftContract = await tz.contract.at(nftAddress);
-  const storage = await nftContract.storage<any>();
-  const meta: MichelsonMap<BigNumber, fa2.TokenMetadata> =
-    storage.token_metadata;
-
-  const tokensMetaP = tokens
-    .map(t => new BigNumber(t))
-    .map(async tid => {
-      return { tid, meta: await meta.get(tid) };
-    });
-  const tokensMeta = await Promise.all(tokensMetaP);
-
-  tokensMeta.forEach(m => {
-    if (m.meta) printTokenMetadata(m.meta);
-    else console.log(kleur.red(`token ${m.tid} is missing`));
-  });
+  const tokenIds = tokens.map(t=>Number.parseInt(t));
+  console.log(kleur.yellow('querying token metadata...'));
+  const tokensMeta = await fa2.tokenMetadata(nftAddress, tz, tokenIds);
+  tokensMeta.forEach(printTokenMetadata);
 }
 
-function printTokenMetadata(m: fa2.TokenMetadata) {
-  console.log(kleur.yellow(`token ${m.token_id.toNumber()} metedata here`));
-}
-
-function formatMichelsonMap(m: MichelsonMap<string, string>): string {
-  let result = '{ ';
-  m.forEach((v, k) => (result += `${kleur.dim().green(k)}=${kleur.green(v)} `));
-  result += '}';
-  return result;
+function printTokenMetadata(m: TokenMetadata) {
+  console.log(kleur.green(JSON.stringify(m, null, 2)));
 }
 
 export function parseTransfers(
