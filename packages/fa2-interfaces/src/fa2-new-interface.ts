@@ -23,6 +23,12 @@ export interface BalanceResponse {
   request: BalanceRequest;
 }
 
+export interface Fa2 {
+  tzToolkit: TezosToolkit;
+  at: (contractAddress: Address) => Promise<Fa2Contract>;
+  useLambdaView: (lambdaView: Address) => Fa2;
+}
+
 export interface Fa2Contract {
   tzToolkit: TezosToolkit;
   useLambdaView: (lambdaView: Address) => Fa2Contract;
@@ -33,7 +39,8 @@ export interface Fa2Contract {
   hasNftToken: (owner: Address, tokenId: Nat) => Promise<boolean>;
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
 
-  tokenMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
+  tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
+  tokenMetadata: (tokenId: number) => Promise<TokenMetadata>;
 }
 
 const createFa2Contract = (
@@ -75,18 +82,23 @@ const createFa2Contract = (
       return results;
     },
 
-    tokenMetadata: async tokenIds => {
+    tokensMetadata: async tokenIds => {
       const requests = tokenIds.map(id =>
         contract.tzip12().getTokenMetadata(id)
       );
       return Promise.all(requests);
+    },
+
+    tokenMetadata: async tokenId => {
+      const response = await self.tokensMetadata([tokenId]);
+      return response[0];
     }
   };
 
   return self;
 };
 
-export const createFa2 = (tzt: TezosToolkit, lambdaView?: Address) => {
+export const createFa2 = (tzt: TezosToolkit, lambdaView?: Address): Fa2 => {
   tzt.addExtension(new Tzip12Module());
 
   return {

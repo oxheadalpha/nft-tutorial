@@ -5,7 +5,7 @@ import { BigNumber } from 'bignumber.js';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
-import { TokenMetadata} from '@taquito/tzip12';
+import { TokenMetadata } from '@taquito/tzip12';
 import {
   loadUserConfig,
   loadFile,
@@ -155,14 +155,11 @@ export async function showBalances(
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
-  const balances: fa2.BalanceOfResponse[] = await fa2.queryBalances(
-    nftAddress,
-    tz,
-    requests,
-    lambdaView
-  );
+  const fa2Contract = await fa2.createFa2(tz).useLambdaView(lambdaView).at(nftAddress);
 
+  console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
+  const balances = await fa2Contract.queryBalances(requests)  
+  
   printBalances(balances);
 }
 
@@ -188,9 +185,13 @@ export async function showMetadata(
 
   const tz = await createToolkit(signer, config);
   const nftAddress = await resolveAlias2Address(contract, config);
-  const tokenIds = tokens.map(t=>Number.parseInt(t));
+  const tokenIds = tokens.map(t => Number.parseInt(t));
+ 
+  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+
   console.log(kleur.yellow('querying token metadata...'));
-  const tokensMeta = await fa2.tokenMetadata(nftAddress, tz, tokenIds);
+  const tokensMeta = await fa2Contract.tokensMetadata(tokenIds)
+  
   tokensMeta.forEach(printTokenMetadata);
 }
 
