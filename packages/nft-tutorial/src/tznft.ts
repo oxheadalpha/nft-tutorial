@@ -244,6 +244,8 @@ program
     owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
 
 // pinning to IPFS
+
+//prettier-ignore
 program
   .command('set-pinata-keys')
   .alias('spk')
@@ -254,7 +256,31 @@ program
     'override existing keys'
   )
   .action( async (pinata_api_key, pinata_secret_key, options) =>
-    ipfs.setPinataKeys(pinata_api_key, pinata_secret_key, options.force))
+    ipfs.setPinataKeys(pinata_api_key, pinata_secret_key, options.force));
+
+//prettier-ignore
+program
+  .command('pin-file')
+  .alias('pf')
+  .description('Pin file to Pinata IPFS')
+  .arguments('<file>')
+  .requiredOption(
+    '-t, --tag <tag>',
+    'IPFS tag name for the pinned file'
+  )
+  .action( async (file, options) => ipfs.pinFileToIpfs(options.tag, file));
+
+//prettier-ignore
+program
+  .command('pin-dir')
+  .alias('pd')
+  .description('Pin directory to Pinata IPFS')
+  .arguments('<dir>')
+  .requiredOption(
+    '-t, --tag <tag>',
+    'IPFS tag name for the pinned directory'
+  )
+  .action( async (dir, options) => ipfs.pinDirectoryToIpfs(options.tag, dir));
 
 //debugging command
 

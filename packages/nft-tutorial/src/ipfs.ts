@@ -25,7 +25,7 @@ export async function setPinataKeys(
 
 type PinataKeys = { apiKey: string; secretKey: string };
 
-export async function pinFileToIpfs(name: string, filePath: string) {
+export async function pinFileToIpfs(tag: string, filePath: string) {
   const config = loadUserConfig();
   if (!config.has(ipfsKey)) {
     console.log(
@@ -48,14 +48,14 @@ export async function pinFileToIpfs(name: string, filePath: string) {
   const cid = await pinFile(
     pinataKeys.apiKey,
     pinataKeys.secretKey,
-    name,
+    tag,
     resolvedPath
   );
 
   console.log(kleur.green(`cid:${cid}`));
 }
 
-export async function pinDirectoryToIpfs(name: string, dirPath: string) {
+export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
   const config = loadUserConfig();
   if (!config.has(ipfsKey)) {
     console.log(
@@ -75,10 +75,10 @@ export async function pinDirectoryToIpfs(name: string, dirPath: string) {
     return;
   }
 
-  const cid = await pinFile(
+  const cid = await pinDirectory(
     pinataKeys.apiKey,
     pinataKeys.secretKey,
-    name,
+    tag,
     resolvedPath
   );
 
