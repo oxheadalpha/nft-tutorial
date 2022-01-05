@@ -235,7 +235,7 @@ export async function transfer(
   const txs = await resolveTxAddresses(batch, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
-  
+
   const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
   await fa2Contract.transferTokens(txs);
 }
@@ -276,18 +276,23 @@ export async function updateOperators(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
+  
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
+  
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
+  
   const nftAddress = await resolveAlias2Address(contract, config);
-  await fa2.updateOperators(nftAddress, tz, resolvedAdd, resolvedRemove);
+  
+  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  await fa2Contract.updateOperators(resolvedAdd, resolvedRemove)
 }
 
 async function resolveOperators(

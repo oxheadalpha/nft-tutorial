@@ -5,10 +5,9 @@ import { TezosToolkit } from '@taquito/taquito';
 import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
 
 import { Tzip12Contract } from './type-aliases';
-import { transfer } from '.';
 
-type Address = string;
-type Nat = BigNumber;
+export type Address = string;
+export type Nat = BigNumber;
 
 export interface BalanceRequest {
   owner: Address;
@@ -29,6 +28,12 @@ export interface TransferDestination {
 export interface Transfer {
   from_: Address;
   txs: TransferDestination[];
+}
+
+export interface OperatorUpdate {
+  owner: Address;
+  operator: Address;
+  token_id: Nat;
 }
 
 export interface Fa2 {
@@ -56,8 +61,25 @@ export interface Fa2Contract {
     tokenId: Nat,
     amount: Nat
   ) => Promise<void>;
-  
+
   transferTokens: (transfers: Transfer[]) => Promise<void>;
+
+  addOperator: (
+    owner: Address,
+    operator: Address,
+    tokenId: Nat
+  ) => Promise<void>;
+
+  removeOperator: (
+    owner: Address,
+    operator: Address,
+    tokenId: Nat
+  ) => Promise<void>;
+
+  updateOperators: (
+    addOperators: OperatorUpdate[],
+    removeOperators: OperatorUpdate[]
+  ) => Promise<void>;
 }
 
 const createFa2Contract = (
@@ -123,6 +145,38 @@ const createFa2Contract = (
       const hash = await op.confirmation();
 
       console.log(kleur.green('tokens transferred'));
+    },
+
+    addOperator: (owner, operator, tokenId) =>
+      self.updateOperators([{ owner, operator, token_id: tokenId }], []),
+
+    removeOperator: (owner, operator, tokenId) =>
+      self.updateOperators([], [{ owner, operator, token_id: tokenId }]),
+
+    updateOperators: async (addOperators, removeOperators) => {
+      interface AddOperator {
+        add_operator: OperatorUpdate;
+      }
+      interface RemoveOperator {
+        remove_operator: OperatorUpdate;
+      }
+
+      type UpdateOperator = AddOperator | RemoveOperator;
+
+      console.log(kleur.yellow('updating operators...'));
+
+      const addParams: UpdateOperator[] = addOperators.map(param => {
+        return { add_operator: param };
+      });
+      const removeParams: UpdateOperator[] = removeOperators.map(param => {
+        return { remove_operator: param };
+      });
+      const allOperators = addParams.concat(removeParams);
+
+      const op = await contract.methods.update_operators(allOperators).send();
+      await op.confirmation();
+
+      console.log(kleur.green('updated operators'));
     }
   };
 
