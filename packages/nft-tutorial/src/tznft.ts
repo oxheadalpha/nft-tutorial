@@ -170,6 +170,19 @@ program
 
 //prettier-ignore
 program
+  .command('mint-from-file')
+  .alias('mff')
+  .description('create a new NFT contract and mint new tokens')
+  .arguments('<owner> <collection>')
+  .requiredOption(
+    '-tf, --token_file <file>',
+    'path to a file with definitions of new tokens, each line is comma-separated pair of token_id, tokenMetadataUri')
+  .action(async (owner, collection, options) => 
+    contracts.mintNftsFromFile(owner, collection, options.token_file))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
     .command('mint-freeze')
     .alias('mf')
     .description('freeze minting for nft collection (contract)')
