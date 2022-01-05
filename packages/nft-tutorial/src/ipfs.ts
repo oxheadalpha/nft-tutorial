@@ -26,24 +26,11 @@ export async function setPinataKeys(
 type PinataKeys = { apiKey: string; secretKey: string };
 
 export async function pinFileToIpfs(tag: string, filePath: string) {
-  const config = loadUserConfig();
-  if (!config.has(ipfsKey)) {
-    console.log(
-      kleur.red(
-        'Pinata keys are not configured. Run set-pinata-keys command first.'
-      )
-    );
-    return;
-  }
-  const pinataKeys: PinataKeys = config.get(ipfsKey);
+  const pinataKeys = loadPinataKeys();
+  if(!pinataKeys) return;
 
-  const resolvedPath = path.isAbsolute(filePath)
-    ? filePath
-    : path.join(process.cwd(), filePath);
-  if (!fs.existsSync(resolvedPath)) {
-    console.log(kleur.red(`File ${resolvedPath} does not exist.`));
-    return;
-  }
+  const resolvedPath = resolvePath(filePath);
+  if(!resolvedPath) return;
 
   const cid = await pinFile(
     pinataKeys.apiKey,
@@ -56,24 +43,11 @@ export async function pinFileToIpfs(tag: string, filePath: string) {
 }
 
 export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
-  const config = loadUserConfig();
-  if (!config.has(ipfsKey)) {
-    console.log(
-      kleur.red(
-        'Pinata keys are not configured. Run set-pinata-keys command first.'
-      )
-    );
-    return;
-  }
-  const pinataKeys: PinataKeys = config.get(ipfsKey);
+  const pinataKeys = loadPinataKeys();
+  if(!pinataKeys) return;
 
-  const resolvedPath = path.isAbsolute(dirPath)
-    ? dirPath
-    : path.join(process.cwd(), dirPath);
-  if (!fs.existsSync(resolvedPath)) {
-    console.log(kleur.red(`Directory ${resolvedPath} does not exist.`));
-    return;
-  }
+  const resolvedPath = resolvePath(dirPath);
+  if(!resolvedPath) return;
 
   const cid = await pinDirectory(
     pinataKeys.apiKey,
@@ -83,4 +57,28 @@ export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
   );
 
   console.log(kleur.green(`cid:${cid}`));
+}
+
+function loadPinataKeys() : PinataKeys | undefined {
+  const config = loadUserConfig();
+  if (!config.has(ipfsKey)) {
+    console.log(
+      kleur.red(
+        'Pinata keys are not configured. Run set-pinata-keys command first.'
+      )
+    );
+    return undefined;
+  }
+  return config.get(ipfsKey);
+}
+
+function resolvePath(fileOrDir: string): string | undefined {
+  const resolvedPath = path.isAbsolute(fileOrDir)
+    ? fileOrDir
+    : path.join(process.cwd(), fileOrDir);
+  if (!fs.existsSync(resolvedPath)) {
+    console.log(kleur.red(`Path ${resolvedPath} does not exist.`));
+    return undefined;
+  }
+  return resolvedPath;
 }
