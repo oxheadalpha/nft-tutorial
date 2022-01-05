@@ -1,10 +1,11 @@
 import { BigNumber } from 'bignumber.js';
+import * as kleur from 'kleur';
 
 import { TezosToolkit } from '@taquito/taquito';
 import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
-import { Tzip12ContractAbstraction } from '@taquito/tzip12';
 
 import { Tzip12Contract } from './type-aliases';
+import { transfer } from '.';
 
 type Address = string;
 type Nat = BigNumber;
@@ -17,6 +18,17 @@ export interface BalanceRequest {
 export interface BalanceResponse {
   balance: Nat;
   request: BalanceRequest;
+}
+
+export interface TransferDestination {
+  to_: Address;
+  token_id: Nat;
+  amount: Nat;
+}
+
+export interface Transfer {
+  from_: Address;
+  txs: TransferDestination[];
 }
 
 export interface Fa2 {
@@ -37,6 +49,15 @@ export interface Fa2Contract {
 
   tokenMetadata: (tokenId: number) => Promise<TokenMetadata>;
   tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
+
+  transferToken: (
+    from: Address,
+    to: Address,
+    tokenId: Nat,
+    amount: Nat
+  ) => Promise<void>;
+  
+  transferTokens: (transfers: Transfer[]) => Promise<void>;
 }
 
 const createFa2Contract = (
@@ -88,6 +109,20 @@ const createFa2Contract = (
     tokenMetadata: async tokenId => {
       const response = await self.tokensMetadata([tokenId]);
       return response[0];
+    },
+
+    transferToken: (from, to, tokenId, amount) =>
+      self.transferTokens([
+        { from_: from, txs: [{ to_: to, token_id: tokenId, amount }] }
+      ]),
+
+    transferTokens: async transfers => {
+      console.log(kleur.yellow('transferring tokens...'));
+
+      const op = await contract.methods.transfer(transfers).send();
+      const hash = await op.confirmation();
+
+      console.log(kleur.green('tokens transferred'));
     }
   };
 

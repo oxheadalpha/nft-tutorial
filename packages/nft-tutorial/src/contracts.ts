@@ -155,11 +155,14 @@ export async function showBalances(
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const fa2Contract = await fa2.createFa2(tz).useLambdaView(lambdaView).at(nftAddress);
+  const fa2Contract = await fa2
+    .createFa2(tz)
+    .useLambdaView(lambdaView)
+    .at(nftAddress);
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
-  const balances = await fa2Contract.queryBalances(requests)  
-  
+  const balances = await fa2Contract.queryBalances(requests);
+
   printBalances(balances);
 }
 
@@ -186,12 +189,12 @@ export async function showMetadata(
   const tz = await createToolkit(signer, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tokenIds = tokens.map(t => Number.parseInt(t));
- 
+
   const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
 
   console.log(kleur.yellow('querying token metadata...'));
-  const tokensMeta = await fa2Contract.tokensMetadata(tokenIds)
-  
+  const tokensMeta = await fa2Contract.tokensMetadata(tokenIds);
+
   tokensMeta.forEach(printTokenMetadata);
 }
 
@@ -226,13 +229,15 @@ export function parseTransfers(
 export async function transfer(
   signer: string,
   contract: string,
-  batch: fa2.Fa2Transfer[]
+  batch: fa2.Transfer[]
 ): Promise<void> {
   const config = loadUserConfig();
   const txs = await resolveTxAddresses(batch, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
-  await fa2.transfer(nftAddress, tz, txs);
+  
+  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  await fa2Contract.transferTokens(txs);
 }
 
 async function resolveTxAddresses(
