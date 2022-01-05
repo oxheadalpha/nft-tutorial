@@ -8,6 +8,7 @@ import * as aliasConf from './config-aliases';
 import * as bootstrap from './bootstrap';
 import * as contracts from './contracts';
 import * as metadata from './metadata';
+import * as ipfs from './ipfs';
 const packageJson = require('../package.json');
 
 // configuration
@@ -241,6 +242,19 @@ program
     'list of the "operator, token_id" pairs to be removed by the token owner')
   .action(async (owner, options) => contracts.updateOperators(
     owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
+
+// pinning to IPFS
+program
+  .command('set-pinata-keys')
+  .alias('spk')
+  .description('set Pinata keys to configuration file')
+  .arguments('<pinata_api_key> <pinata_secret_key>')
+  .option(
+    '-f, --force',
+    'override existing keys'
+  )
+  .action( async (pinata_api_key, pinata_secret_key, options) =>
+    ipfs.setPinataKeys(pinata_api_key, pinata_secret_key, options.force))
 
 //debugging command
 
