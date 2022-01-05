@@ -4,11 +4,7 @@ import { TezosToolkit } from '@taquito/taquito';
 import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
 import { Tzip12ContractAbstraction } from '@taquito/tzip12';
 
-import { Contract } from './type-aliases';
-
-export type Tzip12Contract = Contract & {
-  tzip12(this: Contract): Tzip12ContractAbstraction;
-};
+import { Tzip12Contract } from './type-aliases';
 
 type Address = string;
 type Nat = BigNumber;
@@ -39,8 +35,8 @@ export interface Fa2Contract {
   hasNftToken: (owner: Address, tokenId: Nat) => Promise<boolean>;
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
 
-  tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
   tokenMetadata: (tokenId: number) => Promise<TokenMetadata>;
+  tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
 }
 
 const createFa2Contract = (
