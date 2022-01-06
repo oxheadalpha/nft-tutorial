@@ -3,7 +3,7 @@ import retry from 'async-retry';
 import { loadUserConfig, lambdaViewKey } from './config-util';
 import { createToolkit } from './contracts';
 import Configstore from 'configstore';
-import { startSandbox, killSandbox } from '@oxheadalpha/nft-contracts';
+import { startSandbox, killSandbox } from '@oxheadalpha/tezos-tools';
 import { TezosToolkit, VIEW_LAMBDA } from '@taquito/taquito';
 
 export async function bootstrap(): Promise<void> {

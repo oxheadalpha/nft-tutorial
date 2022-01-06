@@ -20,7 +20,7 @@ import {
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import * as nft from './nft-interface';
 import { bytes } from '@oxheadalpha/fa2-interfaces';
-import { originateContract } from '@oxheadalpha/nft-contracts';
+import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
   address_or_alias: string,
