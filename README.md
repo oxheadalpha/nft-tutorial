@@ -1,12 +1,17 @@
 # Tutorial: Non-Fungible Tokens on Tezos Using FA2
 
+## Tutorial
+
 The actual tutorial is located [here](./packages/nft-tutorial/README.md).
+
+## Packages
 
 The repo has three following yarn workspaces (packages):
 
-* [nft-contracts](./packages/nft-contracts/) - various utilities to interact with
-  [LIGO](https://ligolang.org/) compiler and
-  [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox from TypeScript code.
+* [tezos-tools](./packages/tezos-tools/) - various utilities to interact with
+  [LIGO](https://ligolang.org/) compiler,
+  [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox and
+  [Pinata](https://www.pinata.cloud/) IPFS from TypeScript code.
 
 * [fa2-interfaces](./packages/nft-fa2-interfaces/) - TypeScript interfaces to
   interact with FA2 contracts on blockchain.

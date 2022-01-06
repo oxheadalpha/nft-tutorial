@@ -1,4 +1,4 @@
-import { ligo } from '@oxheadalpha/nft-contracts';
+import { ligo } from '@oxheadalpha/tezos-tools';
 
 const main = async () => {
   const ligoEnv = ligo();
