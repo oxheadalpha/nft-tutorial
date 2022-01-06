@@ -1,132 +1,205 @@
-import * as kleur from 'kleur';
 import { BigNumber } from 'bignumber.js';
+import * as kleur from 'kleur';
+
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
-import { bytes } from './type-aliases';
 import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
 
-type address = string;
-type nat = BigNumber;
+import { Tzip12Contract } from './type-aliases';
 
-export interface Fa2TransferDestination {
-  to_: address;
-  token_id: nat;
-  amount: nat;
+export type Address = string;
+export type Nat = BigNumber;
+export type Bytes = string;
+
+export interface BalanceRequest {
+  owner: Address;
+  token_id: Nat;
 }
 
-export interface Fa2Transfer {
-  from_: address;
-  txs: Fa2TransferDestination[];
+export interface BalanceResponse {
+  balance: Nat;
+  request: BalanceRequest;
 }
 
-export interface BalanceOfRequest {
-  owner: address;
-  token_id: nat;
+export interface TransferDestination {
+  to_: Address;
+  token_id: Nat;
+  amount: Nat;
 }
 
-export interface BalanceOfResponse {
-  balance: nat;
-  request: BalanceOfRequest;
+export interface Transfer {
+  from_: Address;
+  txs: TransferDestination[];
+}
+
+export interface OperatorUpdate {
+  owner: Address;
+  operator: Address;
+  token_id: Nat;
 }
 
 // this is how token metadata stored withing the contract internally
 export interface TokenMetadataInternal {
-  token_id: nat;
-  token_info: MichelsonMap<string, bytes>;
+  token_id: Nat;
+  token_info: MichelsonMap<string, Bytes>;
+}
+export interface Fa2 {
+  tzToolkit: TezosToolkit;
+  at: (contractAddress: Address) => Promise<Fa2Contract>;
+  useLambdaView: (lambdaView: Address) => Fa2;
 }
 
-export async function transfer(
-  fa2: address,
-  operator: TezosToolkit,
-  txs: Fa2Transfer[]
-): Promise<void> {
-  console.log(kleur.yellow('transferring tokens...'));
-  const nftWithOperator = await operator.contract.at(fa2);
+export interface Fa2Contract {
+  tzToolkit: TezosToolkit;
+  useLambdaView: (lambdaView: Address) => Fa2Contract;
 
-  const op = await nftWithOperator.methods.transfer(txs).send();
+  queryBalance: (owner: Address, tokenId: Nat) => Promise<Nat>;
+  queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
 
-  const hash = await op.confirmation();
-  console.log(kleur.green('tokens transferred'));
+  hasNftToken: (owner: Address, tokenId: Nat) => Promise<boolean>;
+  hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
+
+  tokenMetadata: (tokenId: number) => Promise<TokenMetadata>;
+  tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
+
+  transferToken: (
+    from: Address,
+    to: Address,
+    tokenId: Nat,
+    amount: Nat
+  ) => Promise<void>;
+
+  transferTokens: (transfers: Transfer[]) => Promise<void>;
+
+  addOperator: (
+    owner: Address,
+    operator: Address,
+    tokenId: Nat
+  ) => Promise<void>;
+
+  removeOperator: (
+    owner: Address,
+    operator: Address,
+    tokenId: Nat
+  ) => Promise<void>;
+
+  updateOperators: (
+    addOperators: OperatorUpdate[],
+    removeOperators: OperatorUpdate[]
+  ) => Promise<void>;
 }
 
-export interface OperatorParam {
-  owner: address;
-  operator: address;
-  token_id: nat;
-}
-interface AddOperator {
-  add_operator: OperatorParam;
-}
-interface RemoveOperator {
-  remove_operator: OperatorParam;
-}
+const createFa2Contract = (
+  tzt: TezosToolkit,
+  contract: Tzip12Contract,
+  lambdaView?: Address
+): Fa2Contract => {
+  const self: Fa2Contract = {
+    tzToolkit: tzt,
 
-type UpdateOperator = AddOperator | RemoveOperator;
+    useLambdaView: (lambdaView: Address) =>
+      createFa2Contract(tzt, contract, lambdaView),
 
-export async function updateOperators(
-  fa2: address,
-  owner: TezosToolkit,
-  addOperators: OperatorParam[],
-  removeOperators: OperatorParam[]
-): Promise<void> {
-  console.log(kleur.yellow('updating operators...'));
-  const fa2WithOwner = await owner.contract.at(fa2);
-  const addParams: UpdateOperator[] = addOperators.map(param => {
-    return { add_operator: param };
-  });
-  const removeParams: UpdateOperator[] = removeOperators.map(param => {
-    return { remove_operator: param };
-  });
-  const allOperators = addParams.concat(removeParams);
+    queryBalance: async (owner, tokenId) => {
+      const responses = await self.queryBalances([
+        { owner, token_id: tokenId }
+      ]);
 
-  const op = await fa2WithOwner.methods.update_operators(allOperators).send();
-  await op.confirmation();
-  console.log(kleur.green('updated operators'));
-}
+      return responses[0].balance;
+    },
 
-export interface BalanceOfRequest {
-  owner: address;
-  token_id: nat;
-}
+    queryBalances: async requests =>
+      contract.views.balance_of(requests).read(lambdaView),
 
-export interface BalanceOfResponse {
-  balance: nat;
-  request: BalanceOfRequest;
-}
+    hasNftToken: async (owner, tokenId) => {
+      const responses = await self.hasNftTokens([{ owner, token_id: tokenId }]);
+      return responses[0];
+    },
 
-export const queryBalances = async (
-  fa2: address,
-  owner: TezosToolkit,
-  requests: BalanceOfRequest[],
-  lambdaView?: address
-): Promise<BalanceOfResponse[]> => {
-  const contract = await owner.contract.at(fa2);
-  return contract.views.balance_of(requests).read(lambdaView);
+    hasNftTokens: async requests => {
+      const responses = await self.queryBalances(requests);
+
+      const results = responses.map(r => {
+        if (r.balance.eq(1)) return true;
+        else if (r.balance.eq(0)) return false;
+        else throw new Error(`Invalid NFT balance ${r.balance}`);
+      });
+
+      return results;
+    },
+
+    tokensMetadata: async tokenIds => {
+      const requests = tokenIds.map(id =>
+        contract.tzip12().getTokenMetadata(id)
+      );
+      return Promise.all(requests);
+    },
+
+    tokenMetadata: async tokenId => {
+      const response = await self.tokensMetadata([tokenId]);
+      return response[0];
+    },
+
+    transferToken: (from, to, tokenId, amount) =>
+      self.transferTokens([
+        { from_: from, txs: [{ to_: to, token_id: tokenId, amount }] }
+      ]),
+
+    transferTokens: async transfers => {
+      console.log(kleur.yellow('transferring tokens...'));
+
+      const op = await contract.methods.transfer(transfers).send();
+      const hash = await op.confirmation();
+
+      console.log(kleur.green('tokens transferred'));
+    },
+
+    addOperator: (owner, operator, tokenId) =>
+      self.updateOperators([{ owner, operator, token_id: tokenId }], []),
+
+    removeOperator: (owner, operator, tokenId) =>
+      self.updateOperators([], [{ owner, operator, token_id: tokenId }]),
+
+    updateOperators: async (addOperators, removeOperators) => {
+      interface AddOperator {
+        add_operator: OperatorUpdate;
+      }
+      interface RemoveOperator {
+        remove_operator: OperatorUpdate;
+      }
+
+      type UpdateOperator = AddOperator | RemoveOperator;
+
+      console.log(kleur.yellow('updating operators...'));
+
+      const addParams: UpdateOperator[] = addOperators.map(param => {
+        return { add_operator: param };
+      });
+      const removeParams: UpdateOperator[] = removeOperators.map(param => {
+        return { remove_operator: param };
+      });
+      const allOperators = addParams.concat(removeParams);
+
+      const op = await contract.methods.update_operators(allOperators).send();
+      await op.confirmation();
+
+      console.log(kleur.green('updated operators'));
+    }
+  };
+
+  return self;
 };
 
-export async function hasNftTokens(
-  fa2: address,
-  owner: TezosToolkit,
-  requests: BalanceOfRequest[],
-  lambdaView?: address
-): Promise<boolean[]> {
-  const responses = await queryBalances(fa2, owner, requests, lambdaView);
-  const results = responses.map(r => {
-    if (r.balance.eq(1)) return true;
-    else if (r.balance.eq(0)) return false;
-    else throw new Error(`Invalid NFT balance ${r.balance}`);
-  });
-  return results;
-}
+export const createFa2 = (tzt: TezosToolkit, lambdaView?: Address): Fa2 => {
+  tzt.addExtension(new Tzip12Module());
 
-export const tokenMetadata = async (
-  fa2: address,
-  owner: TezosToolkit,
-  tokenIds: number[]
-): Promise<TokenMetadata[]> => {
-  owner.addExtension(new Tzip12Module());
-  const contract = await owner.contract.at(fa2, tzip12);
-  const metaRequests = tokenIds.map(id =>
-    contract.tzip12().getTokenMetadata(id)
-  );
-  return Promise.all(metaRequests);
+  return {
+    tzToolkit: tzt,
+
+    at: async (contractAddress: Address) => {
+      const contract = await tzt.contract.at(contractAddress, tzip12);
+      return createFa2Contract(tzt, contract, lambdaView);
+    },
+
+    useLambdaView: (lambdaView: Address) => createFa2(tzt, lambdaView)
+  };
 };
