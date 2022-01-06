@@ -55,7 +55,6 @@ export interface Fa2Contract {
 }
 
 const createFa2Contract = (
-  tzt: TezosToolkit,
   contract: Tzip12Contract,
   lambdaView?: address
 ): Fa2Contract => {
@@ -127,7 +126,7 @@ export const createFa2 = (tzt: TezosToolkit, lambdaView?: address): Fa2 => {
   return {
     at: async (contractAddress: address) => {
       const contract = await tzt.contract.at(contractAddress, tzip12);
-      return createFa2Contract(tzt, contract, lambdaView);
+      return createFa2Contract(contract, lambdaView);
     },
 
     useLambdaView: (lambdaView: address) => createFa2(tzt, lambdaView)
