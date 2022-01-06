@@ -21,7 +21,9 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   yield nonEmptyString('name');
   yield v.validateRecommended(meta)('description');
   yield nonEmptyString('description');
+  yield validateDescription(meta);
   yield nonEmptyString('homepage');
+  yield validateHomepage(meta);
   yield v.validateUri(meta)('homepage');
   yield nonEmptyString('version');
   yield [...validateAuthors(meta)].flat();
@@ -29,6 +31,25 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   const ifaceFmtValidation = validateInterfaces(meta);
   if (ifaceFmtValidation.length > 0) yield ifaceFmtValidation;
   else yield validateMissingInterfaces(meta);
+}
+
+function validateDescription(meta: any): string[] {
+  if (meta.description && meta.description === 'Awsome NFT collection')
+    return [
+      'Warning: It looks like "description" has a sample value. Replace with a real description or remove it'
+    ];
+  return [];
+}
+
+function validateHomepage(meta: any): string[] {
+  if (
+    meta.homepage &&
+    meta.homepage === 'https://github.com/oxheadalpha/nft-tutorial'
+  )
+    return [
+      'Warning: It looks like "homepage" has a sample value. Replace with a real description or remove it'
+    ];
+  return [];
 }
 
 const sampleAuthor = 'John Doe <john.doe@johndoe.com>';
