@@ -38,7 +38,6 @@ export interface TokenMetadataInternal {
   token_info: MichelsonMap<string, bytes>;
 }
 export interface Fa2 {
-  tzToolkit: TezosToolkit;
   at: (contractAddress: address) => Promise<Fa2Contract>;
   useLambdaView: (lambdaView: address) => Fa2;
 }
@@ -126,8 +125,6 @@ export const createFa2 = (tzt: TezosToolkit, lambdaView?: address): Fa2 => {
   tzt.addExtension(new Tzip12Module());
 
   return {
-    tzToolkit: tzt,
-
     at: async (contractAddress: address) => {
       const contract = await tzt.contract.at(contractAddress, tzip12);
       return createFa2Contract(tzt, contract, lambdaView);
