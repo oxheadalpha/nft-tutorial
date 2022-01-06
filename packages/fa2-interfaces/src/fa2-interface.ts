@@ -1,86 +1,53 @@
-import { BigNumber } from 'bignumber.js';
 import * as kleur from 'kleur';
 
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
 
-import { Tzip12Contract } from './type-aliases';
-
-export type Address = string;
-export type Nat = BigNumber;
-export type Bytes = string;
+import { Tzip12Contract, address, nat, bytes } from './type-aliases';
 
 export interface BalanceRequest {
-  owner: Address;
-  token_id: Nat;
+  owner: address;
+  token_id: nat;
 }
 
 export interface BalanceResponse {
-  balance: Nat;
+  balance: nat;
   request: BalanceRequest;
 }
 
 export interface TransferDestination {
-  to_: Address;
-  token_id: Nat;
-  amount: Nat;
+  to_: address;
+  token_id: nat;
+  amount: nat;
 }
 
 export interface Transfer {
-  from_: Address;
+  from_: address;
   txs: TransferDestination[];
 }
 
 export interface OperatorUpdate {
-  owner: Address;
-  operator: Address;
-  token_id: Nat;
+  owner: address;
+  operator: address;
+  token_id: nat;
 }
 
 // this is how token metadata stored withing the contract internally
 export interface TokenMetadataInternal {
-  token_id: Nat;
-  token_info: MichelsonMap<string, Bytes>;
+  token_id: nat;
+  token_info: MichelsonMap<string, bytes>;
 }
 export interface Fa2 {
   tzToolkit: TezosToolkit;
-  at: (contractAddress: Address) => Promise<Fa2Contract>;
-  useLambdaView: (lambdaView: Address) => Fa2;
+  at: (contractAddress: address) => Promise<Fa2Contract>;
+  useLambdaView: (lambdaView: address) => Fa2;
 }
 
 export interface Fa2Contract {
-  tzToolkit: TezosToolkit;
-  useLambdaView: (lambdaView: Address) => Fa2Contract;
-
-  queryBalance: (owner: Address, tokenId: Nat) => Promise<Nat>;
   queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
-
-  hasNftToken: (owner: Address, tokenId: Nat) => Promise<boolean>;
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
-
-  tokenMetadata: (tokenId: number) => Promise<TokenMetadata>;
   tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
-
-  transferToken: (
-    from: Address,
-    to: Address,
-    tokenId: Nat,
-    amount: Nat
-  ) => Promise<void>;
-
   transferTokens: (transfers: Transfer[]) => Promise<void>;
-
-  addOperator: (
-    owner: Address,
-    operator: Address,
-    tokenId: Nat
-  ) => Promise<void>;
-
-  removeOperator: (
-    owner: Address,
-    operator: Address,
-    tokenId: Nat
-  ) => Promise<void>;
 
   updateOperators: (
     addOperators: OperatorUpdate[],
@@ -91,29 +58,11 @@ export interface Fa2Contract {
 const createFa2Contract = (
   tzt: TezosToolkit,
   contract: Tzip12Contract,
-  lambdaView?: Address
+  lambdaView?: address
 ): Fa2Contract => {
   const self: Fa2Contract = {
-    tzToolkit: tzt,
-
-    useLambdaView: (lambdaView: Address) =>
-      createFa2Contract(tzt, contract, lambdaView),
-
-    queryBalance: async (owner, tokenId) => {
-      const responses = await self.queryBalances([
-        { owner, token_id: tokenId }
-      ]);
-
-      return responses[0].balance;
-    },
-
     queryBalances: async requests =>
       contract.views.balance_of(requests).read(lambdaView),
-
-    hasNftToken: async (owner, tokenId) => {
-      const responses = await self.hasNftTokens([{ owner, token_id: tokenId }]);
-      return responses[0];
-    },
 
     hasNftTokens: async requests => {
       const responses = await self.queryBalances(requests);
@@ -134,16 +83,6 @@ const createFa2Contract = (
       return Promise.all(requests);
     },
 
-    tokenMetadata: async tokenId => {
-      const response = await self.tokensMetadata([tokenId]);
-      return response[0];
-    },
-
-    transferToken: (from, to, tokenId, amount) =>
-      self.transferTokens([
-        { from_: from, txs: [{ to_: to, token_id: tokenId, amount }] }
-      ]),
-
     transferTokens: async transfers => {
       console.log(kleur.yellow('transferring tokens...'));
 
@@ -152,12 +91,6 @@ const createFa2Contract = (
 
       console.log(kleur.green('tokens transferred'));
     },
-
-    addOperator: (owner, operator, tokenId) =>
-      self.updateOperators([{ owner, operator, token_id: tokenId }], []),
-
-    removeOperator: (owner, operator, tokenId) =>
-      self.updateOperators([], [{ owner, operator, token_id: tokenId }]),
 
     updateOperators: async (addOperators, removeOperators) => {
       interface AddOperator {
@@ -189,17 +122,17 @@ const createFa2Contract = (
   return self;
 };
 
-export const createFa2 = (tzt: TezosToolkit, lambdaView?: Address): Fa2 => {
+export const createFa2 = (tzt: TezosToolkit, lambdaView?: address): Fa2 => {
   tzt.addExtension(new Tzip12Module());
 
   return {
     tzToolkit: tzt,
 
-    at: async (contractAddress: Address) => {
+    at: async (contractAddress: address) => {
       const contract = await tzt.contract.at(contractAddress, tzip12);
       return createFa2Contract(tzt, contract, lambdaView);
     },
 
-    useLambdaView: (lambdaView: Address) => createFa2(tzt, lambdaView)
+    useLambdaView: (lambdaView: address) => createFa2(tzt, lambdaView)
   };
 };
