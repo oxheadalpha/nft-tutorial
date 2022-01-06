@@ -195,22 +195,22 @@ export async function showBalances(
   const ownerAddress = await resolveAlias2Address(owner, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const lambdaView = config.get(lambdaViewKey(config));
-  const requests: fa2.BalanceOfRequest[] = tokens.map(t => {
+  const requests: fa2.BalanceRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
+  const fa2Contract = await fa2
+    .createFa2(tz)
+    .useLambdaView(lambdaView)
+    .at(nftAddress);
+
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
-  const balances: fa2.BalanceOfResponse[] = await fa2.queryBalances(
-    nftAddress,
-    tz,
-    requests,
-    lambdaView
-  );
+  const balances = await fa2Contract.queryBalances(requests);
 
   printBalances(balances);
 }
 
-function printBalances(balances: fa2.BalanceOfResponse[]): void {
+function printBalances(balances: fa2.BalanceResponse[]): void {
   console.log(kleur.green('requested NFT balances:'));
   for (let b of balances) {
     console.log(
@@ -233,8 +233,12 @@ export async function showMetadata(
   const tz = await createToolkit(signer, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tokenIds = tokens.map(t => Number.parseInt(t));
+
+  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+
   console.log(kleur.yellow('querying token metadata...'));
-  const tokensMeta = await fa2.tokenMetadata(nftAddress, tz, tokenIds);
+  const tokensMeta = await fa2Contract.tokensMetadata(tokenIds);
+
   tokensMeta.forEach(printTokenMetadata);
 }
 
@@ -244,10 +248,10 @@ function printTokenMetadata(m: TokenMetadata) {
 
 export function parseTransfers(
   description: string,
-  batch: fa2.Fa2Transfer[]
-): fa2.Fa2Transfer[] {
+  batch: fa2.Transfer[]
+): fa2.Transfer[] {
   const [from_, to_, token_id] = description.split(',').map(p => p.trim());
-  const tx: fa2.Fa2Transfer = {
+  const tx: fa2.Transfer = {
     from_,
     txs: [
       {
@@ -269,19 +273,21 @@ export function parseTransfers(
 export async function transfer(
   signer: string,
   contract: string,
-  batch: fa2.Fa2Transfer[]
+  batch: fa2.Transfer[]
 ): Promise<void> {
   const config = loadUserConfig();
   const txs = await resolveTxAddresses(batch, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
-  await fa2.transfer(nftAddress, tz, txs);
+
+  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  await fa2Contract.transferTokens(txs);
 }
 
 async function resolveTxAddresses(
-  transfers: fa2.Fa2Transfer[],
+  transfers: fa2.Transfer[],
   config: Configstore
-): Promise<fa2.Fa2Transfer[]> {
+): Promise<fa2.Transfer[]> {
   const resolved = transfers.map(async t => {
     return {
       from_: await resolveAlias2Address(t.from_, config),
@@ -292,9 +298,9 @@ async function resolveTxAddresses(
 }
 
 async function resolveTxDestinationAddresses(
-  txs: fa2.Fa2TransferDestination[],
+  txs: fa2.TransferDestination[],
   config: Configstore
-): Promise<fa2.Fa2TransferDestination[]> {
+): Promise<fa2.TransferDestination[]> {
   const resolved = txs.map(async t => {
     return {
       to_: await resolveAlias2Address(t.to_, config),
@@ -314,25 +320,30 @@ export async function updateOperators(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
+  
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
+  
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
+  
   const nftAddress = await resolveAlias2Address(contract, config);
-  await fa2.updateOperators(nftAddress, tz, resolvedAdd, resolvedRemove);
+  
+  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  await fa2Contract.updateOperators(resolvedAdd, resolvedRemove)
 }
 
 async function resolveOperators(
   owner: string,
   operators: string[],
   config: Configstore
-): Promise<fa2.OperatorParam[]> {
+): Promise<fa2.OperatorUpdate[]> {
   const resolved = operators.map(async o => {
     try {
       const [op, token] = o.split(',');

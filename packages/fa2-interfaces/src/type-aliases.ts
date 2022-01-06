@@ -12,6 +12,10 @@ export type ContractExt = Contract & {
   tzip16(this: Contract): Tzip16ContractAbstraction;
 };
 
+export type Tzip12Contract = Contract & {
+  tzip12(this: Contract): Tzip12ContractAbstraction;
+}
+
 export type address = string;
 export type nat = BigNumber;
 export type bytes = string;
