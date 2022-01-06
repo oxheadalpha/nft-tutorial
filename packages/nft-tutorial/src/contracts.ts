@@ -93,6 +93,41 @@ export async function mintNfts(
   ]);
 }
 
+export async function mintNftsFromFile(
+  owner: string,
+  collection: string,
+  fileName: string
+): Promise<void> {
+  const tokens = await loadTokensFromFile(fileName);
+  if (tokens.length === 0)
+    return Promise.reject('there are no token definitions provided');
+
+  const config = loadUserConfig();
+  const tz = await createToolkit(owner, config);
+  const collectionAddress = await resolveAlias2Address(collection, config);
+  const ownerAddress = await tz.signer.publicKeyHash();
+
+  await nft.mintTokens(collectionAddress, tz, [
+    { owner: ownerAddress, tokens }
+  ]);
+}
+
+async function loadTokensFromFile(
+  fileName: string
+): Promise<fa2.TokenMetadataInternal[]> {
+  const data = await loadFile(fileName);
+  return data
+    .split('\n')
+    .filter(line => {
+      const l = line.trim();
+      return l.length > 0 && !l.startsWith('#');
+    })
+    .map(line => {
+      let [tokenId, metadataUri] = line.split(',').map(s => s.trim());
+      return createTokenMetadata(tokenId, metadataUri);
+    });
+}
+
 export async function mintFreeze(
   owner: string,
   collection: string
@@ -108,12 +143,21 @@ export function parseTokens(
   tokens: fa2.TokenMetadataInternal[]
 ): fa2.TokenMetadataInternal[] {
   const [id, tokenMetadataUri] = descriptor.split(',').map(p => p.trim());
-  const token: fa2.TokenMetadataInternal = {
-    token_id: new BigNumber(id),
-    token_info: new MichelsonMap()
-  };
+  const token = createTokenMetadata(id, tokenMetadataUri);
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
+}
+
+function createTokenMetadata(
+  tokenId: string | number,
+  tokenMetadataUri: string
+): fa2.TokenMetadataInternal {
+  const m: fa2.TokenMetadataInternal = {
+    token_id: new BigNumber(tokenId),
+    token_info: new MichelsonMap()
+  };
+  m.token_info.set('', char2Bytes(tokenMetadataUri));
+  return m;
 }
 
 function createNftStorage(owner: string, metaJson: string) {

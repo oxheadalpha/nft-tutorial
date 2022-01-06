@@ -1,6 +1,5 @@
 import Configstore from 'configstore';
 import * as kleur from 'kleur';
-import * as path from 'path';
 import { validateAddress, ValidationResult } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import {

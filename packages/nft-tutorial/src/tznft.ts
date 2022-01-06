@@ -8,6 +8,7 @@ import * as aliasConf from './config-aliases';
 import * as bootstrap from './bootstrap';
 import * as contracts from './contracts';
 import * as metadata from './metadata';
+import * as ipfs from './ipfs';
 const packageJson = require('../package.json');
 
 // configuration
@@ -170,6 +171,19 @@ program
 
 //prettier-ignore
 program
+  .command('mint-from-file')
+  .alias('mff')
+  .description('create a new NFT contract and mint new tokens')
+  .arguments('<owner> <collection>')
+  .requiredOption(
+    '-tf, --token_file <file>',
+    'path to a file with definitions of new tokens, each line is comma-separated pair of token_id, tokenMetadataUri')
+  .action(async (owner, collection, options) => 
+    contracts.mintNftsFromFile(owner, collection, options.token_file))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
     .command('mint-freeze')
     .alias('mf')
     .description('freeze minting for nft collection (contract)')
@@ -228,6 +242,45 @@ program
     'list of the "operator, token_id" pairs to be removed by the token owner')
   .action(async (owner, options) => contracts.updateOperators(
     owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
+
+// pinning to IPFS
+
+//prettier-ignore
+program
+  .command('set-pinata-keys')
+  .alias('spk')
+  .description('set Pinata keys to configuration file')
+  .arguments('<pinata_api_key> <pinata_secret_key>')
+  .option(
+    '-f, --force',
+    'override existing keys'
+  )
+  .action( async (pinata_api_key, pinata_secret_key, options) =>
+    ipfs.setPinataKeys(pinata_api_key, pinata_secret_key, options.force));
+
+//prettier-ignore
+program
+  .command('pin-file')
+  .alias('pf')
+  .description('Pin file to Pinata IPFS')
+  .arguments('<file>')
+  .requiredOption(
+    '-t, --tag <tag>',
+    'IPFS tag name for the pinned file'
+  )
+  .action( async (file, options) => ipfs.pinFileToIpfs(options.tag, file));
+
+//prettier-ignore
+program
+  .command('pin-dir')
+  .alias('pd')
+  .description('Pin directory to Pinata IPFS')
+  .arguments('<dir>')
+  .requiredOption(
+    '-t, --tag <tag>',
+    'IPFS tag name for the pinned directory'
+  )
+  .action( async (dir, options) => ipfs.pinDirectoryToIpfs(options.tag, dir));
 
 //debugging command
 
