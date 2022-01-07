@@ -133,12 +133,86 @@ to list all available commands.
    The default configuration comes with two account aliases `bob` and `alice`
    that can be used for token minting and transferring.
 
-### Mint NFT Token(s)
+### Create NFT Collection
 
-This tutorial uses an NFT collection contract. Each time the user mints a new set
-(collection) of tokens, a new NFT contract is created. The user cannot add more
-tokens or remove (burn) existing tokens within the contract. However tokens can
-be transferred to other owners.
+To create a new NFT collection (FA2 contract) we would follow the steps bellow:
+
+1. Prepare collection (FA2 contract) metadata.
+2. Create a collection (originate a contract).
+3. Prepare tokens metadata.
+4. Mint tokens.
+
+#### Prepare NFT Collection Metadata
+
+`create-collection-meta` command generates a new contract metadata JSON file and
+requires `<collection_name>` parameter.
+
+```sh
+$ tznft create-collection-meta <collection_name>
+```
+
+Example:
+
+```sh
+$ tznft create-collection-meta my_collection
+
+Created collection metadata file my_collection.json
+```
+
+`my_collection.json` file contains a template for the collection contract metadata:
+
+```json
+{
+  "name": "my_collection",
+  "description": "Awsome NFT collection",
+  "homepage": "https://github.com/oxheadalpha/nft-tutorial",
+  "authors": [
+    "John Doe <john.doe@johndoe.com>"
+  ],
+  "version": "1.0.0",
+  "license": {
+    "name": "MIT"
+  },
+  "interfaces": [
+    "TZIP-016",
+    "TZIP-012",
+    "TZIP-021"
+  ],
+  "source": {
+    "tools": [
+      "LIGO"
+    ],
+    "location": "https://github.com/oxheadalpha/nft-tutorial"
+  }
+}
+```
+
+#### Create NFT Collection
+
+
+
+You can edit the file before using it to create a collection contract. Please
+refer to the contract metadata
+[TZIP-16](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-16/tzip-16.md)
+and [FA2 Contract Metadata](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#contract-metadata-tzip-016)
+standards for more details.
+
+`validate-collection-meta` command ttznfthat validates contract metadata
+JSON and requires the following parameters:
+
+- `<metadata_file>` path to a metadata JSON file
+- `--errors-only` optional flag to suppress validation warning messages
+
+Example:
+
+```sh
+$ tznft validate-collection-meta my_collection.json
+
+Warning: It looks like "description" has a sample value. Replace with a real description or remove it
+Warning: It looks like "homepage" has a sample value. Replace with a real URL or remove it
+Warning: It looks like one of the authors is a sample 'John Doe <john.doe@johndoe.com>'. Replace with a real author e-mail or URL or remove it
+```
+
 
 `mint` command requires the following parameters:
 
@@ -536,7 +610,7 @@ commands:
   alias john has been deleted
   ```
 
-### Advanced Topics (TBD)
+### TBD
 
-- Modifying NFT contract code
-- Extending token metadata
+- Support custom NFT contracts
+- Support TZIP-16 off-chain views
