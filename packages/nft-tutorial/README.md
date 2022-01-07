@@ -714,12 +714,14 @@ and `testnet` (Carthagenet). Each pre-configured network has two bootstrap alias
   ```sh
   $ tznft bootstrap
 
-  366b9f3ead158a086e8c397d542b2a2f81111a119f3bd6ddbf36574b325f1f03
+  ea4b3e3c52c37214344cbd82988c475f84125546ca6534c0ce870582e688ca18
 
   starting sandbox...
+  connecting to Tezos node rpc...
+  connecting to Tezos node rpc...
   sandbox started
-  originating balance inspector contract...
-  originated balance inspector KT1WDqPuRFMm2HwDRBotGmnWdkWm1WyG4TYE
+  originating Taquito lambda view contract...
+  originated Taquito lambda view KT1BEZKvYrXY74RNcYyL1BWEqDuyETGdccB5
   ```
 
 - `kill-sandbox` stop Flextesa sandbox process if selected network is `sandbox`.
