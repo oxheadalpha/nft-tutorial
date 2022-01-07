@@ -20,13 +20,11 @@ export interface ContractApi {
 const contractApi = (
   contract: Tzip12Contract,
   lambdaView?: address
-): ContractApi => {
-  const self: ContractApi = {
-    with: extendApi => extendApi(self as any, contract, lambdaView)
-  };
-
-  return self;
-};
+): ContractApi => ({
+  with(extendApi) {
+    return extendApi(this as any, contract, lambdaView);
+  }
+});
 
 export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
   tzt.addExtension(new Tzip12Module());
