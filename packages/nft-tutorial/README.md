@@ -464,28 +464,71 @@ which addresses own the tokens).
 
 `show-meta` command requires the following parameters:
 
-- `--nft` address of the FA2 NFT contract to inspect
+- `--nft` address or alias of the FA2 NFT contract to inspect
 - `--signer` alias on behalf of which contract is inspected
 - `--tokens` a list of token IDs to inspect
 
 ```sh
-$ tznft show-meta --nft <nft_address> --signer <alias> --tokens <token_id_list>
+$ tznft show-meta --nft <nft_address_or_alias> --signer <alias> --tokens <token_id_list>
 ```
 
 Example:
 
 ```sh
-$ tznft show-meta --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --tokens 0 1
+$ tznft show-meta --nft my_collection --signer bob --tokens 1 2
 
-token_id: 0	symbol: T1	name: My Token One	extras: { }
-token_id: 1	symbol: T2	name: My Token Two	extras: { }
+querying token metadata...
+{
+  "token_id": 1,
+  "decimals": 0,
+  "isBooleanAmount": true,
+  "name": "Token 1",
+  "description": "Awesome Tezos NFT",
+  "tags": [
+    "awsome",
+    "nft"
+  ],
+  "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
+  "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "creators": [],
+  "attributes": [
+    {
+      "name": "sample attribute",
+      "value": "sample value"
+    }
+  ]
+}
+{
+  "token_id": 2,
+  "decimals": 0,
+  "isBooleanAmount": true,
+  "name": "Token 2",
+  "description": "Awesome Tezos NFT",
+  "tags": [
+    "awsome",
+    "nft"
+  ],
+  "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
+  "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "creators": [],
+  "attributes": [
+    {
+      "name": "sample attribute",
+      "value": "sample value"
+    }
+  ]
+}
 ```
+
+Beware that IPFS might require some time to propagate the information about
+pinned token metadata files. `show-meta` command may timeout if ran soon after
+the token metadata was pinned.
 
 #### Inspect Token Balances
 
 `show-balance` command requires the following parameters:
 
-- `--nft` address of the FA2 NFT contract to inspect
+- `--nft` address or alias of the FA2 NFT contract to inspect
 - `--signer` alias on behalf of which contract is inspected
 - `--owner` alias of the token owner to check balances
 - `--tokens` a list of token IDs to inspect
@@ -497,23 +540,23 @@ $ tznft show-balance --nft <nft_address> --signer <alias> --owner <alias> --toke
 Example 1, check `bob`'s balances:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner bob --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 1
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 2	balance: 1
 ```
 
 Example 2, check `alice` balances:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner alice --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 0
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 0
 ```
 
 ### Transferring Tokens
