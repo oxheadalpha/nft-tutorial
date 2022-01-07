@@ -19,7 +19,7 @@ export const validateNonEmptyString =
     if (value === undefined) return [];
     if (value.trim() === '')
       return [
-        `Warning: Property '${propertyName}' has empty string value. Consider removing or provide a value for the property.`
+        `Warning: Property "${propertyName}" has empty string value. Consider removing or provide a value for the property.`
       ];
 
     return [];
