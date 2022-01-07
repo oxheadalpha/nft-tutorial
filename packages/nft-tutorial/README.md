@@ -187,17 +187,13 @@ Created collection metadata file my_collection.json
 }
 ```
 
-#### Create NFT Collection
-
-
-
 You can edit the file before using it to create a collection contract. Please
 refer to the contract metadata
 [TZIP-16](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-16/tzip-16.md)
 and [FA2 Contract Metadata](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#contract-metadata-tzip-016)
 standards for more details.
 
-`validate-collection-meta` command ttznfthat validates contract metadata
+`validate-collection-meta` command validates contract metadata
 JSON and requires the following parameters:
 
 - `<metadata_file>` path to a metadata JSON file
@@ -213,15 +209,44 @@ Warning: It looks like "homepage" has a sample value. Replace with a real URL or
 Warning: It looks like one of the authors is a sample 'John Doe <john.doe@johndoe.com>'. Replace with a real author e-mail or URL or remove it
 ```
 
+#### Originate NFT Collection Contract
+
+`create-collection` command originates FA2 collection contract and requires the
+following parameters:
+
+- `<owner>` alias or address of the new collection owner
+- `--meta_file <file>`  path to a new collection metadata file
+- `--alias <alias>` optional alias for a new collection contract address
+
+```sh
+$ tznft create-collection <owner> --meta_file <file> --alias <alias>
+```
+
+Example:
+
+```sh
+$ tznft create-collection bob --meta_file my_collection.json --alias my_collection
+
+originating new NFT contract...
+originated contract nft with address KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
+consumed gas: 2799
+alias my_collection has been added
+```
+
+You can inspect newly created contract using [TZComet](https://tzcomet.io/)
+or [BCD](https://better-call.dev/) contract explorers by copying and pasting a new
+contract address. TZComet can automatically discover a contract on either Tezos
+mainnet, testnet or a locally running sandbox. BCD can discover contracts on
+mainnet and testnet only.
 
 `mint` command requires the following parameters:
 
-- <owner> alias or address of the new tokens owner
+- `<owner>` alias or address of the new tokens owner
 - `--tokens` new tokens metadata. Each token metadata is represented as comma
   delimited string: `'<token_id>, <token_symbol>, <token_name>'`:
 
 ```sh
-$ tznft mint <owner_alias> --tokens <token_meta_list>`
+$ tznft mint <owner_alias> --tokens <token_meta_list>
 ```
 
 Example:
