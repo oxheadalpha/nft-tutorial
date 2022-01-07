@@ -135,8 +135,8 @@ program
 
 //prettier-ignore
 program
-  .command('create-token-meta')
-  .alias('ctm')
+  .command('create-nft-meta')
+  .alias('cnm')
   .description('create a new NFT token metadata template file')
   .arguments('<nft_name> <creator> <uri>')
   .action(metadata.createNftMeta)
