@@ -318,8 +318,65 @@ Warning: It looks like "tags" property contains sample values "awsome", "nft". R
 Warning: It looks like "attributes" property contans sample attribute. Remove or replace it with actual attributes
 ```
 
+For this tutorial, we will mint two tokens. We will use two token metadata files
+`Token1.json` and `Token2.json` derived from the generated template file. Both
+tokens will share the same `artifactUri` and would have different names. Feel
+free to customize tokens metadata as you see fit.
 #### Pin Tokens Metadata on IPFS
 
+Before minting tokens, we need to pin token metadata files to IPFS and use their
+IPFS hashes for minting. There are multiple ways to do this, but in this tutorial
+we will use [Pinata](https://www.pinata.cloud/). First, you need to create a
+Pinata account (there is a free option available). You can upload (pin) `Token1.sjon`
+and `Token2.json` files created on the previous step manually or use `tznft` CLI.
+
+Create Pinata keys using Pinata's web UI. You would need an API key and a secret
+key.
+
+Execute `set-pinata-keys` command that requires the following parameters:
+
+- `<pinata_api_key>` Pinata API key
+- `<pinata_secret_key>` Pinata secret key
+- `--force` optional flag to override existing keys in configuration if any
+
+```sh
+$ tznft set-pinata-keys <pinata_api_key> <pinata_secret_key> --force
+```
+
+Example:
+
+```sh
+$ tznft set-pinata-keys 38dxxx e9fxxx --force
+38dxxx e9fxxx
+Pinata keys have been added.
+```
+
+_Note_: Pinata keys are stored in the `tznft.json` configuration file in your
+project directory. Please you caution to not share your secret Pinata key.
+
+Use `pin-file` command to pin token metadata files on Pinata IPFS service. Required
+parameter:
+
+- `<file>` path to a file to be pinned
+- `--tag` IPFS tag (can be the same as file name)
+
+```sh
+$ tznft pin-file <file> --tag <tag>
+```
+
+Example:
+
+```sh
+$ tznft pin-file Token1.json --tag Token1
+
+cid:QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU
+
+$ tznft pin-file Token2.json --tag Token2
+
+cid:QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5
+```
+
+There is alos a similar command `pin-dir` to pin a whole directory on IPFS.
 
 #### Mint Tokens
 
