@@ -140,7 +140,8 @@ To create a new NFT collection (FA2 contract) we would follow the steps bellow:
 1. Prepare collection (FA2 contract) metadata.
 2. Create a collection (originate a contract).
 3. Prepare tokens metadata.
-4. Mint tokens.
+4. Pin tokens metadata on IPFS
+5. Mint tokens.
 
 #### Prepare NFT Collection Metadata
 
@@ -239,6 +240,89 @@ contract address. TZComet can automatically discover a contract on either Tezos
 mainnet, testnet or a locally running sandbox. BCD can discover contracts on
 mainnet and testnet only.
 
+#### Prepare Tokens Metadata
+
+`create-nft-meta` command generates a new token metadata JSON file and
+requires the following parameters:
+
+- `<nft_name>` name of the token
+- `<creator>` address or alias of the NFT collection owner
+- `<uri>` token artifact URI
+
+```sh
+$ tznft create-nft-meta <nft_name> <creator> <uri>
+```
+
+Token metadata can store a reference to some external document and/or image.
+This tutorial supports storing external data on [IPFS](https://ipfs.io) and keeping
+an IPFS hash as a part of the token metadata (which we will store on IPFS as well).
+
+Let's create metadata for an NFT token which references an image on IPFS with the
+IPFS file hashcode (CID) `QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj`.
+
+Example:
+
+```sh
+$ tznft create-nft-meta Token1 bob ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj
+
+Created token metadata sample file Token1.json
+```
+
+`Token1.json` file contains a template for the token metadata:
+
+```json
+{
+  "decimals": 0,
+  "isBooleanAmount": true,
+  "name": "Token1",
+  "description": "",
+  "tags": [
+    "awsome",
+    "nft"
+  ],
+  "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
+  "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "displayUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "thumbnailUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "creators": [],
+  "rights": "",
+  "attributes": [
+    {
+      "name": "sample attribute",
+      "value": "sample value"
+    }
+  ]
+}
+```
+
+You can edit the file before using it to mint an NFT and create create multiple
+metadata files per each token you intend to mint. You may edit generated and add
+many other attributes. Please refer to the rich metadata
+[TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip-21.md)
+standard for more details.
+
+`validate-nft-meta` command validates token metadata JSON and requires the
+following parameters:
+
+- `<metadata_file>` path to a metadata JSON file
+- `--errors-only` optional flag to suppress validation warning messages
+
+Example:
+
+```sh
+$ tznft validate-nft-meta Token1.json
+
+Warning: Property 'description' has empty string value. Consider removing or provide a value for the property.
+Warning: Property 'rights' has empty string value. Consider removing or provide a value for the property.
+Warning: It looks like "tags" property contains sample values "awsome", "nft". Remove or replace them with actual tag values
+Warning: It looks like "attributes" property contans sample attribute. Remove or replace it with actual attributes
+```
+
+#### Pin Tokens Metadata on IPFS
+
+
+#### Mint Tokens
+
 `mint` command requires the following parameters:
 
 - `<owner>` alias or address of the new tokens owner
@@ -318,46 +402,6 @@ requested NFT balances:
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 0
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 ```
-
-### Tokens With External Metadata
-
-Token metadata can store a reference to some external document and/or image.
-This tutorial supports storing external data on [IPFS](https://ipfs.io) and keeping
-an IPFS hash as a part of the token metadata.
-
-Let's create a single NFT token which references an image on IPFS.
-
-1. Upload your image to IPFS and obtain an image file hash. There are
-   multiple ways to do that. One of the possible solutions is to install the
-   [IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) web plugin and
-   upload an image file from there. You can upload multiple images and/or documents
-   if you plan to create a collection of multiple NFTs.
-
-2. Copy the IPFS file hash code (`CID`). For this example we will use
-   `QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj`
-
-3. Execute `tznft mint` command adding IPFS hash as a fourth parameter in the token
-   description.
-
-```sh
-$ tznft mint bob -t '0, TZT, Tezos Token, QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj'
-
-originating new NFT contract...
-originated NFT collection KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8
-```
-
-4. Now we can inspect new token metadata and see that the IPFS hash (`ipfs_cid`)
-   is there.
-
-```sh
-$ tznft show-meta -s bob --nft KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8 --tokens 0
-
-token_id: 0	symbol: TZT	name: Tezos Token	extras: { ipfs_cid=QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj }
-```
-
-5. You can inspect the file on the web by opening a URL `https://ipfs.io/ipfs/<ipfs_cid>`.
-   For our example, the URL would be
-   [https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj](https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj)
 
 ### Transferring Tokens
 
