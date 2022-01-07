@@ -383,26 +383,82 @@ There is alos a similar command `pin-dir` to pin a whole directory on IPFS.
 `mint` command requires the following parameters:
 
 - `<owner>` alias or address of the new tokens owner
-- `--tokens` new tokens metadata. Each token metadata is represented as comma
-  delimited string: `'<token_id>, <token_symbol>, <token_name>'`:
+- `<collection>` alias or address of the NFT collection contract created by
+  `create-collection` command
+- `--tokens` new token descriptors. Each token descriptor is a comma
+  delimited string: `'<token_id>, <token_metadata_uri>'`:
 
 ```sh
-$ tznft mint <owner_alias> --tokens <token_meta_list>
+$ tznft mint <owner_alias> <collection_alias> --tokens <tokens_list>
 ```
 
 Example:
 
 ```sh
-$ tznft mint bob --tokens '0, T1, My Token One' '1, T2, My Token Two'
+$ tznft mint bob my_collection --tokens '1, ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU' '2, ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5'
 
-originating new NFT contract...
-originated NFT collection KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh
+minting tokens...
+tokens minted
 ```
+
+Alternatively you can use `mint-from-file` command to specify token descriptors
+in a csv file instead of CLI. Required parameters:
+
+- `<owner>` alias or address of the new tokens owner
+- `<collection>` alias or address of the NFT collection contract created by
+  `create-collection` command
+- `--toke_file <file>` path to a file with definitions of new tokens
+
+Let's create `tokens.csv` file as following:
+
+```csv
+3, ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU
+4, ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5
+```
+
+and run `mint-from-file` command:
+
+```sh
+$ tznft mint-from-file bob my_collection --token_file tokens.csv
+
+minting tokens...
+tokens minted
+```
+
+You can mint multiple batches of tokens into the same NFT collection contract.
+The only requiremet is that token IDs must be unique.
+
+Once, you finished populating your NFT collection you can freeze it (i. e. prevent
+it from accepting more tokens).
+
+`mint-freeze` command has the following parameters:
+
+- `<owner>` alias or address of the new tokens owner
+- `<collection>` alias or address of the NFT collection contract created by
+  `create-collection` command
+
+```sh
+$ tznft mint-freeze <owner> <collection>
+```
+
+Example:
+
+```sh
+$ tznft mint-freeze bob my_collection
+
+freezing nft collection...
+nft collection frozen
+```
+
+Beware that freeze is a one way operation. Once a collection is frozen it is
+impossible to "unfreeze" it and mint more tokens.
+
 
 ### Inspecting The NFT Contract
 
-Using `KT1..` address of the NFT contract created by the `mint` command, we can
-inspect token metadata and balances (i. e. which addresses own the tokens).
+Using `KT1..` address (or an address alias) of the NFT contract created by the
+`create-collection` command, we can inspect token metadata and balances (i. e.
+which addresses own the tokens).
 
 #### Inspect Token Metadata
 
