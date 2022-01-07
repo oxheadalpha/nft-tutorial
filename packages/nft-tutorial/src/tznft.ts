@@ -159,7 +159,7 @@ program
 program
   .command('mint')
   .alias('m')
-  .description('create a new NFT contract and mint new tokens')
+  .description('mint new tokens into existing token collection contract')
   .arguments('<owner> <collection>')
   .requiredOption(
     '-t, --tokens <tokens...>',
@@ -173,7 +173,7 @@ program
 program
   .command('mint-from-file')
   .alias('mff')
-  .description('create a new NFT contract and mint new tokens')
+  .description('mint new tokens into existing token collection contract')
   .arguments('<owner> <collection>')
   .requiredOption(
     '-tf, --token_file <file>',
