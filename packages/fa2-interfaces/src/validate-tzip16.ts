@@ -59,7 +59,7 @@ function* validateAuthors(meta: any): Generator<string[]> {
   if (!authors) return;
   if (authors.find(a => a === sampleAuthor))
     yield [
-      `Warning: It looks like one of authors is a sample '${sampleAuthor}'. Replace with a real author e-mail or URL or remove it`
+      `Warning: It looks like one of the authors is a sample '${sampleAuthor}'. Replace with a real author e-mail or URL or remove it`
     ];
 
   yield authors
