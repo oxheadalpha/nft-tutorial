@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^2.0.8",
-    "@oxheadalpha/nft-contracts": "^2.0.8",
+    "@oxheadalpha/tezos-tools": "^2.0.8",
     "@taquito/signer": "^11.0.2",
     "@taquito/taquito": "^11.0.2",
     "async-retry": "^1.3.3",
