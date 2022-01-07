@@ -57,12 +57,14 @@ and [TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip
 
 You will need to install `tznft` CLI tool. After the installation, you can invoke
 various commands in the form of `tznft <command> [options]`. `tznft` provides the
-following commands:
+following command categories:
 
-- mint (contract origination) NFT with metadata command
-- token inspection commands
-- NFT transfer command
-- Configuration commands to bootstrap Tezos network and configure address aliases
+- configuration and bootstraping Tezos network and configure address aliases
+- generate and validate NFT collection and tokens metadata
+- create NFT collection (FA2 contract origination) and mint tokens
+- token inspection
+- token transfer
+- pin files and directories to [Pinata](https://www.pinata.cloud/) IPFS server
 
 The commands will be explained in more detail below. You can always run
 
@@ -74,30 +76,27 @@ to list all available commands.
 
 ### Initial Setup
 
-1. Create a new local directory to keep your tutorial configuration:
+1. Install `@oxheadalpha/nft-tutorial` npm package:
+
+   ```sh
+   $ npm install -g @oxheadalpha/nft-tutorial
+
+   TODO: paste actual output
+   ```
+
+   The command installs `tznft` CLI tool.
+
+2. Create a new local project directory to keep your tutorial configuration:
 
    ```sh
    $ mkdir nft-tutorial
    $ cd nft-tutorial
    ```
 
-2. Install `@tqtezos/nft-tutorial` npm package:
+3. Initialize tutorial project config:
 
    ```sh
-   $ npm install -g https://github.com/tqtezos/nft-tutorial.git
-
-   /usr/local/bin/tznft -> /usr/local/lib/node_modules/@tqtezos/nft-tutorial/lib/tznft.js
-
-   + @tqtezos/nft-tutorial@1.0.0
-   added 3 packages from 1 contributor and updated 145 packages in 11.538s
-   ```
-
-   The command installs `tznft` CLI tool.
-
-3. Initialize tutorial config:
-
-   ```sh
-   $ tznft init-config
+   $ tznft init
 
    tznft.json config file created
    ```
@@ -115,12 +114,17 @@ to list all available commands.
    ```sh
    $ tznft bootstrap
 
-   ebb03733415c6a8f6813a7b67905a448556e290335c5824ca567badc32757cf4
+   ea4b3e3c52c37214344cbd82988c475f84125546ca6534c0ce870582e688ca18
 
    starting sandbox...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
    sandbox started
-   originating balance inspector contract...
-   originated balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+   originating Taquito lambda view contract...
+   originated Taquito lambda view KT1BEZKvYrXY74RNcYyL1BWEqDuyETGdccB5
    ```
 
    If you are bootstrapping a `sandbox` network for the first time, Docker will download
