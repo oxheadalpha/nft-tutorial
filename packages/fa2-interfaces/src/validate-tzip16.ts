@@ -47,7 +47,7 @@ function validateHomepage(meta: any): string[] {
     meta.homepage === 'https://github.com/oxheadalpha/nft-tutorial'
   )
     return [
-      'Warning: It looks like "homepage" has a sample value. Replace with a real description or remove it'
+      'Warning: It looks like "homepage" has a sample value. Replace with a real URL or remove it'
     ];
   return [];
 }
