@@ -1,7 +1,7 @@
 import * as kleur from 'kleur';
 
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
-import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
+import { MichelsonMap } from '@taquito/taquito';
+import { TokenMetadata } from '@taquito/tzip12';
 
 import { Tzip12Contract, address, nat, bytes } from './type-aliases';
 
@@ -37,10 +37,6 @@ export interface TokenMetadataInternal {
   token_id: nat;
   token_info: MichelsonMap<string, bytes>;
 }
-export interface Fa2 {
-  at: (contractAddress: address) => Promise<Fa2Contract>;
-  useLambdaView: (lambdaView: address) => Fa2;
-}
 
 export interface Fa2Contract {
   queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
@@ -54,10 +50,15 @@ export interface Fa2Contract {
   ) => Promise<void>;
 }
 
-const createFa2Contract = (
+/**
+ * @description Fa2 is a function that takes an inputApi and extends it to include Fa2Contract interfaace
+ * @returns A new "extended" objects
+ */
+export const Fa2 = <T>(
+  inputApi: T,
   contract: Tzip12Contract,
   lambdaView?: address
-): Fa2Contract => {
+): T & Fa2Contract => {
   const self: Fa2Contract = {
     queryBalances: async requests =>
       contract.views.balance_of(requests).read(lambdaView),
@@ -117,18 +118,5 @@ const createFa2Contract = (
     }
   };
 
-  return self;
-};
-
-export const createFa2 = (tzt: TezosToolkit, lambdaView?: address): Fa2 => {
-  tzt.addExtension(new Tzip12Module());
-
-  return {
-    at: async (contractAddress: address) => {
-      const contract = await tzt.contract.at(contractAddress, tzip12);
-      return createFa2Contract(contract, lambdaView);
-    },
-
-    useLambdaView: (lambdaView: address) => createFa2(tzt, lambdaView)
-  };
+  return { ...inputApi, ...self };
 };
