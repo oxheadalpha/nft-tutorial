@@ -6,9 +6,9 @@ implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
 (CLI) to originate and interact with the NFT contracts either on the
 [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Hangzhou2net).
 
-**Disclaimer:** We highly recommend users read the additional resources above and
-take necessary precautions before following this tutorial and interacting with
-experimental technology. Use this tutorial at your own risk.
+**Disclaimer:** We highly recommend users to take necessary precautions before
+following this tutorial and interacting with experimental technology. Use this
+tutorial at your own risk.
 
 ## Introduction
 
@@ -33,10 +33,14 @@ inspection of token balances for the specific token ID and token owner address.
 For NFTs the balance can be either 0 (which means that the address does not own
 this particular token) or 1 (the address owns the token).
 
-The FA2 contract also associates some metadata with each token. This tutorial supports
-token symbol and token name metadata attributes. However, the implementation can
-be easily extended to support custom metadata attributes such as an associated
-image or document URL and its crypto-hash.
+To enable discovery of the token contracts and tokens by indexers, wallets, token
+market places and other DApps, the FA2 contract also associates some metadata with
+each token. At least, each token metadata has a name attribute. However, it is also
+possible to provide extended metadata such as an associated image or document URL
+and its crypto-hash. The metadata format is described in
+[TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#token-metadata)
+and [TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip-21.md)
+(rich metadata) standards.
 
 ## Tutorial
 
@@ -47,7 +51,7 @@ image or document URL and its crypto-hash.
 
 - [Docker](https://www.docker.com/) must be installed. You need docker to run
   Flextesa sandbox. You might skip docker installation if you plan to run this
-  tutorial on the testnet (Carthagenet) only.
+  tutorial on the testnet (Hangzhou2net) only.
 
 ### The CLI Tool
 
