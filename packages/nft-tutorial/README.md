@@ -574,10 +574,10 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 0
 $ tznft transfer --nft <nft_address> --signer <signer> --batch <batch_list>`
 ```
 
-Example, `bob` transfers his own tokens `0` and `1` to `alice`:
+Example, `bob` transfers his own tokens `1` and `2` to `alice`:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'bob, alice, 0' 'bob, alice, 1'
+$ tznft transfer --nft my_collection --signer bob --batch 'bob, alice, 1' 'bob, alice, 2'
 
 transferring tokens...
 tokens transferred
@@ -586,19 +586,19 @@ tokens transferred
 Now, we can check token balances after the transfer:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner bob --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 0
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 2	balance: 0
 
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner alice --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 1
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 1
 ```
 
 ### Operator Transfer
