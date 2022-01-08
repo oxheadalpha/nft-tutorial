@@ -10,6 +10,30 @@ The tutorial uses a pre-compiled FA2 NFT contract written in
 following this tutorial and interacting with experimental technology. Use this
 tutorial at your own risk.
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [What is FA2 (TZIP-12)?](#what-is-fa2-tzip-12)
+  - [What is a Non-Fungible Token (NFT)?](#what-is-a-non-fungible-token-nft)
+- [Tutorial](#tutorial)
+  - [Prerequisites](#prerequisites)
+  - [The CLI Tool](#the-cli-tool)
+  - [Initial Setup](#initial-setup)
+  - [Create NFT Collection](#create-nft-collection)
+    - [Prepare NFT Collection Metadata](#prepare-nft-collection-metadata)
+    - [Originate NFT Collection Contract](#originate-nft-collection-contract)
+    - [Prepare Tokens Metadata](#prepare-tokens-metadata)
+    - [Pin Tokens Metadata on IPFS](#pin-tokens-metadata-on-ipfs)
+    - [Mint Tokens](#mint-tokens)
+  - [Inspecting The NFT Contract](#inspecting-the-nft-contract)
+    - [Inspect Token Metadata](#inspect-token-metadata)
+    - [Inspect Token Balances](#inspect-token-balances)
+  - [Transferring Tokens](#transferring-tokens)
+  - [Operator Transfer](#operator-transfer)
+  - [Configuration](#configuration)
+    - [Network Configuration Commands](#network-configuration-commands)
+    - [Alias Configuration Commands](#alias-configuration-commands)
+
 ## Introduction
 
 ### What is FA2 (TZIP-12)?
