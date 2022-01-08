@@ -50,15 +50,10 @@ export interface Fa2Contract {
   ) => Promise<void>;
 }
 
-/**
- * @description Fa2 is a function that takes an inputApi and extends it to include Fa2Contract interfaace
- * @returns A new "extended" objects
- */
-export const Fa2 = <T>(
-  inputApi: T,
+export const Fa2 = (
   contract: Tzip12Contract,
   lambdaView?: address
-): T & Fa2Contract => {
+): Fa2Contract => {
   const self: Fa2Contract = {
     queryBalances: async requests =>
       contract.views.balance_of(requests).read(lambdaView),
@@ -118,5 +113,5 @@ export const Fa2 = <T>(
     }
   };
 
-  return { ...inputApi, ...self };
+  return self;
 };

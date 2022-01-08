@@ -8,21 +8,18 @@ export interface TezosApi {
 }
 
 export interface ContractApi {
-  with: <I extends ContractApi, O extends I>(
-    extendApi: (
-      inputApi: I,
-      contract: Tzip12Contract,
-      lambdaView?: address
-    ) => O
-  ) => O;
+  with: <I extends ContractApi, O>(
+    this: I,
+    createApi: (contract: Tzip12Contract, lambdaView?: address) => O
+  ) => I & O;
 }
 
 const contractApi = (
   contract: Tzip12Contract,
   lambdaView?: address
 ): ContractApi => ({
-  with(extendApi) {
-    return extendApi(this as any, contract, lambdaView);
+  with(createApi) {
+    return { ...this, ...createApi(contract, lambdaView) };
   }
 });
 
