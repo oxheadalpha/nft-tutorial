@@ -25,10 +25,10 @@ tutorial at your own risk.
     - [Prepare Tokens Metadata](#prepare-tokens-metadata)
     - [Pin Tokens Metadata on IPFS](#pin-tokens-metadata-on-ipfs)
     - [Mint Tokens](#mint-tokens)
-  - [Inspecting The NFT Contract](#inspecting-the-nft-contract)
+  - [Inspect The NFT Contract](#inspect-the-nft-contract)
     - [Inspect Token Metadata](#inspect-token-metadata)
     - [Inspect Token Balances](#inspect-token-balances)
-  - [Transferring Tokens](#transferring-tokens)
+  - [Transfer Tokens](#transfer-tokens)
   - [Operator Transfer](#operator-transfer)
   - [Configuration](#configuration)
     - [Network Configuration Commands](#network-configuration-commands)
@@ -479,7 +479,7 @@ Beware that freeze is a one way operation. Once a collection is frozen it is
 impossible to "unfreeze" it and mint more tokens.
 
 
-### Inspecting The NFT Contract
+### Inspect The NFT Contract
 
 Using `KT1..` address (or an address alias) of the NFT contract created by the
 `create-collection` command, we can inspect token metadata and balances (i. e.
@@ -584,7 +584,7 @@ owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 0
 ```
 
-### Transferring Tokens
+### Transfer Tokens
 
 `transfer` command requires the following parameters:
 
