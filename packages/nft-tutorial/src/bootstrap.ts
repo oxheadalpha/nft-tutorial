@@ -1,9 +1,8 @@
 import * as kleur from 'kleur';
-import retry from 'async-retry';
 import { loadUserConfig, lambdaViewKey } from './config-util';
-import { createToolkit } from './contracts';
+import { createToolkit, createToolkitWithoutSigner } from './contracts';
 import Configstore from 'configstore';
-import { startSandbox, killSandbox } from '@oxheadalpha/tezos-tools';
+import { startSandbox, killSandbox, awaitForSandbox } from '@oxheadalpha/tezos-tools';
 import { TezosToolkit, VIEW_LAMBDA } from '@taquito/taquito';
 
 export async function bootstrap(): Promise<void> {
@@ -33,14 +32,8 @@ export async function kill(): Promise<void> {
 
 async function awaitForNetwork(): Promise<void> {
   const config = loadUserConfig();
-  const toolkit = await createToolkit('bob', config);
-  await retry(
-    async () => {
-      console.log('connecting to Tezos node rpc...');
-      await toolkit.rpc.getBlockHeader({ block: '2' });
-    },
-    { retries: 8 }
-  );
+  const toolkit = await createToolkitWithoutSigner(config);
+  await awaitForSandbox(toolkit);
 }
 
 async function originateLambdaViewContract(

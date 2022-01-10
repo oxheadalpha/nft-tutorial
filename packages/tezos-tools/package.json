@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^2.0.7",
+    "@taquito/taquito": "^11.0.2",
+    "async-retry": "^1.3.3",
     "@pinata/sdk": "^1.1.23",
     "child_process": "^1.0.2",
     "kleur": "^4.1.4"
