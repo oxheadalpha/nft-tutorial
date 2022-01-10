@@ -19,7 +19,7 @@ import {
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { Fa2 } from '@oxheadalpha/fa2-interfaces';
-import * as nft from './nft-interface';
+import { Nft } from './nft-interface';
 import { bytes } from '@oxheadalpha/fa2-interfaces';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
@@ -89,9 +89,8 @@ export async function mintNfts(
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
-  await nft.mintTokens(collectionAddress, tz, [
-    { owner: ownerAddress, tokens }
-  ]);
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+  await nftContract.mintTokens([{ owner: ownerAddress, tokens }]);
 }
 
 export async function mintNftsFromFile(
@@ -108,9 +107,8 @@ export async function mintNftsFromFile(
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
-  await nft.mintTokens(collectionAddress, tz, [
-    { owner: ownerAddress, tokens }
-  ]);
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+  await nftContract.mintTokens([{ owner: ownerAddress, tokens }]);
 }
 
 async function loadTokensFromFile(
@@ -136,7 +134,9 @@ export async function mintFreeze(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const collectionAddress = await resolveAlias2Address(collection, config);
-  await nft.freezeCollection(collectionAddress, tz);
+  
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft)
+  await nftContract.freezeCollection();
 }
 
 export function parseTokens(
