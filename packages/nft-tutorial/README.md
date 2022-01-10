@@ -490,17 +490,16 @@ which addresses own the tokens).
 `show-meta` command requires the following parameters:
 
 - `--nft` alias or address of the FA2 NFT contract to inspect
-- `--signer` alias or address on behalf of which contract is inspected
 - `--tokens` a list of token IDs to inspect
 
 ```sh
-$ tznft show-meta --nft <nft_address_or_alias> --signer <alias> --tokens <token_id_list>
+$ tznft show-meta --nft <nft_address_or_alias> --tokens <token_id_list>
 ```
 
 Example:
 
 ```sh
-$ tznft show-meta --nft my_collection --signer bob --tokens 1 2
+$ tznft show-meta --nft my_collection --tokens 1 2
 
 querying token metadata...
 {
