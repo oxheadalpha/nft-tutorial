@@ -18,6 +18,7 @@ import {
   addAlias
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
+import { Fa2 } from '@oxheadalpha/fa2-interfaces';
 import * as nft from './nft-interface';
 import { bytes } from '@oxheadalpha/fa2-interfaces';
 import { originateContract } from '@oxheadalpha/tezos-tools';
@@ -199,10 +200,9 @@ export async function showBalances(
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const fa2Contract = await fa2
-    .createFa2(tz)
-    .useLambdaView(lambdaView)
-    .at(nftAddress);
+  const fa2Contract = (
+    await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
+  ).with(Fa2);
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
   const balances = await fa2Contract.queryBalances(requests);
@@ -234,7 +234,7 @@ export async function showMetadata(
   const nftAddress = await resolveAlias2Address(contract, config);
   const tokenIds = tokens.map(t => Number.parseInt(t));
 
-  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow('querying token metadata...'));
   const tokensMeta = await fa2Contract.tokensMetadata(tokenIds);
@@ -280,7 +280,7 @@ export async function transfer(
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
 
-  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
   await fa2Contract.transferTokens(txs);
 }
 
@@ -320,23 +320,23 @@ export async function updateOperators(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
-  
+
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
-  
+
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
-  
+
   const nftAddress = await resolveAlias2Address(contract, config);
-  
-  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
-  await fa2Contract.updateOperators(resolvedAdd, resolvedRemove)
+
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+  await fa2Contract.updateOperators(resolvedAdd, resolvedRemove);
 }
 
 async function resolveOperators(
