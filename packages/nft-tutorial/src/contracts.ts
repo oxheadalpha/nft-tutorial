@@ -35,6 +35,14 @@ export function createToolkitFromSigner(
   signer: InMemorySigner,
   config: Configstore
 ): TezosToolkit {
+  const toolkit = createToolkitWithoutSigner(config);
+  toolkit.setProvider({
+    signer,
+  });
+  return toolkit;
+}
+
+function createToolkitWithoutSigner(config: Configstore): TezosToolkit {
   const pk = `${activeNetworkKey(config)}.providerUrl`;
   const providerUrl = config.get(pk);
   if (!providerUrl) {
@@ -47,8 +55,6 @@ export function createToolkitFromSigner(
 
   const toolkit = new TezosToolkit(providerUrl);
   toolkit.setProvider({
-    signer,
-    rpc: providerUrl,
     config: { confirmationPollingIntervalSecond: 5 }
   });
   return toolkit;
@@ -224,13 +230,12 @@ function printBalances(balances: fa2.BalanceResponse[]): void {
 }
 
 export async function showMetadata(
-  signer: string,
   contract: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(signer, config);
+  const tz = await createToolkitWithoutSigner(config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tokenIds = tokens.map(t => Number.parseInt(t));
 
