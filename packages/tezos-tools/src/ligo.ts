@@ -65,7 +65,45 @@ const runCmd = (cwd: string, cmd: string): Promise<string> => {
   );
 };
 
-export const ligo = (cwd?: string) => {
+/**
+ * TypeScript interface to Ligo commands
+ */
+export interface Ligo {
+  /**
+   * Compile contract from Ligo language to Michelson
+   * @param srcFile path to the contract source file
+   * @param main name of the main entry point function for the contract
+   * @param dstFile path to the compiled contract resulting file
+   */
+  compileContract(
+    srcFile: string,
+    main: string,
+    dstFile: string
+  ): Promise<void>;
+  /**
+   * Compile contract from Ligo language to Michelson and loads Michelson code
+   * @param srcFile path to the contract source file
+   * @param main name of the main entry point function for the contract
+   * @param dstFile path to the compiled contract resulting file
+   * @returns compiled Michelson code of the contract
+   */
+  compileAndLoadContract(
+    srcFile: string,
+    main: string,
+    dstFile: string
+  ): Promise<string>;
+  /**
+   * Print to console current Ligo compiler version
+   */
+  printLigoVersion(): Promise<void>;
+}
+
+/**
+ * Create Ligo compiler API
+ * @param cwd working directory to run Ligo commands
+ * @returns [Ligo] object with Typescript API for Ligo compiler
+ */
+export const ligo = (cwd?: string): Ligo => {
   const cwd_ = cwd ? cwd : process.cwd();
   const fullCwd = path.resolve(cwd_);
   return {
