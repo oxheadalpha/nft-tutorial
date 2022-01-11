@@ -13,7 +13,7 @@ import { Tzip12Contract, address } from './type-aliases';
  * has only one method "with". By chaining "with" it can be extended
  * to include multiple interfaces, like FA2, NFT, Admin etc.,
  * like this:
- * 
+ *
  * ```typescript
  * contract.with(Fa2).with(Nft)
  * ```
@@ -101,16 +101,16 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
 
 /**
  * Run and confirms a Taquito ContractMethod
- * @param cm - a Taquito contract method
- * @returns  a hash of a confirmed method
- * 
- * Usage example:* 
+ * @param cm - a Taquito ContractMethod
+ * @returns  Taquito TransactionOperation
+ *
+ * Usage example:*
  * ```typescript
- * await fa2.runMethod(fa2Contract.transferTokens(txs));
+ * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
  * ```
  */
 export const runMethod = async (cm: ContractMethod<ContractProvider>) => {
   const op = await cm.send();
-  const hash = await op.confirmation();
-  return hash;
+  await op.confirmation();
+  return op;
 };
