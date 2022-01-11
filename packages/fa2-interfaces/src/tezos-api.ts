@@ -1,15 +1,48 @@
 import { tzip12, Tzip12Module } from '@taquito/tzip12';
+
+import {
+  ContractMethod,
+  ContractProvider,
+  TezosToolkit
+} from '@taquito/taquito';
+
 import { Tzip12Contract, address } from './type-aliases';
-import { TezosToolkit } from '@taquito/taquito';
 
 /**
- * Interface to create contract API builder
+ * A type-safe API to a contract at specific address that, by default,
+ * has only one method "with". By chaining "with" it can be extended
+ * to include multiple interfaces, like FA2, NFT, Admin etc.,
+ * like this:
+ *
+ * ```typescript
+ * contract.with(Fa2).with(Nft)
+ * ```
+ */
+export interface ContractApi {
+  /**
+   * Extend existing contract API
+   *
+   * @typeParam I current contract API
+   * @typeParam O additional API to be composed with the current one
+   *
+   * @param createApi a constructor function that should return
+   * an object (a record of functions) to extend the current API with
+   */
+  with: <I extends ContractApi, O>(
+    this: I,
+    createApi: (contract: Tzip12Contract, lambdaView?: address) => O
+  ) => I & O;
+}
+
+/**
+ * Interface to create contract APIs
  */
 export interface TezosApi {
   /**
-   * Create API builder for the contract at specified address
+   * Create an API to the contract at the specified address
    */
   at: (contractAddress: address) => Promise<ContractApi>;
+
   /**
    * Specify Taquito lambda view contract address to access contract CPS style
    * view entry points.
@@ -17,20 +50,9 @@ export interface TezosApi {
   useLambdaView: (lambdaView: address) => TezosApi;
 }
 
-/**
- * Contract API builder
- */
-export interface ContractApi {
-  /**
-   * Extend existing contract API
-   * @typeParam I current contract API 
-   * @typeParam O additional API to be composed with the current one
-   * @param createApi extension function to create additional API for the contract
-   */
-  with: <I extends ContractApi, O>(
-    this: I,
-    createApi: (contract: Tzip12Contract, lambdaView?: address) => O
-  ) => I & O;
+export interface TezosApi {
+  at: (contractAddress: address) => Promise<ContractApi>;
+  useLambdaView: (lambdaView: address) => TezosApi;
 }
 
 const contractApi = (
@@ -44,12 +66,12 @@ const contractApi = (
 
 /**
  * Create Tezos API to build modular contract APIs.
- * 
+ *
  * Usage example:
  * ```typescript
  * const tzt = new TezosToolkit(...);
- * 
- * const nftContract = 
+ *
+ * const nftContract =
  *   (await tezosApi(tz).at(contractAddress))
  *   .with(Nft).with(Fa2);
  * // mintTokens() is defined in Nft extension
@@ -75,4 +97,20 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
 
     useLambdaView: (lambdaView: address) => tezosApi(tzt, lambdaView)
   };
+};
+
+/**
+ * Run and confirms a Taquito ContractMethod
+ * @param cm - a Taquito ContractMethod
+ * @returns  Taquito TransactionOperation
+ *
+ * Usage example:*
+ * ```typescript
+ * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
+ * ```
+ */
+export const runMethod = async (cm: ContractMethod<ContractProvider>) => {
+  const op = await cm.send();
+  await op.confirmation();
+  return op;
 };

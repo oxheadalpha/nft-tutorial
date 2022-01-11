@@ -1,4 +1,7 @@
-import kleur from 'kleur';
+import {
+  ContractMethod,
+  ContractProvider
+} from '@taquito/taquito';
 
 import {
   Tzip12Contract,
@@ -12,28 +15,11 @@ export interface MintParam {
 }
 
 export interface NftContract {
-  mintTokens: (tokens: MintParam[]) => Promise<void>;
-  freezeCollection: () => Promise<void>;
+  mintTokens: (tokens: MintParam[]) => ContractMethod<ContractProvider>;
+  freezeCollection: () => ContractMethod<ContractProvider>;
 }
 
-export const Nft = (
-  contract: Tzip12Contract,
-): NftContract => ({
-  mintTokens: async tokens => {
-    console.log(kleur.yellow('minting tokens...'));
-
-    const op = await contract.methods.mint(tokens).send();
-    await op.confirmation();
-
-    console.log(kleur.green('tokens minted'));
-  },
-
-  freezeCollection: async () => {
-    console.log(kleur.yellow('freezing nft collection...'));
-
-    const op = await contract.methods.mint_freeze().send();
-    await op.confirmation();
-
-    console.log(kleur.green('nft collection frozen'));
-  }
+export const Nft = (contract: Tzip12Contract): NftContract => ({
+  mintTokens: tokens => contract.methods.mint(tokens),
+  freezeCollection: () => contract.methods.mint_freeze()
 });
