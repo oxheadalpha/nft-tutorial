@@ -5,6 +5,12 @@ import addFormats from 'ajv-formats';
 import schema from './schemas/tzip21-metadata-schema.json';
 import * as v from './meta-validators';
 
+/**
+ * Validate token metadata format in accordance with TZIP-21 standard
+ * @param meta object representing token metadata.
+ * @returns list of validation errors and/or warnings. Each error string starts
+ * with `Error:` prefix and each warning string starts with `Warning:` prefix.
+ */
 export function validateTzip21(meta: object): string[] {
   const ajv = new Ajv();
   addFormats(ajv);

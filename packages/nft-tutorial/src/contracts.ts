@@ -42,7 +42,7 @@ export function createToolkitFromSigner(
   return toolkit;
 }
 
-function createToolkitWithoutSigner(config: Configstore): TezosToolkit {
+export function createToolkitWithoutSigner(config: Configstore): TezosToolkit {
   const pk = `${activeNetworkKey(config)}.providerUrl`;
   const providerUrl = config.get(pk);
   if (!providerUrl) {

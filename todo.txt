@@ -5,21 +5,20 @@ VERSION TWO
 DONE      1.1. New version of Typescript and compilation
 DONE      1.2. Multiple packages (yarn workspaces vs. lerna)
             1.2.1. Contracts
-DONE          1.2.1.1 Ligo compilation
-              1.2.2.2 Generate contract storage Typescript type
-DONE          1.2.2.3 Contract origination (???)
-DONE          1.2.2.4. Standard contracts source code
-              1.2.2.5. Contract tests
-              1.2.2.6. Compile and package off-chain views
+DONE          1.2.1.1. Ligo compilation
+DONE          1.2.2.2. Contract origination (???)
+DONE          1.2.2.3. Standard contracts source code
+              1.2.2.4. Contract tests
 WIP         1.2.2.  Typescript contract interfaces
-              1.2.2.1  FA2
-              1.2.2.2  FA2/NFT
+DONE          1.2.2.1  FA2
+DONE          1.2.2.2  FA2/NFT
               1.2.2.3  Admin entry points
-WIP           1.2.2.4  Custom mint entry points
-            1.2.3. CLI
+DONE          1.2.2.4  Custom mint entry points
+WIP           1.2.2.5  Support Taquito batch API
+              1.2.2.6  Helper to build FA2 transfer batch
+DONE        1.2.3. CLI
 DONE          1.2.3.1 Provide TZIP-16 metadata during contract origination
 NA            1.2.3.2 Originate two types of NFT contracts
-              1.2.3.3 Originate user-written contract
 DONE      1.3. NPM build and publishing
 DONE    2. Enhance metadata
 DONE      2.1. TZIP-16 contract metadata
@@ -27,18 +26,17 @@ DONE      2.2. TZIP-21 rich token metadata
 DONE      2.3. validate user-provided metadata
 DONE      2.4. pin metadata to IPFS
         
-        4. Ability to support custom contracts
+        4. Advanced features
 DONE      4.1. LIGO contract compilation toolkit (CLI)
           4.2. Generate contract storage Typescript type (CLI)
+          4.3. Compile and package off-chain views
+          4.4. Originate user-written contract
 
 DONE    5. Metadata
 DONE      5.1. generate TZIP-021 metadata template
 DONE      5.2. validate user-provided token metadata schema
 DONE      5.3. validate user-provided TZIP-016 metadata schema
 DONE      5.4. Retrieve token metadata using Taquito Tzip12 provider
-
-
-
 
 
 VERSION ONE
