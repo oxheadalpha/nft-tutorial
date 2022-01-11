@@ -1,9 +1,12 @@
 import {
+  ContractMethod,
+  ContractProvider
+} from '@taquito/taquito';
+
+import {
   Tzip12Contract,
   address,
-  TokenMetadataInternal,
-  contractCall,
-  ContractCall
+  TokenMetadataInternal
 } from '@oxheadalpha/fa2-interfaces';
 
 export interface MintParam {
@@ -12,11 +15,11 @@ export interface MintParam {
 }
 
 export interface NftContract {
-  mintTokens: (tokens: MintParam[]) => ContractCall;
-  freezeCollection: () => ContractCall;
+  mintTokens: (tokens: MintParam[]) => ContractMethod<ContractProvider>;
+  freezeCollection: () => ContractMethod<ContractProvider>;
 }
 
 export const Nft = (contract: Tzip12Contract): NftContract => ({
-  mintTokens: tokens => contractCall(contract.methods.mint(tokens)),
-  freezeCollection: () => contractCall(contract.methods.mint_freeze())
+  mintTokens: tokens => contract.methods.mint(tokens),
+  freezeCollection: () => contract.methods.mint_freeze()
 });

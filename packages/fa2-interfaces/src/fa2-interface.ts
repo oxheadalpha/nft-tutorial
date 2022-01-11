@@ -1,10 +1,11 @@
-import * as kleur from 'kleur';
+import {
+  ContractMethod,
+  ContractProvider,
+  MichelsonMap
+} from '@taquito/taquito';
 
-import { Contract, MichelsonMap } from '@taquito/taquito';
 import { TokenMetadata } from '@taquito/tzip12';
-
 import { Tzip12Contract, address, nat, bytes } from './type-aliases';
-import { contractCall, ContractCall } from './tezos-api';
 
 /**
  * `balance_of` FA2 entry point parameter
@@ -14,6 +15,7 @@ export interface BalanceRequest {
    * Address of the token owner which holds token balance
    */
   owner: address;
+  
   /**
    * Token ID
    */
@@ -28,6 +30,7 @@ export interface BalanceResponse {
    * Balance hold by the owner address for the specified token ID
    */
   balance: nat;
+  
   /**
    * Owner address and token ID for which balance was requested
    */
@@ -35,17 +38,19 @@ export interface BalanceResponse {
 }
 
 /**
- * 
+ *
  */
 export interface TransferDestination {
   /**
    * Recipient address for the token transfer
    */
   to_: address;
+  
   /**
    * ID of the token to be transferred
    */
   token_id: nat;
+  
   /**
    * Amount to be transferred
    */
@@ -62,6 +67,7 @@ export interface Transfer {
    * Owner address to transfer token(s) from
    */
   from_: address;
+  
   /**
    * One or more destinations to transfer tokens to. Each destination specifies
    * destination address, token id and the amount to be transferred.
@@ -77,11 +83,13 @@ export interface OperatorUpdate {
    * Token owner which operators to be updated
    */
   owner: address;
+  
   /**
    * Operator to be added or removed from the list of the owner's operators for
    * the specified token
    */
   operator: address;
+  
   /**
    * Token ID (token type) which can be transferred on behalf of the owner by the
    * operator
@@ -95,8 +103,9 @@ export interface OperatorUpdate {
 export interface TokenMetadataInternal {
   /** Token ID */
   token_id: nat;
-  /** 
-   * Bytes encoding pieces of token metadata such as metadata external URI, 
+  
+  /**
+   * Bytes encoding pieces of token metadata such as metadata external URI,
    * decimals, etc.
    */
   token_info: MichelsonMap<string, bytes>;
@@ -111,27 +120,29 @@ export interface Fa2Contract {
    * Invokes FA2 contract `balance_of` entry point
    */
   queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
+  
   /**
    * Query balances for multiple tokens and token owners and represents
    * results as NFT ownership status.
    * Invokes FA2 contract `balance_of` entry point
    */
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
+  
   /**
    * Extract tokens metadata
    */
   tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
-  
+
   /**
    * Transfer tokens. In default implementation, only token owner or its operator
    * can transfer tokens from the owner address.
    */
-  transferTokens: (transfers: Transfer[]) => ContractCall;
+  transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
 
   /**
    * Update list of operators who can transfer tokens on behalf of the token
    * owner. In default implementation, only the owner can update its own operators.
-   * 
+   *
    * @param addOperators list of operators for the specific tokens to be added
    * to the owner's operator list
    * @param removeOperators list of operators for the specific tokens to be removed
@@ -140,15 +151,15 @@ export interface Fa2Contract {
   updateOperators: (
     addOperators: OperatorUpdate[],
     removeOperators: OperatorUpdate[]
-  ) => ContractCall;
+  ) => ContractMethod<ContractProvider>;
 }
 
 /**
  * FA2 contract API extension
- * 
+ *
  * Usage example:
  * ```typescript
- * const fa2Contract = 
+ * const fa2Contract =
  *   (await tezosApi(tz).at(contractAddress)).with(Fa2);
  * await fa2Contract.transfer(...);
  * ```
@@ -180,8 +191,7 @@ export const Fa2 = (
       return Promise.all(requests);
     },
 
-    transferTokens: transfers =>
-      contractCall(contract.methods.transfer(transfers)),
+    transferTokens: transfers => contract.methods.transfer(transfers),
 
     updateOperators: (addOperators, removeOperators) => {
       interface AddOperator {
@@ -201,7 +211,7 @@ export const Fa2 = (
       });
       const allOperators = addParams.concat(removeParams);
 
-      return contractCall(contract.methods.update_operators(allOperators));
+      return contract.methods.update_operators(allOperators);
     }
   };
 

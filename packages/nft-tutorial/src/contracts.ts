@@ -98,7 +98,9 @@ export async function mintNfts(
   const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
 
   console.log(kleur.yellow('minting tokens...'));
-  await nftContract.mintTokens([{ owner: ownerAddress, tokens }]).run();
+  await fa2.runMethod(
+    nftContract.mintTokens([{ owner: ownerAddress, tokens }])
+  );
   console.log(kleur.green('tokens minted'));
 }
 
@@ -119,7 +121,9 @@ export async function mintNftsFromFile(
   const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
 
   console.log(kleur.yellow('minting tokens...'));
-  await nftContract.mintTokens([{ owner: ownerAddress, tokens }]).run();
+  await fa2.runMethod(
+    nftContract.mintTokens([{ owner: ownerAddress, tokens }])
+  );
   console.log(kleur.green('tokens minted'));
 }
 
@@ -297,7 +301,7 @@ export async function transfer(
   const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow('transferring tokens...'));
-  await fa2Contract.transferTokens(txs).run();
+  await fa2.runMethod(fa2Contract.transferTokens(txs));
   console.log(kleur.green('tokens transferred'));
 }
 
@@ -355,7 +359,7 @@ export async function updateOperators(
   const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow('updating operators...'));
-  await fa2Contract.updateOperators(resolvedAdd, resolvedRemove).run();
+  await fa2.runMethod(fa2Contract.updateOperators(resolvedAdd, resolvedRemove));
   console.log(kleur.green('updated operators'));
 }
 
