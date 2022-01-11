@@ -101,13 +101,17 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
 
 /**
  * Run and confirms a Taquito ContractMethod
- * @param cm - a Taquito contract method
- * @returns  a hash of a confirmed method
  * 
- * Usage example:* 
+ * Usage example:
  * ```typescript
  * await fa2.runMethod(fa2Contract.transferTokens(txs));
+ * 
+ * // generic contract call
+ * await fa2.runMethod(contract.methods.foo());
  * ```
+ * 
+ * @param cm - a Taquito contract method
+ * @returns  a hash of a confirmed method
  */
 export const runMethod = async (cm: ContractMethod<ContractProvider>) => {
   const op = await cm.send();
