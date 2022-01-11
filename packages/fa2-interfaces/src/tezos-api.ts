@@ -11,10 +11,12 @@ import { Tzip12Contract, address } from './type-aliases';
 /**
  * A type-safe API to a contract at specific address that, by default,
  * has only one method "with". By chaining "with" it can be extended
- * to include multiple interfaces, like FA2, NFT, Admin etc., 
- * like this: 
+ * to include multiple interfaces, like FA2, NFT, Admin etc.,
+ * like this:
  * 
+ * ```typescript
  * contract.with(Fa2).with(Nft)
+ * ```
  */
 export interface ContractApi {
   /**
@@ -22,8 +24,8 @@ export interface ContractApi {
    *
    * @typeParam I current contract API
    * @typeParam O additional API to be composed with the current one
-   * 
-   * @param createApi a constructor function that should return 
+   *
+   * @param createApi a constructor function that should return
    * an object (a record of functions) to extend the current API with
    */
   with: <I extends ContractApi, O>(
@@ -101,10 +103,14 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
  * Run and confirms a Taquito ContractMethod
  * @param cm - a Taquito contract method
  * @returns  a hash of a confirmed method
+ * 
+ * Usage example:* 
+ * ```typescript
+ * await fa2.runMethod(fa2Contract.transferTokens(txs));
+ * ```
  */
 export const runMethod = async (cm: ContractMethod<ContractProvider>) => {
   const op = await cm.send();
   const hash = await op.confirmation();
   return hash;
 };
-
