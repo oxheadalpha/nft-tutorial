@@ -154,7 +154,7 @@ export async function mintFreeze(
   const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
 
   console.log(kleur.yellow('freezing nft collection...'));
-  await nftContract.freezeCollection();
+  fa2.runMethod(await nftContract.freezeCollection());
   console.log(kleur.green('nft collection frozen'));
 }
 
