@@ -50,11 +50,6 @@ export interface TezosApi {
   useLambdaView: (lambdaView: address) => TezosApi;
 }
 
-export interface TezosApi {
-  at: (contractAddress: address) => Promise<ContractApi>;
-  useLambdaView: (lambdaView: address) => TezosApi;
-}
-
 const contractApi = (
   contract: Tzip12Contract,
   lambdaView?: address
