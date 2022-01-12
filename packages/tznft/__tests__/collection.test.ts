@@ -1,15 +1,24 @@
 import * as kleur from 'kleur';
 import * as path from 'path';
+import { BigNumber } from 'bignumber.js';
 import { TezosToolkit } from '@taquito/taquito';
 
-import { address } from '@oxheadalpha/fa2-interfaces';
+import {
+  address,
+  Fa2,
+  runMethod,
+  TokenMetadataInternal
+} from '@oxheadalpha/fa2-interfaces';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 import { loadFile } from '../src/config-util';
-import { createNftStorage } from '../src/nft-interface';
+import {
+  createNftStorage,
+  createTokenMetadata,
+  Nft
+} from '../src/nft-interface';
 
 import { TestApi, bootstrap } from './test-bootstrap';
-
 
 jest.setTimeout(240000);
 
@@ -40,6 +49,12 @@ async function originateCollection(tzt: TezosToolkit): Promise<address> {
   return contract.address;
 }
 
+const tokenMeta = (tokenId: number) =>
+  createTokenMetadata(
+    tokenId,
+    'ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU'
+  );
+
 describe('NFT Collection Tests', () => {
   let api: TestApi;
   let bobAddress: address;
@@ -57,7 +72,23 @@ describe('NFT Collection Tests', () => {
     collectionAddress = await originateCollection(api.bob.toolkit);
   });
 
-  test('dummy', () => {
-    console.log('HELLO', collectionAddress);
+  test('mint', async () => {
+    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+    const tokens = [1, 2].map(tokenMeta);
+
+    console.log(kleur.yellow('minting tokens...'));
+    await runMethod(nft.mintTokens([{ owner: bobAddress, tokens }]));
+    console.log(kleur.green('minted tokens'));
+
+    const fa2 = nft.with(Fa2);
+
+    const meta = await fa2.tokensMetadata([1, 2]);
+    expect(meta.map(t => t.token_id)).toEqual([1, 2]);
+
+    const ownership = await fa2.hasNftTokens([
+      { owner: bobAddress, token_id: new BigNumber(1) },
+      { owner: bobAddress, token_id: new BigNumber(1) }
+    ]);
+    expect(ownership).toEqual([true, true]);
   });
 });

@@ -18,7 +18,7 @@
     "prepare": "yarn build",
     "compile-contract": "ts-node ./src/compile-contract.ts",
     "test-contract": "jest --runInBand",
-    "test": "yarn compile-contract && yarn start-sandbox && yarn test-contract && yarn kill-sandbox",
+    "test": "(yarn compile-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
     "tznft": "./dist/tznft.js"
   },
   "bin": {

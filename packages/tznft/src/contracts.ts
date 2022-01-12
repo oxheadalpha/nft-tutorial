@@ -2,7 +2,7 @@ import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { TokenMetadata } from '@taquito/tzip12';
@@ -19,7 +19,7 @@ import {
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { Fa2 } from '@oxheadalpha/fa2-interfaces';
-import { createNftStorage, Nft } from './nft-interface';
+import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
@@ -165,19 +165,6 @@ export function parseTokens(
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
 }
-
-function createTokenMetadata(
-  tokenId: string | number,
-  tokenMetadataUri: string
-): fa2.TokenMetadataInternal {
-  const m: fa2.TokenMetadataInternal = {
-    token_id: new BigNumber(tokenId),
-    token_info: new MichelsonMap()
-  };
-  m.token_info.set('', char2Bytes(tokenMetadataUri));
-  return m;
-}
-
 
 export async function showBalances(
   signer: string,

@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import {
   ContractMethod,
   ContractProvider,
@@ -48,4 +49,16 @@ export function createNftStorage(owner: string, metaJson: string) {
     metadata,
     mint_freeze: false
   };
+}
+
+export function createTokenMetadata(
+  tokenId: string | number,
+  tokenMetadataUri: string
+): TokenMetadataInternal {
+  const m: TokenMetadataInternal = {
+    token_id: new BigNumber(tokenId),
+    token_info: new MichelsonMap()
+  };
+  m.token_info.set('', char2Bytes(tokenMetadataUri));
+  return m;
 }
