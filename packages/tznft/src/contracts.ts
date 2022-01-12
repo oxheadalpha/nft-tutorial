@@ -2,7 +2,7 @@ import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { TokenMetadata } from '@taquito/tzip12';
@@ -19,8 +19,7 @@ import {
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { Fa2 } from '@oxheadalpha/fa2-interfaces';
-import { Nft } from './nft-interface';
-import { bytes } from '@oxheadalpha/fa2-interfaces';
+import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
@@ -77,7 +76,6 @@ export async function createCollection(
   const contract = await originateContract(tz, code, storage, 'nft');
 
   if (alias) {
-    const meta = JSON.parse(metaJson);
     await addAlias(alias, contract.address);
   }
 }
@@ -166,41 +164,6 @@ export function parseTokens(
   const token = createTokenMetadata(id, tokenMetadataUri);
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
-}
-
-function createTokenMetadata(
-  tokenId: string | number,
-  tokenMetadataUri: string
-): fa2.TokenMetadataInternal {
-  const m: fa2.TokenMetadataInternal = {
-    token_id: new BigNumber(tokenId),
-    token_info: new MichelsonMap()
-  };
-  m.token_info.set('', char2Bytes(tokenMetadataUri));
-  return m;
-}
-
-function createNftStorage(owner: string, metaJson: string) {
-  const assets = {
-    ledger: new MichelsonMap(),
-    operators: new MichelsonMap(),
-    token_metadata: new MichelsonMap()
-  };
-  const admin = {
-    admin: owner,
-    pending_admin: undefined,
-    paused: false
-  };
-  const metadata = new MichelsonMap<string, bytes>();
-  metadata.set('', char2Bytes('tezos-storage:content'));
-  metadata.set('content', char2Bytes(metaJson));
-
-  return {
-    assets,
-    admin,
-    metadata,
-    mint_freeze: false
-  };
 }
 
 export async function showBalances(

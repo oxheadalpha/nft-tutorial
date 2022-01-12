@@ -17,6 +17,8 @@
     "build": "tsc -p . && chmod +x dist/tznft.js && yarn compile-contract",
     "prepare": "yarn build",
     "compile-contract": "ts-node ./src/compile-contract.ts",
+    "test-contract": "jest --runInBand",
+    "test": "(yarn compile-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
     "tznft": "./dist/tznft.js"
   },
   "bin": {
@@ -36,6 +38,10 @@
     "@types/node": "^17.0.0",
     "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2",
+    "@jest/types": "^27.4.2",
+    "@types/jest": "^27.0.3",
     "typescript": "^4.5.2"
   },
   "dependencies": {
