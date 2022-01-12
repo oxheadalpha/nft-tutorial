@@ -11,21 +11,16 @@ export type TestApi = {
 };
 
 export async function bootstrap(): Promise<TestApi> {
-  const toolkits = await flextesaToolkits('http://localhost:20000');
-  await awaitForSandbox(toolkits.bob);
-  const lambdaView = await originateLambdaViewContract(toolkits.bob);
+  const api = await flextesaApi('http://localhost:20000');
+  await awaitForSandbox(api.bob.toolkit);
+  const lambdaView = await originateLambdaViewContract(api.bob.toolkit);
   return {
-    bob: tezosApi(toolkits.bob).useLambdaView(lambdaView),
-    alice: tezosApi(toolkits.alice).useLambdaView(lambdaView)
+    bob: api.bob.useLambdaView(lambdaView),
+    alice: api.alice.useLambdaView(lambdaView)
   };
 }
 
-type TestToolkits = {
-  bob: TezosToolkit;
-  alice: TezosToolkit;
-};
-
-async function flextesaToolkits(rpc: string): Promise<TestToolkits> {
+async function flextesaApi(rpc: string): Promise<TestApi> {
   const bob = await createToolkit(
     rpc,
     'edsk3RFgDiCt7tWB2oe96w1eRw72iYiiqZPLu9nnEY23MYRp2d8Kkx'
@@ -34,7 +29,10 @@ async function flextesaToolkits(rpc: string): Promise<TestToolkits> {
     rpc,
     'edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq'
   );
-  return { bob, alice };
+  return { 
+    bob: tezosApi(bob), 
+    alice: tezosApi(alice) 
+  };
 }
 
 async function createToolkit(

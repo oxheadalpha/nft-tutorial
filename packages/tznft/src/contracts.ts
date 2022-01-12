@@ -19,8 +19,7 @@ import {
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { Fa2 } from '@oxheadalpha/fa2-interfaces';
-import { Nft } from './nft-interface';
-import { bytes } from '@oxheadalpha/fa2-interfaces';
+import { createNftStorage, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
@@ -77,7 +76,6 @@ export async function createCollection(
   const contract = await originateContract(tz, code, storage, 'nft');
 
   if (alias) {
-    const meta = JSON.parse(metaJson);
     await addAlias(alias, contract.address);
   }
 }
@@ -180,28 +178,6 @@ function createTokenMetadata(
   return m;
 }
 
-function createNftStorage(owner: string, metaJson: string) {
-  const assets = {
-    ledger: new MichelsonMap(),
-    operators: new MichelsonMap(),
-    token_metadata: new MichelsonMap()
-  };
-  const admin = {
-    admin: owner,
-    pending_admin: undefined,
-    paused: false
-  };
-  const metadata = new MichelsonMap<string, bytes>();
-  metadata.set('', char2Bytes('tezos-storage:content'));
-  metadata.set('content', char2Bytes(metaJson));
-
-  return {
-    assets,
-    admin,
-    metadata,
-    mint_freeze: false
-  };
-}
 
 export async function showBalances(
   signer: string,

@@ -48,6 +48,11 @@ export interface TezosApi {
    * view entry points.
    */
   useLambdaView: (lambdaView: address) => TezosApi;
+
+  /**
+   * Underlying `TezosToolkit`
+   */
+  toolkit: TezosToolkit;
 }
 
 const contractApi = (
@@ -90,7 +95,9 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
       return contractApi(contract, lambdaView);
     },
 
-    useLambdaView: (lambdaView: address) => tezosApi(tzt, lambdaView)
+    useLambdaView: (lambdaView: address) => tezosApi(tzt, lambdaView),
+
+    toolkit: tzt
   };
 };
 
