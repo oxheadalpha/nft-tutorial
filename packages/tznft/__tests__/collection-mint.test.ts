@@ -12,7 +12,7 @@ import {
 
 jest.setTimeout(240000);
 
-describe('NFT Collection Tests', () => {
+describe('NFT Collection Minting Tests', () => {
   let api: TestApi;
   let bobAddress: address;
   let aliceAddress: address;

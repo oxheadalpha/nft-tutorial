@@ -65,4 +65,51 @@ describe('FA2 Token Transfer Tests', () => {
     const aliceOwnership = await testTokensOwnership(fa2, aliceAddress);
     expect(aliceOwnership).toEqual([true, false]);
   });
+
+  test('transfer non existing token', async () => {
+    const fa2 = (await api.bob.at(collectionAddress)).with(Fa2);
+    const run = runMethod(
+      fa2.transferTokens([nftTransfer(bobAddress, aliceAddress, 10)])
+    );
+
+    await expect(run).rejects.toHaveProperty('message', 'FA2_TOKEN_UNDEFINED');
+  });
+
+  test('transfer other owner token', async () => {
+    const fa2 = (await api.alice.at(collectionAddress)).with(Fa2);
+    const run = runMethod(
+      fa2.transferTokens([nftTransfer(bobAddress, aliceAddress, 1)])
+    );
+
+    await expect(run).rejects.toHaveProperty('message', 'FA2_NOT_OPERATOR');
+  });
+
+  test('operator transfer', async () => {
+    const bobFa2 = (await api.bob.at(collectionAddress)).with(Fa2);
+    const aliceFa2 = (await api.alice.at(collectionAddress)).with(Fa2);
+
+    //Bob adds Alice as an operator for his token 1
+    await runMethod(
+      bobFa2.updateOperators(
+        [
+          {
+            owner: bobAddress,
+            token_id: new BigNumber(1),
+            operator: aliceAddress
+          }
+        ],
+        []
+      )
+    );
+
+    //Alice transfers a token on behalf of Bob as an operator
+    await runMethod(
+      aliceFa2.transferTokens([nftTransfer(bobAddress, aliceAddress, 1)])
+    );
+
+    const bobOwnership = await testTokensOwnership(bobFa2, bobAddress);
+    expect(bobOwnership).toEqual([false, true]);
+    const aliceOwnership = await testTokensOwnership(bobFa2, aliceAddress);
+    expect(aliceOwnership).toEqual([true, false]);
+  });
 });
