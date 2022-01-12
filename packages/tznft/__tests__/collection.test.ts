@@ -115,4 +115,11 @@ describe('NFT Collection Tests', () => {
     );
     await expect(run).rejects.toHaveProperty('message', 'USED_TOKEN_ID');
   });
+
+  test('non-admin mint tokens', async () => {
+    const nft = (await api.alice.at(collectionAddress)).with(Nft);
+    const run = runMethod(mintTestTokens(nft));
+
+    await expect(run).rejects.toHaveProperty('message', 'NOT_AN_ADMIN');
+  });
 });
