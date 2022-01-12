@@ -4,17 +4,17 @@ VERSION TWO
         1. Upgrade project environment
 DONE      1.1. New version of Typescript and compilation
 DONE      1.2. Multiple packages (yarn workspaces vs. lerna)
-            1.2.1. Contracts
+DONE        1.2.1. Contracts
 DONE          1.2.1.1. Ligo compilation
 DONE          1.2.2.2. Contract origination (???)
 DONE          1.2.2.3. Standard contracts source code
-              1.2.2.4. Contract tests
+DONE          1.2.2.4. Contract tests
 WIP         1.2.2.  Typescript contract interfaces
 DONE          1.2.2.1  FA2
 DONE          1.2.2.2  FA2/NFT
               1.2.2.3  Admin entry points
 DONE          1.2.2.4  Custom mint entry points
-WIP           1.2.2.5  Support Taquito batch API
+DONE          1.2.2.5  Support Taquito batch API
               1.2.2.6  Helper to build FA2 transfer batch
 DONE        1.2.3. CLI
 DONE          1.2.3.1 Provide TZIP-16 metadata during contract origination
