@@ -10,7 +10,8 @@ import { loadFile } from '../src/config-util';
 import {
   createNftStorage,
   createTokenMetadata,
-  Nft
+  Nft,
+  NftContract
 } from '../src/nft-interface';
 
 import { TestApi, bootstrap } from './test-bootstrap';
@@ -67,16 +68,16 @@ describe('NFT Collection Tests', () => {
     collectionAddress = await originateCollection(api.bob.toolkit);
   });
 
+  const mintTestTokens = (nft : NftContract) => {
+    const tokens = [1, 2].map(tokenMeta);
+    return nft.mintTokens([{ owner: bobAddress, tokens }]);
+  }
+
   test('mint', async () => {
     const nft = (await api.bob.at(collectionAddress)).with(Nft);
-    const tokens = [1, 2].map(tokenMeta);
-
-    console.log(kleur.yellow('minting tokens...'));
-    await runMethod(nft.mintTokens([{ owner: bobAddress, tokens }]));
-    console.log(kleur.green('minted tokens'));
+    await runMethod(mintTestTokens(nft));
 
     const fa2 = nft.with(Fa2);
-
     const meta = await fa2.tokensMetadata([1, 2]);
     expect(meta.map(t => t.token_id)).toEqual([1, 2]);
 
@@ -90,9 +91,8 @@ describe('NFT Collection Tests', () => {
   test('mint and freeze', async () => {
     const nft = (await api.bob.at(collectionAddress)).with(Nft);
 
-    const tokens = [1, 2].map(tokenMeta);
     const batch = api.bob.toolkit.contract.batch();
-    batch.withContractCall(nft.mintTokens([{ owner: bobAddress, tokens }]));
+    batch.withContractCall(mintTestTokens(nft));
     batch.withContractCall(nft.freezeCollection());
     console.log(kleur.yellow('minting tokens...'));
     await runBatch(batch);
@@ -103,5 +103,16 @@ describe('NFT Collection Tests', () => {
       nft.mintTokens([{ owner: bobAddress, tokens: extraTokens }])
     );
     await expect(run).rejects.toHaveProperty('message', 'FROZEN');
+  });
+
+  test('mint duplicate tokens', async () => {
+    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+    await runMethod(mintTestTokens(nft));
+
+    const extraTokens = [tokenMeta(1)];
+    const run = runMethod(
+      nft.mintTokens([{ owner: bobAddress, tokens: extraTokens }])
+    );
+    await expect(run).rejects.toHaveProperty('message', 'USED_TOKEN_ID');
   });
 });
