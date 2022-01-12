@@ -1,9 +1,12 @@
 import { tzip12, Tzip12Module } from '@taquito/tzip12';
 
 import {
+  BatchOperation,
   ContractMethod,
   ContractProvider,
-  TezosToolkit
+  OperationBatch,
+  TezosToolkit,
+  TransactionOperation
 } from '@taquito/taquito';
 
 import { Tzip12Contract, address } from './type-aliases';
@@ -111,8 +114,31 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
  * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
  * ```
  */
-export const runMethod = async (cm: ContractMethod<ContractProvider>) => {
+export const runMethod = async (
+  cm: ContractMethod<ContractProvider>
+): Promise<TransactionOperation> => {
   const op = await cm.send();
+  await op.confirmation();
+  return op;
+};
+
+/**
+ * Run and confirms a Taquito batch
+ * @param batch - a Taquito OperationBatch
+ * @returns  Taquito BatchOperation
+ *
+ * Usage example:*
+ * ```typescript
+ * const batch = toolkit.contract.batch();
+ * batch.withContractCall(fa2Contract.transferTokens(txs1));
+ * * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * const op: BatchOperation = await fa2.runBatch(batch);
+ * ```
+ */
+export const runBatch = async (
+  batch: OperationBatch
+): Promise<BatchOperation> => {
+  const op = await batch.send();
   await op.confirmation();
   return op;
 };

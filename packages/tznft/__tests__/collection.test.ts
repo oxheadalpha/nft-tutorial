@@ -3,12 +3,7 @@ import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
 import { TezosToolkit } from '@taquito/taquito';
 
-import {
-  address,
-  Fa2,
-  runMethod,
-  TokenMetadataInternal
-} from '@oxheadalpha/fa2-interfaces';
+import { address, Fa2, runMethod, runBatch } from '@oxheadalpha/fa2-interfaces';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 import { loadFile } from '../src/config-util';
@@ -90,5 +85,23 @@ describe('NFT Collection Tests', () => {
       { owner: bobAddress, token_id: new BigNumber(1) }
     ]);
     expect(ownership).toEqual([true, true]);
+  });
+
+  test('mint and freeze', async () => {
+    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+
+    const tokens = [1, 2].map(tokenMeta);
+    const batch = api.bob.toolkit.contract.batch();
+    batch.withContractCall(nft.mintTokens([{ owner: bobAddress, tokens }]));
+    batch.withContractCall(nft.freezeCollection());
+    console.log(kleur.yellow('minting tokens...'));
+    await runBatch(batch);
+    console.log(kleur.green('minted tokens'));
+
+    const extraTokens = [tokenMeta(3)];
+    const run = runMethod(
+      nft.mintTokens([{ owner: bobAddress, tokens: extraTokens }])
+    );
+    await expect(run).rejects.toHaveProperty('message', 'FROZEN');
   });
 });
