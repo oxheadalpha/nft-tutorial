@@ -40,7 +40,7 @@ function* validateHeuristic(meta: any): Generator<string[]> {
 }
 
 function validateDescription(meta: any): string[] {
-  if (meta.description && meta.description === 'Awsome NFT collection')
+  if (meta.description && meta.description === 'Awesome NFT collection')
     return [
       'Warning: It looks like "description" has a sample value. Replace with a real description or remove it'
     ];

@@ -57,9 +57,9 @@ function validateTags(meta: any): string[] {
   const tags: string[] | undefined = meta.tags;
   if (tags === undefined || tags.length == 0) return [];
 
-  if (tags.find(t => t === 'awsome') && tags.find(t => t === 'nft'))
+  if (tags.find(t => t === 'awesome') && tags.find(t => t === 'nft'))
     return [
-      'Warning: It looks like "tags" property contains sample values "awsome", "nft". Remove or replace them with actual tag values'
+      'Warning: It looks like "tags" property contains sample values "awesome", "nft". Remove or replace them with actual tag values'
     ];
 
   return [];
