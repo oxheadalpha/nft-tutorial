@@ -100,12 +100,11 @@ to list all available commands.
 
 ### Initial Setup
 
-1. Install `@oxheadalpha/nft-tutorial` npm package:
+1. Install `@oxheadalpha/tznft` npm package:
 
    ```sh
-   $ npm install -g @oxheadalpha/nft-tutorial
+   $ npm install -g @oxheadalpha/tznft
 
-   TODO: paste actual output
    ```
 
    The command installs `tznft` CLI tool.
