@@ -1,55 +1,16 @@
 import * as kleur from 'kleur';
-import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit } from '@taquito/taquito';
-
 import { address, Fa2, runMethod, runBatch } from '@oxheadalpha/fa2-interfaces';
-import { originateContract } from '@oxheadalpha/tezos-tools';
-
-import { loadFile } from '../src/config-util';
-import {
-  createNftStorage,
-  createTokenMetadata,
-  Nft,
-  NftContract
-} from '../src/nft-interface';
+import { Nft } from '../src/nft-interface';
 
 import { TestApi, bootstrap } from './test-bootstrap';
+import {
+  mintTestTokens,
+  originateCollection,
+  tokenMeta
+} from './collection-bootstrap';
 
 jest.setTimeout(240000);
-
-const tzip16Meta = {
-  name: 'Test',
-  description: 'Awesome NFT collection',
-  homepage: 'https://github.com/oxheadalpha/nft-tutorial',
-  authors: ['John Doe <john.doe@johndoe.com>'],
-  version: '1.0.0',
-  license: { name: 'MIT' },
-  interfaces: ['TZIP-016', 'TZIP-012', 'TZIP-021'],
-  source: {
-    tools: ['LIGO'],
-    location: 'https://github.com/oxheadalpha/nft-tutorial'
-  }
-};
-
-async function originateCollection(tzt: TezosToolkit): Promise<address> {
-  console.log(kleur.yellow('originating NFT collection contract...'));
-
-  const code = await loadFile(path.join(__dirname, '../dist/fa2_nft_asset.tz'));
-  const ownerAddress = await tzt.signer.publicKeyHash();
-  const storage = createNftStorage(
-    ownerAddress,
-    JSON.stringify(tzip16Meta, null, 2)
-  );
-  const contract = await originateContract(tzt, code, storage, 'nft');
-  return contract.address;
-}
-
-const tokenMeta = (tokenId: number) =>
-  createTokenMetadata(
-    tokenId,
-    'ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU'
-  );
 
 describe('NFT Collection Tests', () => {
   let api: TestApi;
@@ -68,14 +29,9 @@ describe('NFT Collection Tests', () => {
     collectionAddress = await originateCollection(api.bob.toolkit);
   });
 
-  const mintTestTokens = (nft : NftContract) => {
-    const tokens = [1, 2].map(tokenMeta);
-    return nft.mintTokens([{ owner: bobAddress, tokens }]);
-  }
-
   test('mint', async () => {
     const nft = (await api.bob.at(collectionAddress)).with(Nft);
-    await runMethod(mintTestTokens(nft));
+    await runMethod(mintTestTokens(nft, bobAddress));
 
     const fa2 = nft.with(Fa2);
     const meta = await fa2.tokensMetadata([1, 2]);
@@ -92,11 +48,9 @@ describe('NFT Collection Tests', () => {
     const nft = (await api.bob.at(collectionAddress)).with(Nft);
 
     const batch = api.bob.toolkit.contract.batch();
-    batch.withContractCall(mintTestTokens(nft));
+    batch.withContractCall(mintTestTokens(nft, bobAddress));
     batch.withContractCall(nft.freezeCollection());
-    console.log(kleur.yellow('minting tokens...'));
     await runBatch(batch);
-    console.log(kleur.green('minted tokens'));
 
     const extraTokens = [tokenMeta(3)];
     const run = runMethod(
@@ -107,7 +61,7 @@ describe('NFT Collection Tests', () => {
 
   test('mint duplicate tokens', async () => {
     const nft = (await api.bob.at(collectionAddress)).with(Nft);
-    await runMethod(mintTestTokens(nft));
+    await runMethod(mintTestTokens(nft, bobAddress));
 
     const extraTokens = [tokenMeta(1)];
     const run = runMethod(
@@ -118,7 +72,7 @@ describe('NFT Collection Tests', () => {
 
   test('non-admin mint tokens', async () => {
     const nft = (await api.alice.at(collectionAddress)).with(Nft);
-    const run = runMethod(mintTestTokens(nft));
+    const run = runMethod(mintTestTokens(nft, bobAddress));
 
     await expect(run).rejects.toHaveProperty('message', 'NOT_AN_ADMIN');
   });
