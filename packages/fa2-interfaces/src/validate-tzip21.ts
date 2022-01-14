@@ -76,7 +76,7 @@ function validateAttributes(meta: any): string[] {
     )
   )
     return [
-      'Warning: It looks like "attributes" property contans sample attribute. Remove or replace it with actual attributes'
+      'Warning: It looks like "attributes" property contains sample attribute. Remove or replace it with actual attributes'
     ];
 
   return [];
