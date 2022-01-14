@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/tezos-tools",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Ligo FA2 non-fungible token contracts on Tezos",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
@@ -32,7 +32,7 @@
     "start-sandbox": "./flextesa/start-sandbox.sh"
   },
   "dependencies": {
-    "@oxheadalpha/fa2-interfaces": "^2.0.9",
+    "@oxheadalpha/fa2-interfaces": "^2.0.10",
     "@pinata/sdk": "^1.1.23",
     "@taquito/taquito": "^11.0.2",
     "async-retry": "^1.3.3",

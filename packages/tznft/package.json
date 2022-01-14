@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/tznft",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "homepage": "https://github.com/oxheadalpha/nft-tutorial/packages/nft-tutorial#README.md",
@@ -45,8 +45,8 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@oxheadalpha/fa2-interfaces": "^2.0.9",
-    "@oxheadalpha/tezos-tools": "^2.0.9",
+    "@oxheadalpha/fa2-interfaces": "^2.0.10",
+    "@oxheadalpha/tezos-tools": "^2.0.10",
     "@taquito/signer": "^11.0.2",
     "@taquito/taquito": "^11.0.2",
     "bignumber.js": "^9.0.1",
