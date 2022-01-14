@@ -1,14 +1,38 @@
 # Tutorial: Non-Fungible Tokens on Tezos Using FA2
 
 This tutorial shows how to originate and interact with the FA2 NFT contract
-implementation. The tutorial uses a pre-compiled FA2 NFT contract written in
+The tutorial uses a pre-compiled FA2 NFT contract written in
 [LIGO](https://ligolang.org/) smart contract language and a command line interface
 (CLI) to originate and interact with the NFT contracts either on the
 [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Hangzhou2net).
 
-**Disclaimer:** We highly recommend users read the additional resources above and
-take necessary precautions before following this tutorial and interacting with
-experimental technology. Use this tutorial at your own risk.
+**Disclaimer:** We highly recommend users to take necessary precautions before
+following this tutorial and interacting with experimental technology. Use this
+tutorial at your own risk.
+
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [What is FA2 (TZIP-12)?](#what-is-fa2-tzip-12)
+  - [What is a Non-Fungible Token (NFT)?](#what-is-a-non-fungible-token-nft)
+- [Tutorial](#tutorial)
+  - [Prerequisites](#prerequisites)
+  - [The CLI Tool](#the-cli-tool)
+  - [Initial Setup](#initial-setup)
+  - [Create NFT Collection](#create-nft-collection)
+    - [Prepare NFT Collection Metadata](#prepare-nft-collection-metadata)
+    - [Originate NFT Collection Contract](#originate-nft-collection-contract)
+    - [Prepare Tokens Metadata](#prepare-tokens-metadata)
+    - [Pin Tokens Metadata on IPFS](#pin-tokens-metadata-on-ipfs)
+    - [Mint Tokens](#mint-tokens)
+  - [Inspect The NFT Contract](#inspect-the-nft-contract)
+    - [Inspect Token Metadata](#inspect-token-metadata)
+    - [Inspect Token Balances](#inspect-token-balances)
+  - [Transfer Tokens](#transfer-tokens)
+  - [Operator Transfer](#operator-transfer)
+  - [Configuration](#configuration)
+    - [Network Configuration Commands](#network-configuration-commands)
+    - [Alias Configuration Commands](#alias-configuration-commands)
 
 ## Introduction
 
@@ -33,10 +57,14 @@ inspection of token balances for the specific token ID and token owner address.
 For NFTs the balance can be either 0 (which means that the address does not own
 this particular token) or 1 (the address owns the token).
 
-The FA2 contract also associates some metadata with each token. This tutorial supports
-token symbol and token name metadata attributes. However, the implementation can
-be easily extended to support custom metadata attributes such as an associated
-image or document URL and its crypto-hash.
+To enable discovery of the token contracts and tokens by indexers, wallets, token
+market places and other DApps, the FA2 contract also associates some metadata with
+each token. At least, each token metadata has a name attribute. However, it is also
+possible to provide extended metadata such as an associated image or document URL
+and its crypto-hash. The metadata format is described in
+[TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#token-metadata)
+and [TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip-21.md)
+(rich metadata) standards.
 
 ## Tutorial
 
@@ -47,18 +75,20 @@ image or document URL and its crypto-hash.
 
 - [Docker](https://www.docker.com/) must be installed. You need docker to run
   Flextesa sandbox. You might skip docker installation if you plan to run this
-  tutorial on the testnet (Carthagenet) only.
+  tutorial on the testnet (Hangzhou2net) only.
 
 ### The CLI Tool
 
 You will need to install `tznft` CLI tool. After the installation, you can invoke
 various commands in the form of `tznft <command> [options]`. `tznft` provides the
-following commands:
+following command categories:
 
-- mint (contract origination) NFT with metadata command
-- token inspection commands
-- NFT transfer command
-- Configuration commands to bootstrap Tezos network and configure address aliases
+- configuration and bootstrapping Tezos network and configure address aliases
+- generate and validate NFT collections and tokens metadata
+- create NFT collection (FA2 contract origination) and mint tokens
+- token inspection
+- token transfer
+- pin files and directories to [Pinata](https://www.pinata.cloud/) IPFS server
 
 The commands will be explained in more detail below. You can always run
 
@@ -70,30 +100,26 @@ to list all available commands.
 
 ### Initial Setup
 
-1. Create a new local directory to keep your tutorial configuration:
+1. Install `@oxheadalpha/tznft` npm package:
+
+   ```sh
+   $ npm install -g @oxheadalpha/tznft
+
+   ```
+
+   The command installs `tznft` CLI tool.
+
+2. Create a new project directory to keep your project configuration and other files:
 
    ```sh
    $ mkdir nft-tutorial
    $ cd nft-tutorial
    ```
 
-2. Install `@tqtezos/nft-tutorial` npm package:
+3. Initialize tutorial project:
 
    ```sh
-   $ npm install -g https://github.com/tqtezos/nft-tutorial.git
-
-   /usr/local/bin/tznft -> /usr/local/lib/node_modules/@tqtezos/nft-tutorial/lib/tznft.js
-
-   + @tqtezos/nft-tutorial@1.0.0
-   added 3 packages from 1 contributor and updated 145 packages in 11.538s
-   ```
-
-   The command installs `tznft` CLI tool.
-
-3. Initialize tutorial config:
-
-   ```sh
-   $ tznft init-config
+   $ tznft init
 
    tznft.json config file created
    ```
@@ -111,79 +137,423 @@ to list all available commands.
    ```sh
    $ tznft bootstrap
 
-   ebb03733415c6a8f6813a7b67905a448556e290335c5824ca567badc32757cf4
+   ea4b3e3c52c37214344cbd82988c475f84125546ca6534c0ce870582e688ca18
 
    starting sandbox...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
+   connecting to Tezos node rpc...
    sandbox started
-   originating balance inspector contract...
-   originated balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+   originating Taquito lambda view contract...
+   originated Taquito lambda view KT1BEZKvYrXY74RNcYyL1BWEqDuyETGdccB5
    ```
 
-   If you are bootstrapping a `sandbox` network for the first time, Docker will download
-   the Flextesa docker-image as well.
+   If you are bootstrapping a `sandbox` network for the first time, Docker will
+   download the Flextesa docker image as well.
 
    The default configuration comes with two account aliases `bob` and `alice`
    that can be used for token minting and transferring.
 
-### Mint NFT Token(s)
+### Create NFT Collection
 
-This tutorial uses an NFT collection contract. Each time the user mints a new set
-(collection) of tokens, a new NFT contract is created. The user cannot add more
-tokens or remove (burn) existing tokens within the contract. However tokens can
-be transferred to other owners.
+To create a new NFT collection (FA2 contract) we would follow the steps bellow:
 
-`mint` command requires the following parameters:
+1. Prepare collection (FA2 contract) metadata.
+2. Create a collection (originate a contract).
+3. Prepare tokens metadata.
+4. Pin tokens metadata on IPFS
+5. Mint tokens.
 
-- <owner> alias or address of the new tokens owner
-- `--tokens` new tokens metadata. Each token metadata is represented as comma
-  delimited string: `'<token_id>, <token_symbol>, <token_name>'`:
+#### Prepare NFT Collection Metadata
+
+`create-collection-meta` command generates a new contract metadata JSON file and
+requires `<collection_name>` parameter.
 
 ```sh
-$ tznft mint <owner_alias> --tokens <token_meta_list>`
+$ tznft create-collection-meta <collection_name>
 ```
 
 Example:
 
 ```sh
-$ tznft mint bob --tokens '0, T1, My Token One' '1, T2, My Token Two'
+$ tznft create-collection-meta my_collection
 
-originating new NFT contract...
-originated NFT collection KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh
+Created collection metadata file my_collection.json
 ```
 
-### Inspecting The NFT Contract
+`my_collection.json` file contains a template for the collection contract metadata:
 
-Using `KT1..` address of the NFT contract created by the `mint` command, we can
-inspect token metadata and balances (i. e. which addresses own the tokens).
+```json
+{
+  "name": "my_collection",
+  "description": "Awesome NFT collection",
+  "homepage": "https://github.com/oxheadalpha/nft-tutorial",
+  "authors": [
+    "John Doe <john.doe@johndoe.com>"
+  ],
+  "version": "1.0.0",
+  "license": {
+    "name": "MIT"
+  },
+  "interfaces": [
+    "TZIP-016",
+    "TZIP-012",
+    "TZIP-021"
+  ],
+  "source": {
+    "tools": [
+      "LIGO"
+    ],
+    "location": "https://github.com/oxheadalpha/nft-tutorial"
+  }
+}
+```
+
+You can edit the file before using it to create a collection contract. Please
+refer to the contract metadata
+[TZIP-16](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-16/tzip-16.md)
+and [FA2 Contract Metadata](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#contract-metadata-tzip-016)
+standards for more details.
+
+`validate-collection-meta` command validates contract metadata
+JSON and requires the following parameters:
+
+- `<metadata_file>` path to a metadata JSON file
+- `--errors-only` optional flag to suppress validation warning messages
+
+Example:
+
+```sh
+$ tznft validate-collection-meta my_collection.json
+
+Warning: It looks like "description" has a sample value. Replace with a real description or remove it
+Warning: It looks like "homepage" has a sample value. Replace with a real URL or remove it
+Warning: It looks like one of the authors is a sample 'John Doe <john.doe@johndoe.com>'. Replace with a real author e-mail or URL or remove it
+```
+
+#### Originate NFT Collection Contract
+
+`create-collection` command originates FA2 collection contract and requires the
+following parameters:
+
+- `<owner>` alias or address of the new collection owner
+- `--meta_file <file>`  path to a new collection metadata file
+- `--alias <alias>` optional alias for a new collection contract address
+
+```sh
+$ tznft create-collection <owner> --meta_file <file> --alias <alias>
+```
+
+Example:
+
+```sh
+$ tznft create-collection bob --meta_file my_collection.json --alias my_collection
+
+originating new NFT contract...
+originated contract nft with address KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
+consumed gas: 2799
+alias my_collection has been added
+```
+
+You can inspect newly created contract using [TZComet](https://tzcomet.io/)
+or [BCD](https://better-call.dev/) contract explorers by copying and pasting a new
+contract address. TZComet can automatically discover a contract on either Tezos
+mainnet, testnet or a locally running sandbox. BCD can discover contracts on
+mainnet and testnet only.
+
+#### Prepare Tokens Metadata
+
+`create-nft-meta` command generates a new token metadata JSON file and
+requires the following parameters:
+
+- `<nft_name>` name of the token
+- `<creator>` alias or address of the NFT collection owner
+- `<uri>` token artifact URI
+
+```sh
+$ tznft create-nft-meta <nft_name> <creator> <uri>
+```
+
+Token metadata can store a reference to some external document and/or image.
+This tutorial supports storing external data on [IPFS](https://ipfs.io) and keeping
+an IPFS hash as a part of the token metadata (which we will store on IPFS as well).
+
+Let's create metadata for an NFT token which references an image on IPFS with the
+hash code (CID)
+[QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj](https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj).
+
+Example:
+
+```sh
+$ tznft create-nft-meta Token1 bob ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj
+
+Created token metadata sample file Token1.json
+```
+
+`Token1.json` file contains a template for the token metadata:
+
+```json
+{
+  "decimals": 0,
+  "isBooleanAmount": true,
+  "name": "Token1",
+  "description": "",
+  "tags": [
+    "awesome",
+    "nft"
+  ],
+  "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
+  "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "displayUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "thumbnailUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "creators": [],
+  "rights": "",
+  "attributes": [
+    {
+      "name": "sample attribute",
+      "value": "sample value"
+    }
+  ]
+}
+```
+
+You can edit the file before using it to mint an NFT and create multiple metadata
+files per each token you intend to mint. You may edit generated and add many other
+attributes. Please refer to the rich metadata
+[TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip-21.md)
+standard for more details.
+
+`validate-nft-meta` command validates token metadata JSON and requires the
+following parameters:
+
+- `<metadata_file>` path to a metadata JSON file
+- `--errors-only` optional flag to suppress validation warning messages
+
+Example:
+
+```sh
+$ tznft validate-nft-meta Token1.json
+
+Warning: Property "description" has empty string value. Consider removing or provide a value for the property.
+Warning: Property "rights" has empty string value. Consider removing or provide a value for the property.
+Warning: It looks like "tags" property contains sample values "awsome", "nft". Remove or replace them with actual tag values
+Warning: It looks like "attributes" property contans sample attribute. Remove or replace it with actual attributes
+```
+
+For this tutorial, we will mint two tokens. We will use two token metadata files
+`Token1.json` and `Token2.json` derived from the generated template file. Both
+tokens will share the same `artifactUri` and would have different names. Feel
+free to customize tokens metadata as you see fit.
+#### Pin Tokens Metadata on IPFS
+
+Before minting tokens, you need to pin token metadata files to IPFS and use their
+IPFS URIs for minting. There are multiple ways to do this, but in this tutorial
+we will use [Pinata](https://www.pinata.cloud/). First, you need to create a
+Pinata account (there is a free option available). You can upload (pin) `Token1.json`
+and `Token2.json` files created on the previous step manually or use `tznft` CLI.
+
+Create Pinata keys using Pinata's web UI. You would need an API key and a secret
+key.
+
+Execute `set-pinata-keys` command that requires the following parameters:
+
+- `<pinata_api_key>` Pinata API key
+- `<pinata_secret_key>` Pinata secret key
+- `--force` optional flag to override existing keys in configuration if any
+
+```sh
+$ tznft set-pinata-keys <pinata_api_key> <pinata_secret_key> --force
+```
+
+Example:
+
+```sh
+$ tznft set-pinata-keys 38dxxx e9fxxx --force
+38dxxx e9fxxx
+Pinata keys have been added.
+```
+
+_Note: Pinata keys are stored in the `tznft.json` configuration file in your
+project directory. Please you caution to not share your secret Pinata key._
+
+Use `pin-file` command to pin token metadata files on Pinata IPFS service. Required
+parameter:
+
+- `<file>` path to a file to be pinned
+- `--tag` IPFS tag (can be the same as file name)
+
+```sh
+$ tznft pin-file <file> --tag <tag>
+```
+
+Example:
+
+```sh
+$ tznft pin-file Token1.json --tag Token1
+
+ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU
+
+$ tznft pin-file Token2.json --tag Token2
+
+ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5
+```
+
+There is also a similar command `pin-dir` to pin a whole directory on IPFS.
+
+#### Mint Tokens
+
+`mint` command requires the following parameters:
+
+- `<owner>` alias or address of the nft collection owner. 
+- `<collection>` alias or address of the NFT collection contract created by
+  `create-collection` command
+- `--tokens` new token descriptors. Each token descriptor is a comma
+  delimited string: `'<token_id>, <token_metadata_uri>'`:
+
+```sh
+$ tznft mint <owner_alias> <collection_alias> --tokens <tokens_list>
+```
+
+Example:
+
+```sh
+$ tznft mint bob my_collection --tokens '1, ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU' '2, ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5'
+
+minting tokens...
+tokens minted
+```
+
+Alternatively, you can use `mint-from-file` command to specify token descriptors
+in a csv file instead of CLI. Required parameters:
+
+- `<owner>` alias or address of the nft collection owner
+- `<collection>` alias or address of the NFT collection contract created by
+  `create-collection` command
+- `--toke_file <file>` path to a file with definitions of new tokens
+
+Let's create `tokens.csv` file as following:
+
+```csv
+3, ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU
+4, ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5
+```
+
+and run `mint-from-file` command:
+
+```sh
+$ tznft mint-from-file bob my_collection --token_file tokens.csv
+
+minting tokens...
+tokens minted
+```
+
+You can mint multiple batches of tokens into the same NFT collection contract.
+The only requirement is that token IDs must be unique.
+
+Once, you finished populating your NFT collection you can freeze it (i. e. prevent
+it from accepting more tokens).
+
+`mint-freeze` command has the following parameters:
+
+- `<owner>` alias or address of the nft collection owner
+- `<collection>` alias or address of the NFT collection contract created by
+  `create-collection` command
+
+```sh
+$ tznft mint-freeze <owner> <collection>
+```
+
+Example:
+
+```sh
+$ tznft mint-freeze bob my_collection
+
+freezing nft collection...
+nft collection frozen
+```
+
+Beware that freeze is a one way operation. Once a collection is frozen it is
+impossible to "unfreeze" it and mint more tokens.
+
+
+### Inspect The NFT Contract
+
+Using `KT1..` address (or an address alias) of the NFT contract created by the
+`create-collection` command, we can inspect token metadata and balances (i. e.
+which addresses own the tokens).
 
 #### Inspect Token Metadata
 
 `show-meta` command requires the following parameters:
 
-- `--nft` address of the FA2 NFT contract to inspect
-- `--signer` alias on behalf of which contract is inspected
+- `--nft` alias or address of the FA2 NFT contract to inspect
 - `--tokens` a list of token IDs to inspect
 
 ```sh
-$ tznft show-meta --nft <nft_address> --signer <alias> --tokens <token_id_list>
+$ tznft show-meta --nft <nft_address_or_alias> --tokens <token_id_list>
 ```
 
 Example:
 
 ```sh
-$ tznft show-meta --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --tokens 0 1
+$ tznft show-meta --nft my_collection --tokens 1 2
 
-token_id: 0	symbol: T1	name: My Token One	extras: { }
-token_id: 1	symbol: T2	name: My Token Two	extras: { }
+querying token metadata...
+{
+  "token_id": 1,
+  "decimals": 0,
+  "isBooleanAmount": true,
+  "name": "Token 1",
+  "description": "Awesome Tezos NFT",
+  "tags": [
+    "awesome",
+    "nft"
+  ],
+  "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
+  "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "creators": [],
+  "attributes": [
+    {
+      "name": "sample attribute",
+      "value": "sample value"
+    }
+  ]
+}
+{
+  "token_id": 2,
+  "decimals": 0,
+  "isBooleanAmount": true,
+  "name": "Token 2",
+  "description": "Awesome Tezos NFT",
+  "tags": [
+    "awsome",
+    "nft"
+  ],
+  "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
+  "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
+  "creators": [],
+  "attributes": [
+    {
+      "name": "sample attribute",
+      "value": "sample value"
+    }
+  ]
+}
 ```
+
+Beware that IPFS might require some time to propagate the information about
+pinned token metadata files. `show-meta` command may timeout if ran soon after
+the token metadata was pinned.
 
 #### Inspect Token Balances
 
 `show-balance` command requires the following parameters:
 
-- `--nft` address of the FA2 NFT contract to inspect
-- `--signer` alias on behalf of which contract is inspected
-- `--owner` alias of the token owner to check balances
+- `--nft` alias or address of the FA2 NFT contract to inspect
+- `--signer` alias or address on behalf of which contract is inspected
+- `--owner` alias or address of the token owner to check balances
 - `--tokens` a list of token IDs to inspect
 
 ```sh
@@ -193,70 +563,30 @@ $ tznft show-balance --nft <nft_address> --signer <alias> --owner <alias> --toke
 Example 1, check `bob`'s balances:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner bob --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 1
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 2	balance: 1
 ```
 
 Example 2, check `alice` balances:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner alice --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 0
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 0
 ```
 
-### Tokens With External Metadata
-
-Token metadata can store a reference to some external document and/or image.
-This tutorial supports storing external data on [IPFS](https://ipfs.io) and keeping
-an IPFS hash as a part of the token metadata.
-
-Let's create a single NFT token which references an image on IPFS.
-
-1. Upload your image to IPFS and obtain an image file hash. There are
-   multiple ways to do that. One of the possible solutions is to install the
-   [IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) web plugin and
-   upload an image file from there. You can upload multiple images and/or documents
-   if you plan to create a collection of multiple NFTs.
-
-2. Copy the IPFS file hash code (`CID`). For this example we will use
-   `QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj`
-
-3. Execute `tznft mint` command adding IPFS hash as a fourth parameter in the token
-   description.
-
-```sh
-$ tznft mint bob -t '0, TZT, Tezos Token, QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj'
-
-originating new NFT contract...
-originated NFT collection KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8
-```
-
-4. Now we can inspect new token metadata and see that the IPFS hash (`ipfs_cid`)
-   is there.
-
-```sh
-$ tznft show-meta -s bob --nft KT1SgzbcfTtdHRV8qHNG3hd3w1x23oiC31B8 --tokens 0
-
-token_id: 0	symbol: TZT	name: Tezos Token	extras: { ipfs_cid=QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj }
-```
-
-5. You can inspect the file on the web by opening a URL `https://ipfs.io/ipfs/<ipfs_cid>`.
-   For our example, the URL would be
-   [https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj](https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj)
-
-### Transferring Tokens
+### Transfer Tokens
 
 `transfer` command requires the following parameters:
 
-- `--nft` address of the FA2 NFT contract that holds tokens to be transferred
+- `--nft` alias or address of the FA2 NFT contract that holds tokens to be transferred
 - `--signer` alias or address that initiates the transfer operation
 - `--batch` a list of individual transfers. Each individual transfer is represented
   as a comma delimited string: `<from_address_or_alias>, <to_address_or_alias>, <token_id>`.
@@ -267,10 +597,10 @@ token_id: 0	symbol: TZT	name: Tezos Token	extras: { ipfs_cid=QmRyTc9KbD7ZSkmEf4e
 $ tznft transfer --nft <nft_address> --signer <signer> --batch <batch_list>`
 ```
 
-Example, `bob` transfers his own tokens `0` and `1` to `alice`:
+Example, `bob` transfers his own tokens `1` and `2` to `alice`:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'bob, alice, 0' 'bob, alice, 1'
+$ tznft transfer --nft my_collection --signer bob --batch 'bob, alice, 1' 'bob, alice, 2'
 
 transferring tokens...
 tokens transferred
@@ -279,19 +609,19 @@ tokens transferred
 Now, we can check token balances after the transfer:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner bob --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 0
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 2	balance: 0
 
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner alice --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 1
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 1
 ```
 
 ### Operator Transfer
@@ -301,7 +631,7 @@ It is also possible to transfer tokens on behalf of the owner.
 `bob` is trying to transfer one of `alice`'s tokens back:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'alice, bob, 1'
+$ tznft transfer --nft my_collection --signer bob --batch 'alice, bob, 1'
 
 transferring tokens...
 Tezos operation error: FA2_NOT_OPERATOR
@@ -317,7 +647,7 @@ behalf of `alice`.
 `update-ops` command has the following parameters:
 
 - `<owner>` alias or address of the token owner to update operators for
-- `--nft` address of the FA2 NFT contract
+- `--nft` alias or address of the FA2 NFT contract
 - `--add` list of pairs aliases or addresses and token id to add to the operator set
 - `--remove` list of aliases or addresses and token id to remove from the operator set
 
@@ -328,7 +658,7 @@ $ tznft update-ops <owner> --nft <nft_address> --add [add_operators_list] --remo
 Example, `alice` adds `bob` as an operator:
 
 ```sh
-$ tznft update-ops alice --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --add 'bob, 1'
+$ tznft update-ops alice --nft my_collection --add 'bob, 1'
 
 updating operators...
 updated operators
@@ -337,7 +667,7 @@ updated operators
 Now `bob` can transfer a token on behalf of `alice` again:
 
 ```sh
-$ tznft transfer --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --batch 'alice, bob, 1'
+$ tznft transfer --nft my_collection --signer bob --batch 'alice, bob, 1'
 
 transferring tokens...
 tokens transferred
@@ -346,19 +676,19 @@ tokens transferred
 Inspecting balances after the transfer:
 
 ```sh
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner bob --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner bob --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 0	balance: 0
 owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 1	balance: 1
+owner: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU	token: 2	balance: 0
 
-$ tznft show-balance --nft KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh --signer bob --owner alice --tokens 0 1
+$ tznft show-balance --nft my_collection --signer bob --owner alice --tokens 1 2
 
-querying NFT contract KT1XP3RE6S9t44fKR9Uo5rAfqHvHXu9Cy7fh using balance inspector KT1Pezr7JjgmrPcPhpkbkH1ytG7saMZ34sfd
+querying NFT contract KT1FpmL3pDfq1rc6WsftCPr5wfHkMLGyyYyx
 requested NFT balances:
-owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 0	balance: 1
 owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 1	balance: 0
+owner: tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	token: 2	balance: 1
 ```
 
 Token `1` now belongs to `bob`.
@@ -368,8 +698,8 @@ Token `1` now belongs to `bob`.
 `tznft` can be configured to interact with different Tezos networks. The user can
 also configure address aliases to sign Tezos operations and/or use them as command
 parameters when addresses are required. The default configuration that is created
-by `tznft init-config` command includes two pre-configured networks: `sandbox`
-and `testnet` (Carthagenet). Each pre-configured network has two bootstrap aliases:
+by `tznft init` command includes two pre-configured networks: `sandbox`
+and `testnet` (Hangzhou2net). Each pre-configured network has two bootstrap aliases:
 `bob` and `alice`.
 
 #### Network Configuration Commands
@@ -397,22 +727,23 @@ and `testnet` (Carthagenet). Each pre-configured network has two bootstrap alias
     testnet
   ```
 
-- `bootstrap` bootstrap selected network and deploy helper balance inspector contract.
+- `bootstrap` bootstrap sandbox and deploy helper Taquito view contract.
   If selected network is `sandbox` this command needs to be run each time sandbox
-  is restarted, for other public networks like `testnet` is it enough to run this
-  command once.
+  is restarted. This command has no effect on other network types and can be skipped.
 
   Example:
 
   ```sh
   $ tznft bootstrap
 
-  366b9f3ead158a086e8c397d542b2a2f81111a119f3bd6ddbf36574b325f1f03
+  ea4b3e3c52c37214344cbd82988c475f84125546ca6534c0ce870582e688ca18
 
   starting sandbox...
+  connecting to Tezos node rpc...
+  connecting to Tezos node rpc...
   sandbox started
-  originating balance inspector contract...
-  originated balance inspector KT1WDqPuRFMm2HwDRBotGmnWdkWm1WyG4TYE
+  originating Taquito lambda view contract...
+  originated Taquito lambda view KT1BEZKvYrXY74RNcYyL1BWEqDuyETGdccB5
   ```
 
 - `kill-sandbox` stop Flextesa sandbox process if selected network is `sandbox`.
@@ -433,12 +764,12 @@ every 5 seconds. It makes running the commands that interact with the network
 faster. However, all originated contracts will be lost after the sandbox is stopped.
 
 If you are using `testnet`, your originated contracts will remain on the blockchain
-and you can inspect them afterwards using an block explorer like [BCD](https://better-call.dev/).
+and you can inspect them afterwards using an explorer like [BCD](https://better-call.dev/).
 
 _Note: Although `testnet` configuration already has two bootstrap aliases `bob`
 and `alice`, it is a good practice to create your own alias from the faucet file
 (see `tznft add-alias-faucet` command described below) and use it as a signer for
-the commands like `mint`, `transfer` and `show_balance`. In this way, your Tezos
+the commands like `mint` and `transfer`. In this way, your Tezos
 operations will not interfere with the operations initiated by other users._
 
 #### Alias Configuration Commands
@@ -528,7 +859,7 @@ commands:
   alias john has been deleted
   ```
 
-### Advanced Topics (TBD)
+### TBD
 
-- Modifying NFT contract code
-- Extending token metadata
+- Support custom NFT contracts
+- Support TZIP-16 off-chain views
