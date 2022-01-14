@@ -1,9 +1,9 @@
 # Tutorial: Non-Fungible Tokens on Tezos Using FA2
 
-This tutorial shows how to originate and interact with the FA2 NFT contract
-The tutorial uses a pre-compiled FA2 NFT contract written in
-[LIGO](https://ligolang.org/) smart contract language and a command line interface
-(CLI) to originate and interact with the NFT contracts either on the
+This tutorial shows how to originate and interact with the FA2 NFT contract.
+The tutorial uses an FA2 NFT contract written in [LIGO](https://ligolang.org/)
+smart contract language and a command line interface (CLI) to originate and
+interact with the NFT contracts either on the
 [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Hangzhou2net).
 
 **Disclaimer:** We highly recommend users to take necessary precautions before
@@ -38,7 +38,8 @@ tutorial at your own risk.
 
 ### What is FA2 (TZIP-12)?
 
-FA2 refers to a token standard ([TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
+FA2 refers to a token standard
+([TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md))
 on Tezos. FA2 proposes a unified token contract interface, supporting a wide range
 of token types. The FA2 provides a standard API to transfer tokens, check
 token balances, manage operators (addresses that are permitted to transfer tokens
@@ -57,11 +58,11 @@ inspection of token balances for the specific token ID and token owner address.
 For NFTs the balance can be either 0 (which means that the address does not own
 this particular token) or 1 (the address owns the token).
 
-To enable discovery of the token contracts and tokens by indexers, wallets, token
+To enable discovery of the token contracts and tokens by indexers, wallets,
 market places and other DApps, the FA2 contract also associates some metadata with
-each token. At least, each token metadata has a name attribute. However, it is also
-possible to provide extended metadata such as an associated image or document URL
-and its crypto-hash. The metadata format is described in
+each token. At least, each token metadata has the name attribute. However, it is
+also possible to provide extended metadata such as an associated image or document
+URL and its crypto-hash. The metadata format is described in
 [TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#token-metadata)
 and [TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip-21.md)
 (rich metadata) standards.
@@ -156,6 +157,10 @@ to list all available commands.
    The default configuration comes with two account aliases `bob` and `alice`
    that can be used for token minting and transferring.
 
+   The `bootstrap` command starts and initializes a sandbox. If you are using
+   `testnet` or `mainnet` Tezos networks, `bootstrap` command has no effect and
+   can be skipped.
+
 ### Create NFT Collection
 
 To create a new NFT collection (FA2 contract) we would follow the steps bellow:
@@ -211,14 +216,14 @@ Created collection metadata file my_collection.json
 }
 ```
 
-You can edit the file before using it to create a collection contract. Please
+You can edit the file before using it to originate a collection contract. Please
 refer to the contract metadata
 [TZIP-16](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-16/tzip-16.md)
 and [FA2 Contract Metadata](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#contract-metadata-tzip-016)
 standards for more details.
 
-`validate-collection-meta` command validates contract metadata
-JSON and requires the following parameters:
+`validate-collection-meta` command validates contract metadata JSON and requires
+the following parameters:
 
 - `<metadata_file>` path to a metadata JSON file
 - `--errors-only` optional flag to suppress validation warning messages
@@ -339,7 +344,7 @@ $ tznft validate-nft-meta Token1.json
 Warning: Property "description" has empty string value. Consider removing or provide a value for the property.
 Warning: Property "rights" has empty string value. Consider removing or provide a value for the property.
 Warning: It looks like "tags" property contains sample values "awsome", "nft". Remove or replace them with actual tag values
-Warning: It looks like "attributes" property contans sample attribute. Remove or replace it with actual attributes
+Warning: It looks like "attributes" property contains sample attribute. Remove or replace it with actual attributes
 ```
 
 For this tutorial, we will mint two tokens. We will use two token metadata files
@@ -393,11 +398,11 @@ Example:
 ```sh
 $ tznft pin-file Token1.json --tag Token1
 
-ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU
+ipfs://QmfVUCoqRuR83Hhk9iJeobbqwDhdA1HLRGkbDQzdjHrezw
 
 $ tznft pin-file Token2.json --tag Token2
 
-ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5
+ipfs://QmbAhKqNn9L3dP9pYoutsDq6UjqrjCTuJCNRkJDAF12GL8
 ```
 
 There is also a similar command `pin-dir` to pin a whole directory on IPFS.
@@ -406,7 +411,7 @@ There is also a similar command `pin-dir` to pin a whole directory on IPFS.
 
 `mint` command requires the following parameters:
 
-- `<owner>` alias or address of the nft collection owner. 
+- `<owner>` alias or address of the nft collection owner.
 - `<collection>` alias or address of the NFT collection contract created by
   `create-collection` command
 - `--tokens` new token descriptors. Each token descriptor is a comma
@@ -419,7 +424,7 @@ $ tznft mint <owner_alias> <collection_alias> --tokens <tokens_list>
 Example:
 
 ```sh
-$ tznft mint bob my_collection --tokens '1, ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU' '2, ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5'
+$ tznft mint bob my_collection --tokens '1, ipfs://QmfVUCoqRuR83Hhk9iJeobbqwDhdA1HLRGkbDQzdjHrezw' '2, ipfs://QmbAhKqNn9L3dP9pYoutsDq6UjqrjCTuJCNRkJDAF12GL8'
 
 minting tokens...
 tokens minted
@@ -436,8 +441,8 @@ in a csv file instead of CLI. Required parameters:
 Let's create `tokens.csv` file as following:
 
 ```csv
-3, ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU
-4, ipfs://QmVzFkijvvVUn6Gzbd3zEB43wGRUzVEwN3b5oLNfNT9BU5
+3, ipfs://QmfVUCoqRuR83Hhk9iJeobbqwDhdA1HLRGkbDQzdjHrezw
+4, ipfs://QmbAhKqNn9L3dP9pYoutsDq6UjqrjCTuJCNRkJDAF12GL8
 ```
 
 and run `mint-from-file` command:
@@ -505,15 +510,14 @@ querying token metadata...
   "token_id": 1,
   "decimals": 0,
   "isBooleanAmount": true,
-  "name": "Token 1",
-  "description": "Awesome Tezos NFT",
+  "name": "Token1",
+  "description": "My awesome token",
   "tags": [
     "awesome",
     "nft"
   ],
   "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
   "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
-  "creators": [],
   "attributes": [
     {
       "name": "sample attribute",
@@ -525,15 +529,14 @@ querying token metadata...
   "token_id": 2,
   "decimals": 0,
   "isBooleanAmount": true,
-  "name": "Token 2",
-  "description": "Awesome Tezos NFT",
+  "name": "Token2",
+  "description": "My awesome token",
   "tags": [
-    "awsome",
+    "awesome",
     "nft"
   ],
   "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
   "artifactUri": "ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj",
-  "creators": [],
   "attributes": [
     {
       "name": "sample attribute",
@@ -725,6 +728,7 @@ and `testnet` (Hangzhou2net). Each pre-configured network has two bootstrap alia
 
   * sandbox
     testnet
+    mainnet
   ```
 
 - `bootstrap` bootstrap sandbox and deploy helper Taquito view contract.
@@ -813,6 +817,10 @@ commands:
 
   jane	tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb	edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq
   ```
+
+  **Warning**: Your Tezos alias private key (along with other configuration) is
+  stored in `tznft.json` file in the working directory. Use extreme caution when
+  using private keys for the Tezos mainnet.
 
 - `add-alias <alias> <address>` add alias using Tezos address (public key hash).
   Such aliases do not have associated private key and cannot be used to sign
