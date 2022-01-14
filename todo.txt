@@ -1,3 +1,47 @@
+VERSION TWO
+============================================================================
+
+        1. Upgrade project environment
+DONE      1.1. New version of Typescript and compilation
+DONE      1.2. Multiple packages (yarn workspaces vs. lerna)
+DONE        1.2.1. Contracts
+DONE          1.2.1.1. Ligo compilation
+DONE          1.2.2.2. Contract origination (???)
+DONE          1.2.2.3. Standard contracts source code
+DONE          1.2.2.4. Contract tests
+WIP         1.2.2.  Typescript contract interfaces
+DONE          1.2.2.1  FA2
+DONE          1.2.2.2  FA2/NFT
+              1.2.2.3  Admin entry points
+DONE          1.2.2.4  Custom mint entry points
+DONE          1.2.2.5  Support Taquito batch API
+              1.2.2.6  Helper to build FA2 transfer batch
+DONE        1.2.3. CLI
+DONE          1.2.3.1 Provide TZIP-16 metadata during contract origination
+NA            1.2.3.2 Originate two types of NFT contracts
+DONE      1.3. NPM build and publishing
+DONE    2. Enhance metadata
+DONE      2.1. TZIP-16 contract metadata
+DONE      2.2. TZIP-21 rich token metadata
+DONE      2.3. validate user-provided metadata
+DONE      2.4. pin metadata to IPFS
+        
+        4. Advanced features
+DONE      4.1. LIGO contract compilation toolkit (CLI)
+          4.2. Generate contract storage Typescript type (CLI)
+          4.3. Compile and package off-chain views
+          4.4. Originate user-written contract
+
+DONE    5. Metadata
+DONE      5.1. generate TZIP-021 metadata template
+DONE      5.2. validate user-provided token metadata schema
+DONE      5.3. validate user-provided TZIP-016 metadata schema
+DONE      5.4. Retrieve token metadata using Taquito Tzip12 provider
+
+
+VERSION ONE
+============================================================================
+
 DONE    1. Pick CLI parser (yargs, meow, commander). Commander it is
 DONE    2. Pick config library (configstore, conf). conf
 DONE    3. Initial CLI for config manipulation
@@ -32,10 +76,4 @@ DONE    16. Replace conf with configstore (maybe)
 DONE    17. catch unhandled rejected promise
 DONE    18. Research using ASCII art as token image stored in metadata extras
             asciify-image, ascii-cats
-
-PHASE TWO
-        1. write tutorial
-        2. Editable contracts
-        3. custom contract origination
-        4. custom metadata
         

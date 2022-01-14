@@ -1,0 +1,62 @@
+{
+  "name": "@oxheadalpha/tznft",
+  "version": "2.0.10",
+  "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
+  "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
+  "homepage": "https://github.com/oxheadalpha/nft-tutorial/packages/nft-tutorial#README.md",
+  "keywords": [
+    "tezos",
+    "smart contracts",
+    "NFT",
+    "FA2",
+    "TZIP-12",
+    "TZIP-21"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p . && chmod +x dist/tznft.js && yarn compile-contract",
+    "prepare": "yarn build",
+    "compile-contract": "ts-node ./src/compile-contract.ts",
+    "test-contract": "jest --runInBand",
+    "test": "(yarn compile-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
+    "tznft": "./dist/tznft.js"
+  },
+  "bin": {
+    "tznft": "./dist/tznft.js"
+  },
+  "files": [
+    "dist/*",
+    "ligo/*",
+    "tznft.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@jest/types": "^27.4.2",
+    "@types/async-retry": "^1.4.3",
+    "@types/configstore": "^5.0.1",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.0",
+    "jest": "^27.4.5",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@oxheadalpha/fa2-interfaces": "^2.0.10",
+    "@oxheadalpha/tezos-tools": "^2.0.10",
+    "@taquito/signer": "^11.0.2",
+    "@taquito/taquito": "^11.0.2",
+    "bignumber.js": "^9.0.1",
+    "child_process": "^1.0.2",
+    "commander": "^6.0.0",
+    "configstore": "^5.0.1",
+    "fs": "^0.0.1-security",
+    "kleur": "^4.1.4",
+    "path": "^0.12.7",
+    "process": "^0.11.10"
+  },
+  "gitHead": "1c80cc3e323b7dcadaf1ff8c3b80ebfe8d407369"
+}
