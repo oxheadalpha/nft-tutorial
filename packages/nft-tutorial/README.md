@@ -83,7 +83,7 @@ You will need to install `tznft` CLI tool. After the installation, you can invok
 various commands in the form of `tznft <command> [options]`. `tznft` provides the
 following command categories:
 
-- configuration and bootstraping Tezos network and configure address aliases
+- configuration and bootstrapping Tezos network and configure address aliases
 - generate and validate NFT collections and tokens metadata
 - create NFT collection (FA2 contract origination) and mint tokens
 - token inspection
@@ -188,7 +188,7 @@ Created collection metadata file my_collection.json
 ```json
 {
   "name": "my_collection",
-  "description": "Awsome NFT collection",
+  "description": "Awesome NFT collection",
   "homepage": "https://github.com/oxheadalpha/nft-tutorial",
   "authors": [
     "John Doe <john.doe@johndoe.com>"
@@ -281,7 +281,7 @@ This tutorial supports storing external data on [IPFS](https://ipfs.io) and keep
 an IPFS hash as a part of the token metadata (which we will store on IPFS as well).
 
 Let's create metadata for an NFT token which references an image on IPFS with the
-hashcode (CID)
+hash code (CID)
 [QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj](https://ipfs.io/ipfs/QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj).
 
 Example:
@@ -301,7 +301,7 @@ Created token metadata sample file Token1.json
   "name": "Token1",
   "description": "",
   "tags": [
-    "awsome",
+    "awesome",
     "nft"
   ],
   "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
@@ -351,7 +351,7 @@ free to customize tokens metadata as you see fit.
 Before minting tokens, you need to pin token metadata files to IPFS and use their
 IPFS URIs for minting. There are multiple ways to do this, but in this tutorial
 we will use [Pinata](https://www.pinata.cloud/). First, you need to create a
-Pinata account (there is a free option available). You can upload (pin) `Token1.sjon`
+Pinata account (there is a free option available). You can upload (pin) `Token1.json`
 and `Token2.json` files created on the previous step manually or use `tznft` CLI.
 
 Create Pinata keys using Pinata's web UI. You would need an API key and a secret
@@ -450,7 +450,7 @@ tokens minted
 ```
 
 You can mint multiple batches of tokens into the same NFT collection contract.
-The only requiremet is that token IDs must be unique.
+The only requirement is that token IDs must be unique.
 
 Once, you finished populating your NFT collection you can freeze it (i. e. prevent
 it from accepting more tokens).
@@ -508,7 +508,7 @@ querying token metadata...
   "name": "Token 1",
   "description": "Awesome Tezos NFT",
   "tags": [
-    "awsome",
+    "awesome",
     "nft"
   ],
   "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
