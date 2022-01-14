@@ -135,8 +135,8 @@ program
 
 //prettier-ignore
 program
-  .command('create-token-meta')
-  .alias('ctm')
+  .command('create-nft-meta')
+  .alias('cnm')
   .description('create a new NFT token metadata template file')
   .arguments('<nft_name> <creator> <uri>')
   .action(metadata.createNftMeta)
@@ -159,7 +159,7 @@ program
 program
   .command('mint')
   .alias('m')
-  .description('create a new NFT contract and mint new tokens')
+  .description('mint new tokens into existing token collection contract')
   .arguments('<owner> <collection>')
   .requiredOption(
     '-t, --tokens <tokens...>',
@@ -173,7 +173,7 @@ program
 program
   .command('mint-from-file')
   .alias('mff')
-  .description('create a new NFT contract and mint new tokens')
+  .description('mint new tokens into existing token collection contract')
   .arguments('<owner> <collection>')
   .requiredOption(
     '-tf, --token_file <file>',

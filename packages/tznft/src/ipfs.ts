@@ -39,7 +39,7 @@ export async function pinFileToIpfs(tag: string, filePath: string) {
     resolvedPath
   );
 
-  console.log(kleur.green(`cid:${cid}`));
+  console.log(kleur.green(`ipfs://${cid}`));
 }
 
 export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
@@ -56,7 +56,7 @@ export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
     resolvedPath
   );
 
-  console.log(kleur.green(`cid:${cid}`));
+  console.log(kleur.green(`ipfs://${cid}`));
 }
 
 function loadPinataKeys() : PinataKeys | undefined {

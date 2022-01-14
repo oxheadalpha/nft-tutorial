@@ -53,7 +53,7 @@ function validateHomepage(meta: any): string[] {
     meta.homepage === 'https://github.com/oxheadalpha/nft-tutorial'
   )
     return [
-      'Warning: It looks like "homepage" has a sample value. Replace with a real description or remove it'
+      'Warning: It looks like "homepage" has a sample value. Replace with a real URL or remove it'
     ];
   return [];
 }
@@ -65,7 +65,7 @@ function* validateAuthors(meta: any): Generator<string[]> {
   if (!authors) return;
   if (authors.find(a => a === sampleAuthor))
     yield [
-      `Warning: It looks like one of authors is a sample '${sampleAuthor}'. Replace with a real author e-mail or URL or remove it`
+      `Warning: It looks like one of the authors is a sample '${sampleAuthor}'. Replace with a real author e-mail or URL or remove it`
     ];
 
   yield authors
