@@ -207,11 +207,10 @@ program
   .command('show-meta')
   .alias('shm')
   .description('show metadata for all tokens in the NFT contract')
-  .requiredOption('-s, --signer <signer>', 'address that originates a query')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
-  .action(async options=>contracts.showMetadata(
-    options.signer, options.nft, options.tokens)).passCommandToAction(false);
+  .action(async options=>contracts.showMetadata( options.nft, options.tokens))
+  .passCommandToAction(false);
 
 //prettier-ignore
 program

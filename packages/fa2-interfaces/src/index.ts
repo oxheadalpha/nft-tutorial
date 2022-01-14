@@ -1,4 +1,5 @@
 export * from './fa2-interface';
+export * from './tezos-api';
 export * from './type-aliases';
-export * from './validate-tzip16';
-export * from './validate-tzip21';
+export { validateTzip16 } from './validate-tzip16';
+export { validateTzip21 } from './validate-tzip21';

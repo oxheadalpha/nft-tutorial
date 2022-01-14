@@ -3,6 +3,12 @@ import schema from './schemas/tzip16-metadata-schema.json';
 import * as v from './meta-validators';
 import isEmail from 'is-email';
 
+/**
+ * Validate contract metadata format in accordance with TZIP-16 standard
+ * @param meta object representing contract metadata.
+ * @returns list of validation errors and/or warnings. Each error string starts
+ * with `Error:` prefix and each warning string starts with `Warning:` prefix.
+ */
 export function validateTzip16(meta: object): string[] {
   const ajv = new Ajv();
   ajv.validate(schema, meta);
@@ -34,7 +40,7 @@ function* validateHeuristic(meta: any): Generator<string[]> {
 }
 
 function validateDescription(meta: any): string[] {
-  if (meta.description && meta.description === 'Awsome NFT collection')
+  if (meta.description && meta.description === 'Awesome NFT collection')
     return [
       'Warning: It looks like "description" has a sample value. Replace with a real description or remove it'
     ];

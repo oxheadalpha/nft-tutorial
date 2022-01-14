@@ -1,60 +1,170 @@
-import * as kleur from 'kleur';
+import {
+  ContractMethod,
+  ContractProvider,
+  MichelsonMap
+} from '@taquito/taquito';
 
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
-import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
-
+import { TokenMetadata } from '@taquito/tzip12';
 import { Tzip12Contract, address, nat, bytes } from './type-aliases';
 
+/**
+ * `balance_of` FA2 entry point parameter
+ */
 export interface BalanceRequest {
+  /**
+   * Address of the token owner which holds token balance
+   */
   owner: address;
+  
+  /**
+   * Token ID
+   */
   token_id: nat;
 }
 
+/**
+ * `balance_of` FA2 entry point response
+ */
 export interface BalanceResponse {
+  /**
+   * Balance hold by the owner address for the specified token ID
+   */
   balance: nat;
+  
+  /**
+   * Owner address and token ID for which balance was requested
+   */
   request: BalanceRequest;
 }
 
+/**
+ *
+ */
 export interface TransferDestination {
+  /**
+   * Recipient address for the token transfer
+   */
   to_: address;
+  
+  /**
+   * ID of the token to be transferred
+   */
   token_id: nat;
+  
+  /**
+   * Amount to be transferred
+   */
   amount: nat;
 }
 
+/**
+ * A transfer from a single token owner address to multiple destinations.
+ * It is possible to transfer multiple tokens to multiple destinations with a
+ * single Transfer.
+ */
 export interface Transfer {
+  /**
+   * Owner address to transfer token(s) from
+   */
   from_: address;
+  
+  /**
+   * One or more destinations to transfer tokens to. Each destination specifies
+   * destination address, token id and the amount to be transferred.
+   */
   txs: TransferDestination[];
 }
 
+/**
+ * Operator update parameter
+ */
 export interface OperatorUpdate {
+  /**
+   * Token owner which operators to be updated
+   */
   owner: address;
+  
+  /**
+   * Operator to be added or removed from the list of the owner's operators for
+   * the specified token
+   */
   operator: address;
+  
+  /**
+   * Token ID (token type) which can be transferred on behalf of the owner by the
+   * operator
+   */
   token_id: nat;
 }
 
-// this is how token metadata stored withing the contract internally
+/**
+ * This is how token metadata stored withing the contract internally
+ */
 export interface TokenMetadataInternal {
+  /** Token ID */
   token_id: nat;
+  
+  /**
+   * Bytes encoding pieces of token metadata such as metadata external URI,
+   * decimals, etc.
+   */
   token_info: MichelsonMap<string, bytes>;
 }
-export interface Fa2 {
-  at: (contractAddress: address) => Promise<Fa2Contract>;
-  useLambdaView: (lambdaView: address) => Fa2;
-}
 
+/**
+ * API to access FA2 contract
+ */
 export interface Fa2Contract {
+  /**
+   * Query balances for multiple tokens and token owners.
+   * Invokes FA2 contract `balance_of` entry point
+   */
   queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
+  
+  /**
+   * Query balances for multiple tokens and token owners and represents
+   * results as NFT ownership status.
+   * Invokes FA2 contract `balance_of` entry point
+   */
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
+  
+  /**
+   * Extract tokens metadata
+   */
   tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
-  transferTokens: (transfers: Transfer[]) => Promise<void>;
 
+  /**
+   * Transfer tokens. In default implementation, only token owner or its operator
+   * can transfer tokens from the owner address.
+   */
+  transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
+
+  /**
+   * Update list of operators who can transfer tokens on behalf of the token
+   * owner. In default implementation, only the owner can update its own operators.
+   *
+   * @param addOperators list of operators for the specific tokens to be added
+   * to the owner's operator list
+   * @param removeOperators list of operators for the specific tokens to be removed
+   * from the owner's operator list
+   */
   updateOperators: (
     addOperators: OperatorUpdate[],
     removeOperators: OperatorUpdate[]
-  ) => Promise<void>;
+  ) => ContractMethod<ContractProvider>;
 }
 
-const createFa2Contract = (
+/**
+ * FA2 contract API extension
+ *
+ * Usage example:
+ * ```typescript
+ * const fa2Contract =
+ *   (await tezosApi(tz).at(contractAddress)).with(Fa2);
+ * await fa2Contract.transfer(...);
+ * ```
+ */
+export const Fa2 = (
   contract: Tzip12Contract,
   lambdaView?: address
 ): Fa2Contract => {
@@ -81,16 +191,9 @@ const createFa2Contract = (
       return Promise.all(requests);
     },
 
-    transferTokens: async transfers => {
-      console.log(kleur.yellow('transferring tokens...'));
+    transferTokens: transfers => contract.methods.transfer(transfers),
 
-      const op = await contract.methods.transfer(transfers).send();
-      const hash = await op.confirmation();
-
-      console.log(kleur.green('tokens transferred'));
-    },
-
-    updateOperators: async (addOperators, removeOperators) => {
+    updateOperators: (addOperators, removeOperators) => {
       interface AddOperator {
         add_operator: OperatorUpdate;
       }
@@ -100,8 +203,6 @@ const createFa2Contract = (
 
       type UpdateOperator = AddOperator | RemoveOperator;
 
-      console.log(kleur.yellow('updating operators...'));
-
       const addParams: UpdateOperator[] = addOperators.map(param => {
         return { add_operator: param };
       });
@@ -110,25 +211,9 @@ const createFa2Contract = (
       });
       const allOperators = addParams.concat(removeParams);
 
-      const op = await contract.methods.update_operators(allOperators).send();
-      await op.confirmation();
-
-      console.log(kleur.green('updated operators'));
+      return contract.methods.update_operators(allOperators);
     }
   };
 
   return self;
-};
-
-export const createFa2 = (tzt: TezosToolkit, lambdaView?: address): Fa2 => {
-  tzt.addExtension(new Tzip12Module());
-
-  return {
-    at: async (contractAddress: address) => {
-      const contract = await tzt.contract.at(contractAddress, tzip12);
-      return createFa2Contract(contract, lambdaView);
-    },
-
-    useLambdaView: (lambdaView: address) => createFa2(tzt, lambdaView)
-  };
 };

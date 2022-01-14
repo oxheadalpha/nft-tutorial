@@ -2,7 +2,7 @@ import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { TokenMetadata } from '@taquito/tzip12';
@@ -18,8 +18,8 @@ import {
   addAlias
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
-import * as nft from './nft-interface';
-import { bytes } from '@oxheadalpha/fa2-interfaces';
+import { Fa2 } from '@oxheadalpha/fa2-interfaces';
+import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
@@ -34,6 +34,14 @@ export function createToolkitFromSigner(
   signer: InMemorySigner,
   config: Configstore
 ): TezosToolkit {
+  const toolkit = createToolkitWithoutSigner(config);
+  toolkit.setProvider({
+    signer
+  });
+  return toolkit;
+}
+
+export function createToolkitWithoutSigner(config: Configstore): TezosToolkit {
   const pk = `${activeNetworkKey(config)}.providerUrl`;
   const providerUrl = config.get(pk);
   if (!providerUrl) {
@@ -46,8 +54,6 @@ export function createToolkitFromSigner(
 
   const toolkit = new TezosToolkit(providerUrl);
   toolkit.setProvider({
-    signer,
-    rpc: providerUrl,
     config: { confirmationPollingIntervalSecond: 5 }
   });
   return toolkit;
@@ -70,7 +76,6 @@ export async function createCollection(
   const contract = await originateContract(tz, code, storage, 'nft');
 
   if (alias) {
-    const meta = JSON.parse(metaJson);
     await addAlias(alias, contract.address);
   }
 }
@@ -88,9 +93,13 @@ export async function mintNfts(
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
-  await nft.mintTokens(collectionAddress, tz, [
-    { owner: ownerAddress, tokens }
-  ]);
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+
+  console.log(kleur.yellow('minting tokens...'));
+  await fa2.runMethod(
+    nftContract.mintTokens([{ owner: ownerAddress, tokens }])
+  );
+  console.log(kleur.green('tokens minted'));
 }
 
 export async function mintNftsFromFile(
@@ -107,9 +116,13 @@ export async function mintNftsFromFile(
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
-  await nft.mintTokens(collectionAddress, tz, [
-    { owner: ownerAddress, tokens }
-  ]);
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+
+  console.log(kleur.yellow('minting tokens...'));
+  await fa2.runMethod(
+    nftContract.mintTokens([{ owner: ownerAddress, tokens }])
+  );
+  console.log(kleur.green('tokens minted'));
 }
 
 async function loadTokensFromFile(
@@ -135,7 +148,12 @@ export async function mintFreeze(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const collectionAddress = await resolveAlias2Address(collection, config);
-  await nft.freezeCollection(collectionAddress, tz);
+
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+
+  console.log(kleur.yellow('freezing nft collection...'));
+  fa2.runMethod(await nftContract.freezeCollection());
+  console.log(kleur.green('nft collection frozen'));
 }
 
 export function parseTokens(
@@ -146,41 +164,6 @@ export function parseTokens(
   const token = createTokenMetadata(id, tokenMetadataUri);
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
-}
-
-function createTokenMetadata(
-  tokenId: string | number,
-  tokenMetadataUri: string
-): fa2.TokenMetadataInternal {
-  const m: fa2.TokenMetadataInternal = {
-    token_id: new BigNumber(tokenId),
-    token_info: new MichelsonMap()
-  };
-  m.token_info.set('', char2Bytes(tokenMetadataUri));
-  return m;
-}
-
-function createNftStorage(owner: string, metaJson: string) {
-  const assets = {
-    ledger: new MichelsonMap(),
-    operators: new MichelsonMap(),
-    token_metadata: new MichelsonMap()
-  };
-  const admin = {
-    admin: owner,
-    pending_admin: undefined,
-    paused: false
-  };
-  const metadata = new MichelsonMap<string, bytes>();
-  metadata.set('', char2Bytes('tezos-storage:content'));
-  metadata.set('content', char2Bytes(metaJson));
-
-  return {
-    assets,
-    admin,
-    metadata,
-    mint_freeze: false
-  };
 }
 
 export async function showBalances(
@@ -199,10 +182,9 @@ export async function showBalances(
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const fa2Contract = await fa2
-    .createFa2(tz)
-    .useLambdaView(lambdaView)
-    .at(nftAddress);
+  const fa2Contract = (
+    await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
+  ).with(Fa2);
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
   const balances = await fa2Contract.queryBalances(requests);
@@ -224,17 +206,16 @@ function printBalances(balances: fa2.BalanceResponse[]): void {
 }
 
 export async function showMetadata(
-  signer: string,
   contract: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(signer, config);
+  const tz = await createToolkitWithoutSigner(config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tokenIds = tokens.map(t => Number.parseInt(t));
 
-  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow('querying token metadata...'));
   const tokensMeta = await fa2Contract.tokensMetadata(tokenIds);
@@ -280,8 +261,11 @@ export async function transfer(
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
 
-  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
-  await fa2Contract.transferTokens(txs);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+
+  console.log(kleur.yellow('transferring tokens...'));
+  await fa2.runMethod(fa2Contract.transferTokens(txs));
+  console.log(kleur.green('tokens transferred'));
 }
 
 async function resolveTxAddresses(
@@ -320,23 +304,26 @@ export async function updateOperators(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
-  
+
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
-  
+
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
-  
+
   const nftAddress = await resolveAlias2Address(contract, config);
-  
-  const fa2Contract = await fa2.createFa2(tz).at(nftAddress);
-  await fa2Contract.updateOperators(resolvedAdd, resolvedRemove)
+
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+
+  console.log(kleur.yellow('updating operators...'));
+  await fa2.runMethod(fa2Contract.updateOperators(resolvedAdd, resolvedRemove));
+  console.log(kleur.green('updated operators'));
 }
 
 async function resolveOperators(
