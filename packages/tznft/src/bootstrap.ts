@@ -2,7 +2,11 @@ import * as kleur from 'kleur';
 import { loadUserConfig, lambdaViewKey } from './config-util';
 import { createToolkit, createToolkitWithoutSigner } from './contracts';
 import Configstore from 'configstore';
-import { startSandbox, killSandbox, awaitForSandbox } from '@oxheadalpha/tezos-tools';
+import {
+  startSandbox,
+  killSandbox,
+  awaitForSandbox
+} from '@oxheadalpha/tezos-tools';
 import { TezosToolkit, VIEW_LAMBDA } from '@taquito/taquito';
 
 export async function bootstrap(): Promise<void> {
@@ -45,9 +49,7 @@ async function originateLambdaViewContract(
   const a = await contractAddressIfExists(config, tezos, configKey);
   if (a) return;
 
-  console.log(
-    kleur.yellow(`originating Taquito lambda view contract...`)
-  );
+  console.log(kleur.yellow(`originating Taquito lambda view contract...`));
   const op = await tezos.contract.originate({
     code: VIEW_LAMBDA.code,
     storage: VIEW_LAMBDA.storage
