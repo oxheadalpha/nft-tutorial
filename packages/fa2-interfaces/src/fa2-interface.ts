@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import {
   ContractMethod,
   ContractProvider,
@@ -175,9 +176,11 @@ export const Fa2 = (
     hasNftTokens: async requests => {
       const responses = await self.queryBalances(requests);
 
+      const one = new BigNumber(1);
+      const zero = new BigNumber(0);
       const results = responses.map(r => {
-        if (r.balance.eq(1)) return true;
-        else if (r.balance.eq(0)) return false;
+        if (one.eq(r.balance)) return true;
+        else if (zero.eq(r.balance)) return false;
         else throw new Error(`Invalid NFT balance ${r.balance}`);
       });
 

@@ -1,5 +1,4 @@
 import * as kleur from 'kleur';
-import { BigNumber } from 'bignumber.js';
 import { address, Fa2, runMethod, runBatch } from '@oxheadalpha/fa2-interfaces';
 import { Nft } from '../src/nft-interface';
 
@@ -38,8 +37,8 @@ describe('NFT Collection Minting Tests', () => {
     expect(meta.map(t => t.token_id)).toEqual([1, 2]);
 
     const ownership = await fa2.hasNftTokens([
-      { owner: bobAddress, token_id: new BigNumber(1) },
-      { owner: bobAddress, token_id: new BigNumber(1) }
+      { owner: bobAddress, token_id: 1 },
+      { owner: bobAddress, token_id: 2 }
     ]);
     expect(ownership).toEqual([true, true]);
   });
