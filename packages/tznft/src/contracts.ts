@@ -238,7 +238,7 @@ export function parseTransfers(
       {
         to_,
         token_id: new BigNumber(token_id),
-        amount: new BigNumber(1)
+        amount: 1
       }
     ]
   };
