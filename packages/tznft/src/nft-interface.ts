@@ -9,6 +9,7 @@ import { char2Bytes } from '@taquito/utils';
 import {
   Tzip12Contract,
   address,
+  nat,
   TokenMetadataInternal,
   bytes
 } from '@oxheadalpha/fa2-interfaces';
@@ -52,11 +53,11 @@ export function createNftStorage(owner: string, metaJson: string) {
 }
 
 export function createTokenMetadata(
-  tokenId: string | number,
+  tokenId: nat,
   tokenMetadataUri: string
 ): TokenMetadataInternal {
   const m: TokenMetadataInternal = {
-    token_id: new BigNumber(tokenId),
+    token_id: tokenId,
     token_info: new MichelsonMap()
   };
   m.token_info.set('', char2Bytes(tokenMetadataUri));

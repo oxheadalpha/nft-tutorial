@@ -137,7 +137,7 @@ async function loadTokensFromFile(
     })
     .map(line => {
       let [tokenId, metadataUri] = line.split(',').map(s => s.trim());
-      return createTokenMetadata(tokenId, metadataUri);
+      return createTokenMetadata(new BigNumber(tokenId), metadataUri);
     });
 }
 
@@ -161,7 +161,7 @@ export function parseTokens(
   tokens: fa2.TokenMetadataInternal[]
 ): fa2.TokenMetadataInternal[] {
   const [id, tokenMetadataUri] = descriptor.split(',').map(p => p.trim());
-  const token = createTokenMetadata(id, tokenMetadataUri);
+  const token = createTokenMetadata(new BigNumber(id), tokenMetadataUri);
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
 }
