@@ -5,7 +5,7 @@ import { TezosToolkit } from '@taquito/taquito';
 
 /**
  * Start a new instance of Flextesa sandbox.
- * Sanbox node RPC will be availabe at 'http://localhost:20000'.
+ * Sandbox node RPC will be available at 'http://localhost:20000'.
  */
 export const startSandbox = async (): Promise<void> => {
   await new Promise<void>((resolve, reject) =>
