@@ -26,5 +26,5 @@ export type Tzip12Contract = Contract & {
 }
 
 export type address = string;
-export type nat = BigNumber;
+export type nat = BigNumber | number;
 export type bytes = string;

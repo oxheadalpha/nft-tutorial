@@ -4,7 +4,6 @@ import {
   address,
   Fa2,
   runMethod,
-  runBatch,
   Transfer,
   Fa2Contract
 } from '@oxheadalpha/fa2-interfaces';
@@ -41,7 +40,7 @@ describe('FA2 Token Transfer Tests', () => {
   ): Transfer {
     return {
       from_,
-      txs: [{ to_, token_id: new BigNumber(tokenId), amount: new BigNumber(1) }]
+      txs: [{ to_, token_id: tokenId, amount: 1 }]
     };
   }
 
@@ -50,8 +49,8 @@ describe('FA2 Token Transfer Tests', () => {
     owner: address
   ): Promise<boolean[]> =>
     fa2.hasNftTokens([
-      { owner, token_id: new BigNumber(1) },
-      { owner, token_id: new BigNumber(2) }
+      { owner, token_id: 1 },
+      { owner, token_id: 2 }
     ]);
 
   test('transfer', async () => {
@@ -94,7 +93,7 @@ describe('FA2 Token Transfer Tests', () => {
         [
           {
             owner: bobAddress,
-            token_id: new BigNumber(1),
+            token_id: 1,
             operator: aliceAddress
           }
         ],
