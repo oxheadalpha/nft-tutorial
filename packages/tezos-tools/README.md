@@ -13,11 +13,19 @@ TypeScript API for
 
 `start-sandbox` starts Flextesa sandbox.
 
-Example: `yarn start-sandbox`
+Example:
+
+```sh
+$ yarn start-sandbox
+```
 
 `kill-sandbox` kills running Flextesa sandbox.
 
-Example: `yarn kill-sandbox`
+Example:
+
+```sh
+$ yarn kill-sandbox
+```
 
 ## API
 
