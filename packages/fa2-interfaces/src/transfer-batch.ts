@@ -4,7 +4,7 @@ import { Transfer } from './fa2-interface';
 /**
  * A batch builder that can create transfers for the method Fa2Contract.transferTokens
  * It merges the subsequent transfers with the same source (from_ field)
- * 
+ *
  * Usage example:
  * ```typescript
  * const transfers = transferBatch()
@@ -15,9 +15,9 @@ import { Transfer } from './fa2-interface';
  * contract.transferTokens(transfers)
  * ```
  *
- * @param transfers a list of transfers to add more transfers to 
+ * @param transfers a list of transfers to add more transfers to
  * (normally use the default empty list)
- * 
+ *
  * @returns a batch of transfers that can be populated with transfers
  */
 export const transferBatch = (transfers: Transfer[] = []) => ({
@@ -46,3 +46,5 @@ export const transferBatch = (transfers: Transfer[] = []) => ({
     return transferBatch(newBatch);
   }
 });
+
+export type TransferBatch = ReturnType<typeof transferBatch>;
