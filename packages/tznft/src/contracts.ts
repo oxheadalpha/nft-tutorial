@@ -289,24 +289,28 @@ export async function updateOperators(
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
+  const batch = fa2.operatorUpdateBatch();
+
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
+  batch.addOperators(resolvedAdd);
 
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
+  batch.removeOperators(resolvedRemove);
 
   const nftAddress = await resolveAlias2Address(contract, config);
 
   const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow('updating operators...'));
-  await fa2.runMethod(fa2Contract.updateOperators(resolvedAdd, resolvedRemove));
+  await fa2.runMethod(fa2Contract.updateOperators(batch.updates));
   console.log(kleur.green('updated operators'));
 }
 
@@ -314,7 +318,7 @@ async function resolveOperators(
   owner: string,
   operators: string[],
   config: Configstore
-): Promise<fa2.OperatorUpdate[]> {
+): Promise<fa2.OperatorUpdateParams[]> {
   const resolved = operators.map(async o => {
     try {
       const [op, token] = o.split(',');
