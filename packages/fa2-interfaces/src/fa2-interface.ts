@@ -98,14 +98,23 @@ export interface OperatorUpdateParams {
   token_id: nat;
 }
 
+/**
+ * Describes an "Add Operator" operation
+ */
 export interface AddOperator {
   add_operator: OperatorUpdateParams;
 }
 
-export interface RemoveOperator {
+/**
+ * Describes a "Remove Operator" operation
+ */
+ export interface RemoveOperator {
   remove_operator: OperatorUpdateParams;
 }
 
+/**
+ * Describes an operator update which is either Add or Remove
+ */
 export type OperatorUpdate = AddOperator | RemoveOperator;
 
 /**
