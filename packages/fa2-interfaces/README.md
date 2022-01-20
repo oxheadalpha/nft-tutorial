@@ -14,6 +14,9 @@
 * [TypeScript API](#typescript-api)
   * [Metadata Validation](#metadata-validation)
   * [Taquito and Michelson Type Aliases](#taquito-and-michelson-type-aliases)
+  * [Taquito Wrappers Providing Type-Safe Contract API](#taquito-wrappers-providing-type-safe-contract-api)
+  * [Helpers to Run Taquito `ContractMethod`](#helpers-to-run-taquito-contractmethod)
+  * [FA2 Contract API Methods](#fa2-contract-api-methods)
 
 ## LIGO
 
