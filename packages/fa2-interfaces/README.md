@@ -277,8 +277,8 @@ const batch = operatorUpdateBatch().
   .addOperator('tzOwner1', 'tzOperator1', 1)
   .removeOperator('tzOwner2, 'tzOperator2', 2)
   .addOperators([
-    { owner: 'tzOnwer3', operator: 'tzOperator3', token_id: 3 },
-    { owner: 'tzOnwer4', operator: 'tzOperator4', token_id: 4 }
+    { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+    { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
   ])
   .updates;
 
