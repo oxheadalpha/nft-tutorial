@@ -160,7 +160,7 @@ const tezosApi = fa2.tezosApi(tezos).useLambdaView(lambdaView);
 ```
 
 , where `lambdaView` is an optional parameter that can specify an address of
-a "lambda view" to be used in FA2 API.
+a [Lambda View](https://tezostaquito.io/docs/lambda_view) to be used in FA2 API.
 Then to get an API to a specific contract, method `at` can be used:
 
 ```typescript
@@ -196,7 +196,7 @@ by providing one constructor function with the following signature:
 ```
 
 The `T` type is just an object(a record of functions) and can be implemented 
-anyway possible, including using `TypeScript` `class`. In this case it has
+anyway possible, including using TypeScript class. In this case it has
 to be wrapped in a function like this:
 
 ```typescript
@@ -208,9 +208,9 @@ export const MyContractApi = (
 
 ### Helpers to Run Taquito `ContractMethod`
 
-In FA2 API methods that update contract storage return `Taquito` type 
+In FA2 API methods that call/invoke contract entry points return `Taquito` type
 `<ContractMethod<ContractProvider>>`. These methods can be sent and confirmed
-individually or in a batch directly using the Taquito API. However, as it is
+individually, or in a batch, directly using Taquito API. However, as it is
 a frequently used operations we have two helpers: `runMethod` & `runBatch`.
 `runMethod` can be used like this:
 
