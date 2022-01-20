@@ -205,3 +205,27 @@ export const MyContractApi = (
   lambdaView?: address
 ): Fa2Contract => new MyClass(contract, lambdaView)
 ```
+
+### Helpers to Run Taquito `ContractMethod`
+
+In FA2 API methods that update contract storage return `Taquito` type 
+`<ContractMethod<ContractProvider>>`. These methods can be sent and confirmed
+individually or in a batch directly using the Taquito API. However, as it is
+a frequently used operations we have two helpers: `runMethod` & `runBatch`.
+`runMethod` can be used like this:
+
+```typescript
+const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
+```
+
+Alternatively, contract methods can be added into a batch and then send &
+confirmed using helper `runBatch` like this:
+
+```typescript
+const batch = toolkit.contract.batch();
+
+batch.withContractCall(fa2Contract.transferTokens(txs1));
+batch.withContractCall(fa2Contract.transferTokens(txs2));
+
+const op: BatchOperation = await fa2.runBatch(batch);
+```
