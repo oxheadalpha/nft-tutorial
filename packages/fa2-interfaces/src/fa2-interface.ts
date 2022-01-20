@@ -163,10 +163,7 @@ export interface Fa2Contract {
    * Update list of operators who can transfer tokens on behalf of the token
    * owner. In default implementation, only the owner can update its own operators.
    *
-   * @param addOperators list of operators for the specific tokens to be added
-   * to the owner's operator list
-   * @param removeOperators list of operators for the specific tokens to be removed
-   * from the owner's operator list
+   * @param updates a list of either add or remove operator commands
    */
   updateOperators: (
     updates: OperatorUpdate[]

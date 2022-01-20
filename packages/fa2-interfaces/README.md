@@ -229,3 +229,56 @@ batch.withContractCall(fa2Contract.transferTokens(txs2));
 
 const op: BatchOperation = await fa2.runBatch(batch);
 ```
+
+### FA2 Contract API Methods
+
+Most of the FA2 Contract API methods are well-described in the source code
+comments for the
+[Fa2Contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2-interfaces/src/fa2-interface.ts)
+type. However, methods that invoke contracts entry points may need
+ an additional explanation.
+
+```typescript
+transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
+```
+
+This methods takes a list of transfers and executes them. Transfers can be
+constructed manually but it is easier to use "Transfers Batch API" to do that.
+Here is an example:
+
+```typescript
+const transfers = transferBatch()
+  .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
+  .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
+  .transfers;
+
+contract.transferTokens(transfers)
+```
+
+It will merge automatically subsequent transaction from the same source in order
+to optimise gas.
+
+Like `transferTokens`, `updateOperators` updates can be built using a batch API.
+
+```typescript
+updateOperators: (
+  updates: OperatorUpdate[]
+) => ContractMethod<ContractProvider>;
+```
+
+Updates here are either add or remove commands that can be built manually or
+using batch API like this:
+
+```typescript
+const batch = operatorUpdateBatch().
+  .addOperator('tzOwner1', 'tzOperator1', 1)
+  .removeOperator('tzOwner2, 'tzOperator2', 2)
+  .addOperators([
+    { owner: 'tzOnwer3', operator: 'tzOperator3', token_id: 3 },
+    { owner: 'tzOnwer4', operator: 'tzOperator4', token_id: 4 }
+  ])
+  .updates;
+
+contract.updateOperators(batch);
+
+```
