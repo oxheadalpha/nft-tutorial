@@ -178,7 +178,7 @@ const fa2Contract = contract.with(Fa2).with(Nft)
 ```
 
 It works as a type-safe "mixin" and `fa2Contract` will infer all the right
-types of the methods in specified APIs. Now the calls to methods in
+types of the methods in the specified APIs. Now the calls to methods in
 `fa2Contract` will be checked at compile time:
 
 ```typescript
@@ -198,9 +198,9 @@ by providing one constructor function with the following signature:
 <T>(contract: Tzip12Contract, lambdaView?: address) => T
 ```
 
-The `T` type is just an object(a record of functions) and can be implemented 
-anyway possible, including using TypeScript class. In this case it has
-to be wrapped in a function like this:
+The `T` type here is just an object(a record of functions) and can be
+implemented anyway possible, including using TypeScript class. In this case it
+has to be wrapped in a function like this:
 
 ```typescript
 export const MyContractApi = (
