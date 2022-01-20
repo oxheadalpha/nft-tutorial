@@ -16,7 +16,7 @@ export interface BalanceRequest {
    * Address of the token owner which holds token balance
    */
   owner: address;
-  
+
   /**
    * Token ID
    */
@@ -31,7 +31,7 @@ export interface BalanceResponse {
    * Balance hold by the owner address for the specified token ID
    */
   balance: nat;
-  
+
   /**
    * Owner address and token ID for which balance was requested
    */
@@ -46,12 +46,12 @@ export interface TransferDestination {
    * Recipient address for the token transfer
    */
   to_: address;
-  
+
   /**
    * ID of the token to be transferred
    */
   token_id: nat;
-  
+
   /**
    * Amount to be transferred
    */
@@ -68,7 +68,7 @@ export interface Transfer {
    * Owner address to transfer token(s) from
    */
   from_: address;
-  
+
   /**
    * One or more destinations to transfer tokens to. Each destination specifies
    * destination address, token id and the amount to be transferred.
@@ -77,20 +77,20 @@ export interface Transfer {
 }
 
 /**
- * Operator update parameter
+ * Operator update parameters
  */
-export interface OperatorUpdate {
+export interface OperatorUpdateParams {
   /**
    * Token owner which operators to be updated
    */
   owner: address;
-  
+
   /**
    * Operator to be added or removed from the list of the owner's operators for
    * the specified token
    */
   operator: address;
-  
+
   /**
    * Token ID (token type) which can be transferred on behalf of the owner by the
    * operator
@@ -99,12 +99,31 @@ export interface OperatorUpdate {
 }
 
 /**
+ * Describes an "Add Operator" operation
+ */
+export interface AddOperator {
+  add_operator: OperatorUpdateParams;
+}
+
+/**
+ * Describes a "Remove Operator" operation
+ */
+ export interface RemoveOperator {
+  remove_operator: OperatorUpdateParams;
+}
+
+/**
+ * Describes an operator update which is either Add or Remove
+ */
+export type OperatorUpdate = AddOperator | RemoveOperator;
+
+/**
  * This is how token metadata stored withing the contract internally
  */
 export interface TokenMetadataInternal {
   /** Token ID */
   token_id: nat;
-  
+
   /**
    * Bytes encoding pieces of token metadata such as metadata external URI,
    * decimals, etc.
@@ -121,14 +140,14 @@ export interface Fa2Contract {
    * Invokes FA2 contract `balance_of` entry point
    */
   queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
-  
+
   /**
    * Query balances for multiple tokens and token owners and represents
    * results as NFT ownership status.
    * Invokes FA2 contract `balance_of` entry point
    */
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
-  
+
   /**
    * Extract tokens metadata
    */
@@ -150,8 +169,7 @@ export interface Fa2Contract {
    * from the owner's operator list
    */
   updateOperators: (
-    addOperators: OperatorUpdate[],
-    removeOperators: OperatorUpdate[]
+    updates: OperatorUpdate[]
   ) => ContractMethod<ContractProvider>;
 }
 
@@ -196,26 +214,7 @@ export const Fa2 = (
 
     transferTokens: transfers => contract.methods.transfer(transfers),
 
-    updateOperators: (addOperators, removeOperators) => {
-      interface AddOperator {
-        add_operator: OperatorUpdate;
-      }
-      interface RemoveOperator {
-        remove_operator: OperatorUpdate;
-      }
-
-      type UpdateOperator = AddOperator | RemoveOperator;
-
-      const addParams: UpdateOperator[] = addOperators.map(param => {
-        return { add_operator: param };
-      });
-      const removeParams: UpdateOperator[] = removeOperators.map(param => {
-        return { remove_operator: param };
-      });
-      const allOperators = addParams.concat(removeParams);
-
-      return contract.methods.update_operators(allOperators);
-    }
+    updateOperators: updates => contract.methods.update_operators(updates)
   };
 
   return self;
