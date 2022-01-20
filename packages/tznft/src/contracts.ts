@@ -227,37 +227,21 @@ function printTokenMetadata(m: TokenMetadata) {
   console.log(kleur.green(JSON.stringify(m, null, 2)));
 }
 
-export function parseTransfers(
+export function addTransfer(
   description: string,
-  batch: fa2.Transfer[]
-): fa2.Transfer[] {
-  const [from_, to_, token_id] = description.split(',').map(p => p.trim());
-  const tx: fa2.Transfer = {
-    from_,
-    txs: [
-      {
-        to_,
-        token_id: new BigNumber(token_id),
-        amount: 1
-      }
-    ]
-  };
-  if (batch.length > 0 && batch[0].from_ === from_) {
-    //merge last two transfers if their from_ addresses are the same
-    batch[0].txs = batch[0].txs.concat(tx.txs);
-    return batch;
-  }
-
-  return batch.concat(tx);
+  batch: fa2.TransferBatch
+): fa2.TransferBatch {
+  const [from, to, tokenId] = description.split(',').map(p => p.trim());
+  return batch.withTransfer(from, to, new BigNumber(tokenId), 1);
 }
 
 export async function transfer(
   signer: string,
   contract: string,
-  batch: fa2.Transfer[]
+  batch: fa2.TransferBatch
 ): Promise<void> {
   const config = loadUserConfig();
-  const txs = await resolveTxAddresses(batch, config);
+  const txs = await resolveTxAddresses(batch.transfers, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
 
@@ -305,24 +289,28 @@ export async function updateOperators(
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
+  const batch = fa2.operatorUpdateBatch();
+
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
+  batch.addOperators(resolvedAdd);
 
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
+  batch.removeOperators(resolvedRemove);
 
   const nftAddress = await resolveAlias2Address(contract, config);
 
   const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow('updating operators...'));
-  await fa2.runMethod(fa2Contract.updateOperators(resolvedAdd, resolvedRemove));
+  await fa2.runMethod(fa2Contract.updateOperators(batch.updates));
   console.log(kleur.green('updated operators'));
 }
 
@@ -330,7 +318,7 @@ async function resolveOperators(
   owner: string,
   operators: string[],
   config: Configstore
-): Promise<fa2.OperatorUpdate[]> {
+): Promise<fa2.OperatorUpdateParams[]> {
   const resolved = operators.map(async o => {
     try {
       const [op, token] = o.split(',');

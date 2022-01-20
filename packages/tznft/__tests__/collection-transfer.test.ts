@@ -5,7 +5,8 @@ import {
   Fa2,
   runMethod,
   Transfer,
-  Fa2Contract
+  Fa2Contract,
+  operatorUpdateBatch
 } from '@oxheadalpha/fa2-interfaces';
 import { Nft } from '../src/nft-interface';
 
@@ -87,19 +88,14 @@ describe('FA2 Token Transfer Tests', () => {
     const bobFa2 = (await api.bob.at(collectionAddress)).with(Fa2);
     const aliceFa2 = (await api.alice.at(collectionAddress)).with(Fa2);
 
+    const batch = operatorUpdateBatch().addOperator(
+      bobAddress,
+      aliceAddress,
+      1
+    ).updates;
+
     //Bob adds Alice as an operator for his token 1
-    await runMethod(
-      bobFa2.updateOperators(
-        [
-          {
-            owner: bobAddress,
-            token_id: 1,
-            operator: aliceAddress
-          }
-        ],
-        []
-      )
-    );
+    await runMethod(bobFa2.updateOperators(batch));
 
     //Alice transfers a token on behalf of Bob as an operator
     await runMethod(

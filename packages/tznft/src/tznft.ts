@@ -2,6 +2,7 @@
 import { program } from 'commander';
 import * as kleur from 'kleur';
 import { TezosOperationError } from '@taquito/taquito';
+import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { initUserConfig } from './config-util';
 import * as networkConf from './config-network';
 import * as aliasConf from './config-aliases';
@@ -222,7 +223,7 @@ program
   .requiredOption(
     '-b, --batch <batch...>', 
     'definition of individual transfers, a list of "from, to, token_id"',
-    contracts.parseTransfers, [])
+    contracts.addTransfer, fa2.transferBatch())
   .action(async options=>contracts.transfer(
     options.signer, options.nft, options.batch)).passCommandToAction(false);
 
