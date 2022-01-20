@@ -139,4 +139,69 @@ type nat
 type bytes
 ```
 
-### TBD
+### Taquito Wrappers Providing Type-Safe Contract API
+
+`fa2-interface` package provides Taquito wrappers that allow to use type-safe API
+to FA2 contracts. To use the wrappers first an instance of Taquito toolkit
+has to be created. It can be done like this:
+
+```typescript
+import { TezosToolkit } from '@taquito/taquito';
+
+const tezos = new TezosToolkit('https://YOUR_PREFERRED_RPC_URL');
+```
+
+Then the wrapper can be created:
+
+```typescript
+import * as fa2 from '@oxheadalpha/fa2-interfaces';
+
+const tezosApi = fa2.tezosApi(tezos).useLambdaView(lambdaView);
+```
+
+, where `lambdaView` is an optional parameter that can specify an address of
+a "lambda view" to be used in FA2 API.
+Then to get an API to a specific contract, method `at` can be used:
+
+```typescript
+const contract = await tezosApi.at(address)
+```
+
+A contract can support multiple interfaces that can be "mixed" in
+by using `with` combinator. Usage example:
+
+```typescript
+const fa2Contract = contract.with(Fa2).with(Nft)
+```
+
+It works as a type-safe "mixin" and `fa2Contract` will infer all the right
+types of the methods in specified APIs. Now the calls to methods in
+`fa2Contract` will be checked at compile time:
+
+```typescript
+const balances = await fa2Contract.queryBalances(requests);
+```
+
+It is not required but if desired the inferred type can be named:
+
+```typescript
+type MyContract = typeof faContract
+```
+
+If a custom contract and API to it is necessary, it can be implemented just
+by providing one constructor function with the following signature:
+
+```typescript
+<T>(contract: Tzip12Contract, lambdaView?: address) => T
+```
+
+The `T` type is just an object(a record of functions) and can be implemented 
+anyway possible, including using `TypeScript` `class`. In this case it has
+to be wrapped in a function like this:
+
+```typescript
+export const MyContractApi = (
+  contract: Tzip12Contract,
+  lambdaView?: address
+): Fa2Contract => new MyClass(contract, lambdaView)
+```
