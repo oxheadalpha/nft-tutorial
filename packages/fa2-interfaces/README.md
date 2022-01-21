@@ -222,7 +222,7 @@ a frequently used operations we have two helpers: `runMethod` & `runBatch`.
  * @param cm - a Taquito ContractMethod
  * @returns  Taquito TransactionOperation
  *
- * Usage example:*
+ * Usage example:
  * ```typescript
  * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
  * ```
@@ -232,7 +232,7 @@ export const runMethod = async (
 ): Promise<TransactionOperation>
 ```
 
-Alternatively, contract methods can be added into a batch and then send &
+alternatively, contract methods can be added into a batch and then send &
 confirmed using helper `runBatch`.
 
 ```typescript
