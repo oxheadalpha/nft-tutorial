@@ -16,7 +16,7 @@ export interface BalanceRequest {
    * Address of the token owner which holds token balance
    */
   owner: address;
-  
+
   /**
    * Token ID
    */
@@ -31,7 +31,7 @@ export interface BalanceResponse {
    * Balance hold by the owner address for the specified token ID
    */
   balance: nat;
-  
+
   /**
    * Owner address and token ID for which balance was requested
    */
@@ -46,12 +46,12 @@ export interface TransferDestination {
    * Recipient address for the token transfer
    */
   to_: address;
-  
+
   /**
    * ID of the token to be transferred
    */
   token_id: nat;
-  
+
   /**
    * Amount to be transferred
    */
@@ -68,7 +68,7 @@ export interface Transfer {
    * Owner address to transfer token(s) from
    */
   from_: address;
-  
+
   /**
    * One or more destinations to transfer tokens to. Each destination specifies
    * destination address, token id and the amount to be transferred.
@@ -77,20 +77,20 @@ export interface Transfer {
 }
 
 /**
- * Operator update parameter
+ * Operator update parameters
  */
-export interface OperatorUpdate {
+export interface OperatorUpdateParams {
   /**
    * Token owner which operators to be updated
    */
   owner: address;
-  
+
   /**
    * Operator to be added or removed from the list of the owner's operators for
    * the specified token
    */
   operator: address;
-  
+
   /**
    * Token ID (token type) which can be transferred on behalf of the owner by the
    * operator
@@ -99,12 +99,31 @@ export interface OperatorUpdate {
 }
 
 /**
+ * Describes an "Add Operator" operation
+ */
+export interface AddOperator {
+  add_operator: OperatorUpdateParams;
+}
+
+/**
+ * Describes a "Remove Operator" operation
+ */
+ export interface RemoveOperator {
+  remove_operator: OperatorUpdateParams;
+}
+
+/**
+ * Describes an operator update which is either Add or Remove
+ */
+export type OperatorUpdate = AddOperator | RemoveOperator;
+
+/**
  * This is how token metadata stored withing the contract internally
  */
 export interface TokenMetadataInternal {
   /** Token ID */
   token_id: nat;
-  
+
   /**
    * Bytes encoding pieces of token metadata such as metadata external URI,
    * decimals, etc.
@@ -121,14 +140,14 @@ export interface Fa2Contract {
    * Invokes FA2 contract `balance_of` entry point
    */
   queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
-  
+
   /**
    * Query balances for multiple tokens and token owners and represents
    * results as NFT ownership status.
    * Invokes FA2 contract `balance_of` entry point
    */
   hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
-  
+
   /**
    * Extract tokens metadata
    */
@@ -137,6 +156,20 @@ export interface Fa2Contract {
   /**
    * Transfer tokens. In default implementation, only token owner or its operator
    * can transfer tokens from the owner address.
+   * 
+   * This methods takes a list of transfers and executes them. Transfers can be
+   * constructed manually but it is easier to use "Transfers Batch API" to do that.
+   * Here is an example of using the batch API:
+   * 
+   * ```typescript
+   * const transfers = transferBatch()
+   *   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
+   *   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
+   *   .transfers;
+   * ```
+   * 
+   * It will merge automatically subsequent transaction from the same source in order
+   * to optimise gas.
    */
   transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
 
@@ -144,14 +177,26 @@ export interface Fa2Contract {
    * Update list of operators who can transfer tokens on behalf of the token
    * owner. In default implementation, only the owner can update its own operators.
    *
-   * @param addOperators list of operators for the specific tokens to be added
-   * to the owner's operator list
-   * @param removeOperators list of operators for the specific tokens to be removed
-   * from the owner's operator list
+   * @param updates a list of either add or remove operator commands
+   * 
+   * Updates here can be built manually or using batch API like this:
+   * 
+   * ```typescript
+   * const batch = operatorUpdateBatch().
+   *   .addOperator('tzOwner1', 'tzOperator1', 1)
+   *   .removeOperator('tzOwner2, 'tzOperator2', 2)
+   *   .addOperators([
+   *     { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+   *     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+   *   ])
+   *   .updates;
+   * 
+   * contract.updateOperators(batch);
+   * 
+   * ```
    */
   updateOperators: (
-    addOperators: OperatorUpdate[],
-    removeOperators: OperatorUpdate[]
+    updates: OperatorUpdate[]
   ) => ContractMethod<ContractProvider>;
 }
 
@@ -196,26 +241,7 @@ export const Fa2 = (
 
     transferTokens: transfers => contract.methods.transfer(transfers),
 
-    updateOperators: (addOperators, removeOperators) => {
-      interface AddOperator {
-        add_operator: OperatorUpdate;
-      }
-      interface RemoveOperator {
-        remove_operator: OperatorUpdate;
-      }
-
-      type UpdateOperator = AddOperator | RemoveOperator;
-
-      const addParams: UpdateOperator[] = addOperators.map(param => {
-        return { add_operator: param };
-      });
-      const removeParams: UpdateOperator[] = removeOperators.map(param => {
-        return { remove_operator: param };
-      });
-      const allOperators = addParams.concat(removeParams);
-
-      return contract.methods.update_operators(allOperators);
-    }
+    updateOperators: updates => contract.methods.update_operators(updates)
   };
 
   return self;

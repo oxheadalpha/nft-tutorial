@@ -109,7 +109,7 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
  * @param cm - a Taquito ContractMethod
  * @returns  Taquito TransactionOperation
  *
- * Usage example:*
+ * Usage example:
  * ```typescript
  * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
  * ```
@@ -127,11 +127,13 @@ export const runMethod = async (
  * @param batch - a Taquito OperationBatch
  * @returns  Taquito BatchOperation
  *
- * Usage example:*
+ * Usage example:
  * ```typescript
  * const batch = toolkit.contract.batch();
+ * 
  * batch.withContractCall(fa2Contract.transferTokens(txs1));
- * * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * 
  * const op: BatchOperation = await fa2.runBatch(batch);
  * ```
  */
