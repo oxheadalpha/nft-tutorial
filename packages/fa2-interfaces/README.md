@@ -233,7 +233,7 @@ Usage example:
 const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
 ```
 
-alternatively, contract methods can be added into a batch and then send &
+Alternatively, contract methods can be added into a batch and then send &
 confirmed using helper `runBatch`.
 
 ```typescript
@@ -291,15 +291,15 @@ tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
 ```typescript
 /**
  * Transfer tokens. In default implementation, only token owner or its operator
- * can transfer tokens from the owner address.
- * 
- * This methods takes a list of transfers and executes them. Transfers can be
- * constructed manually but it is easier to use "Transfers Batch API" to do that.
- * It will merge automatically subsequent transaction from the same source in order
- * to optimise gas.
+ * can transfer tokens from the owner address. * 
  */
 transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
 ```
+
+This methods takes a list of transfers and executes them. Transfers can be
+constructed manually but it is easier to use "Transfers Batch API" to do that.
+It will merge automatically subsequent transaction from the same source in order
+to optimise gas.
 
 Here is an example of using the batch API:
 
