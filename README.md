@@ -13,7 +13,7 @@ The repo has three following yarn workspaces (packages):
   [Flextesa](https://tezos.gitlab.io/flextesa/) sandbox and
   [Pinata](https://www.pinata.cloud/) IPFS from TypeScript code.
 
-* [fa2-interfaces](./packages/nft-fa2-interfaces/) - TypeScript interfaces to
+* [fa2-interfaces](./packages/fa2-interfaces/) - TypeScript interfaces to
   interact with FA2 contracts on blockchain.
 
 * [tznft](./packages/tznft/) - CLI `tznft` tool and tutorial.
