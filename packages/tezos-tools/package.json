@@ -25,7 +25,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p .",
-    "prepare": "yarn build"
+    "clear": "yarn rimraf dist",
+    "prepare": "yarn clear && yarn build"
   },
   "bin": {
     "kill-sandbox": "./flextesa/kill-sandbox.sh",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "prettier": "^2.5.1",
+    "rimraf": "^3.0.2",
     "typescript": "^4.5.2"
   },
   "gitHead": "1c80cc3e323b7dcadaf1ff8c3b80ebfe8d407369"

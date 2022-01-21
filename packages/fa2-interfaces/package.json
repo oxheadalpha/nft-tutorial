@@ -24,8 +24,9 @@
     ".": "./dist/index.js"
   },
   "scripts": {
+    "clear": "yarn rimraf dist",
     "build": "tsc -p . && chmod +x ./dist/export-ligo.js",
-    "prepare": "yarn build",
+    "prepare": "yarn clear && yarn build",
     "test": "jest"
   },
   "bin": {
@@ -37,6 +38,7 @@
     "@types/valid-url": "^1.0.3",
     "jest": "^27.4.5",
     "prettier": "^2.5.1",
+    "rimraf": "^3.0.2",
     "ts-jest": "^27.1.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2"

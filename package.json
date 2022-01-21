@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "build": "yarn lerna run build",
+    "clear": "yarn lerna run clear",
     "build:watch": "tsc -w -p .",
     "test": "yarn lerna run test"
   },
