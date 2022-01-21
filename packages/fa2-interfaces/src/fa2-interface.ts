@@ -166,6 +166,8 @@ export interface Fa2Contract {
    *   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
    *   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
    *   .transfers;
+   * 
+   * const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
    * ```
    * 
    * It will merge automatically subsequent transaction from the same source in order
@@ -191,8 +193,7 @@ export interface Fa2Contract {
    *   ])
    *   .updates;
    * 
-   * contract.updateOperators(batch);
-   * 
+   * const op = await fa2.runMethod(fa2Contract.updateOperators(batch));
    * ```
    */
   updateOperators: (

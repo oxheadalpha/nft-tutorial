@@ -308,6 +308,8 @@ const transfers = transferBatch()
   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
   .transfers;
+
+const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
 ```
 
 ```typescript
@@ -334,5 +336,5 @@ const batch = operatorUpdateBatch().
   ])
   .updates;
 
-contract.updateOperators(batch);
+const op = await fa2.runMethod(fa2Contract.updateOperators(batch));
 ```
