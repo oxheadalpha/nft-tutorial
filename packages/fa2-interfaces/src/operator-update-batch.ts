@@ -1,6 +1,25 @@
 import { address, nat } from './type-aliases';
 import { OperatorUpdate, OperatorUpdateParams } from './fa2-interface';
 
+/**
+ * A batch builder that can create operator updates the method
+ * Fa2Contract.updateOperators. It can combine add & remove operator operations
+ * into one batch like this:
+ * 
+ * const batch = operatorUpdateBatch().
+ *   .addOperator('tzOwner1', 'tzOperator1', 1)
+ *   .removeOperator('tzOwner2, 'tzOperator2', 2)
+ *   .addOperators([
+ *     { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+ *     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+ *   ])
+ *   .updates;
+ * 
+ * contract.updateOperators(batch);
+ * 
+ * @param updates a list of either AddOperator or RemoveOperator
+ * @returns a batch of updates that can be used in updateOperators
+ */
 export const operatorUpdateBatch = (updates: OperatorUpdate[] = []) => {
   const self = {
     updates,

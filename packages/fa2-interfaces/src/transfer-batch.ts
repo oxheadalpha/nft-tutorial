@@ -18,7 +18,7 @@ import { Transfer } from './fa2-interface';
  * @param transfers a list of transfers to add more transfers to
  * (normally use the default empty list)
  *
- * @returns a batch of transfers that can be populated with transfers
+ * @returns a batch of transfers that can be used in transferTokens
  */
 export const transferBatch = (transfers: Transfer[] = []) => ({
   transfers,
