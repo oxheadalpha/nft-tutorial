@@ -221,19 +221,18 @@ a frequently used operations we have two helpers: `runMethod` & `runBatch`.
  * Run and confirms a Taquito ContractMethod
  * @param cm - a Taquito ContractMethod
  * @returns  Taquito TransactionOperation
+ *
+ * Usage example:
+ * ```typescript
+ * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
+ * ```
  */
 export const runMethod = async (
   cm: ContractMethod<ContractProvider>
 ): Promise<TransactionOperation>
 ```
 
-Usage example:
-
-```typescript
-const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
-```
-
-alternatively, contract methods can be added into a batch and then send &
+Alternatively, contract methods can be added into a batch and then send &
 confirmed using helper `runBatch`.
 
 ```typescript
@@ -241,20 +240,20 @@ confirmed using helper `runBatch`.
  * Run and confirms a Taquito batch
  * @param batch - a Taquito OperationBatch
  * @returns  Taquito BatchOperation
+ *
+ * Usage example:
+ * ```typescript
+ * const batch = toolkit.contract.batch();
+ * 
+ * batch.withContractCall(fa2Contract.transferTokens(txs1));
+ * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * 
+ * const op: BatchOperation = await fa2.runBatch(batch);
+ * ```
  */
 export const runBatch = async (
   batch: OperationBatch
 ): Promise<BatchOperation>
-```
-
-Usage example:
-
- ```typescript
-const batch = toolkit.contract.batch();
-
-batch.withContractCall(fa2Contract.transferTokens(txs1));
-batch.withContractCall(fa2Contract.transferTokens(txs2));
-const op: BatchOperation = await fa2.runBatch(batch);
 ```
 
 ### FA2 Contract API Methods
@@ -290,26 +289,26 @@ tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
 
 ```typescript
 /**
- * Transfer tokens. In default implementation, only token owner or its operator
- * can transfer tokens from the owner address.
- * 
- * This methods takes a list of transfers and executes them. Transfers can be
- * constructed manually but it is easier to use "Transfers Batch API" to do that.
- * It will merge automatically subsequent transaction from the same source in order
- * to optimise gas.
- */
+* Transfer tokens. In default implementation, only token owner or its operator
+* can transfer tokens from the owner address.
+* 
+* This methods takes a list of transfers and executes them. Transfers can be
+* constructed manually but it is easier to use "Transfers Batch API" to do that.
+* Here is an example of using the batch API:
+* 
+* ```typescript
+* const transfers = transferBatch()
+*   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
+*   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
+*   .transfers;
+* 
+* const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
+* ```
+* 
+* It will merge automatically subsequent transaction from the same source in order
+* to optimise gas.
+*/
 transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
-```
-
-Here is an example of using the batch API:
-
-```typescript
-const transfers = transferBatch()
-  .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
-  .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
-  .transfers;
-
-const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
 ```
 
 ```typescript
@@ -318,23 +317,23 @@ const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
 * owner. In default implementation, only the owner can update its own operators.
 *
 * @param updates a list of either add or remove operator commands
+* 
+* Updates here can be built manually or using batch API like this:
+* 
+* ```typescript
+* const batch = operatorUpdateBatch().
+*   .addOperator('tzOwner1', 'tzOperator1', 1)
+*   .removeOperator('tzOwner2, 'tzOperator2', 2)
+*   .addOperators([
+*     { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+*     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+*   ])
+*   .updates;
+* 
+* const op = await fa2.runMethod(fa2Contract.updateOperators(batch));
+* ```
 */
 updateOperators: (
   updates: OperatorUpdate[]
-)
-```
-
-Updates here can be built manually or using batch API like this:
-
-```typescript
-const batch = operatorUpdateBatch().
-  .addOperator('tzOwner1', 'tzOperator1', 1)
-  .removeOperator('tzOwner2, 'tzOperator2', 2)
-  .addOperators([
-    { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
-    { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
-  ])
-  .updates;
-
-const op = await fa2.runMethod(fa2Contract.updateOperators(batch));
+) => ContractMethod<ContractProvider>;
 ```
