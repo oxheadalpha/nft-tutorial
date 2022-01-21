@@ -15,7 +15,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p . && chmod +x dist/tznft.js && yarn compile-contract",
-    "prepare": "yarn build",
+    "clear": "yarn rimraf dist",
+    "prepare": "yarn clear && yarn build",
     "compile-contract": "ts-node ./src/compile-contract.ts",
     "test-contract": "jest --runInBand",
     "test": "(yarn compile-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
@@ -40,6 +41,7 @@
     "@types/node": "^17.0.0",
     "jest": "^27.4.5",
     "prettier": "^2.5.1",
+    "rimraf": "^3.0.2",
     "ts-jest": "^27.1.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
