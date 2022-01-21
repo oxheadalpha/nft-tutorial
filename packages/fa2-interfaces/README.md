@@ -215,22 +215,45 @@ In FA2 API methods that call/invoke contract entry points return `Taquito` type
 `<ContractMethod<ContractProvider>>`. These methods can be sent and confirmed
 individually, or in a batch, directly using Taquito API. However, as it is
 a frequently used operations we have two helpers: `runMethod` & `runBatch`.
-`runMethod` can be used like this:
 
 ```typescript
-const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
+/**
+ * Run and confirms a Taquito ContractMethod
+ * @param cm - a Taquito ContractMethod
+ * @returns  Taquito TransactionOperation
+ *
+ * Usage example:*
+ * ```typescript
+ * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
+ * ```
+ */
+export const runMethod = async (
+  cm: ContractMethod<ContractProvider>
+): Promise<TransactionOperation>
 ```
 
 Alternatively, contract methods can be added into a batch and then send &
-confirmed using helper `runBatch` like this:
+confirmed using helper `runBatch`.
 
 ```typescript
-const batch = toolkit.contract.batch();
-
-batch.withContractCall(fa2Contract.transferTokens(txs1));
-batch.withContractCall(fa2Contract.transferTokens(txs2));
-
-const op: BatchOperation = await fa2.runBatch(batch);
+/**
+ * Run and confirms a Taquito batch
+ * @param batch - a Taquito OperationBatch
+ * @returns  Taquito BatchOperation
+ *
+ * Usage example:*
+ * ```typescript
+ * const batch = toolkit.contract.batch();
+ * 
+ * batch.withContractCall(fa2Contract.transferTokens(txs1));
+ * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * 
+ * const op: BatchOperation = await fa2.runBatch(batch);
+ * ```
+ */
+export const runBatch = async (
+  batch: OperationBatch
+): Promise<BatchOperation>
 ```
 
 ### FA2 Contract API Methods
@@ -238,50 +261,78 @@ const op: BatchOperation = await fa2.runBatch(batch);
 Most of the FA2 Contract API methods are well-described in the source code
 comments for the
 [Fa2Contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2-interfaces/src/fa2-interface.ts)
-type. However, methods that invoke contracts entry points may need
- an additional explanation.
+type.
 
 ```typescript
+/**
+ * Query balances for multiple tokens and token owners.
+ * Invokes FA2 contract `balance_of` entry point
+ */
+queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
+```
+
+```typescript
+/**
+ * Query balances for multiple tokens and token owners and represents
+ * results as NFT ownership status.
+ * Invokes FA2 contract `balance_of` entry point
+ */
+hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
+```
+
+```typescript
+/**
+ * Extract tokens metadata
+ */
+tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
+```
+
+```typescript
+/**
+ * Transfer tokens. In default implementation, only token owner or its operator
+ * can transfer tokens from the owner address.
+ * 
+ * This methods takes a list of transfers and executes them. Transfers can be
+ * constructed manually but it is easier to use "Transfers Batch API" to do that.
+ * Here is an example of using the batch API:
+ * 
+ * ```typescript
+ * const transfers = transferBatch()
+ *   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
+ *   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
+ *   .transfers;
+ * 
+ * It will merge automatically subsequent transaction from the same source in order
+ * to optimise gas.
+ * ```
+ */
 transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
 ```
 
-This methods takes a list of transfers and executes them. Transfers can be
-constructed manually but it is easier to use "Transfers Batch API" to do that.
-Here is an example:
-
 ```typescript
-const transfers = transferBatch()
-  .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
-  .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
-  .transfers;
-
-contract.transferTokens(transfers)
-```
-
-It will merge automatically subsequent transaction from the same source in order
-to optimise gas.
-
-Like `transferTokens`, `updateOperators` updates can be built using a batch API.
-
-```typescript
+/**
+* Update list of operators who can transfer tokens on behalf of the token
+* owner. In default implementation, only the owner can update its own operators.
+*
+* @param updates a list of either add or remove operator commands
+* 
+* Updates here can be built manually or using batch API like this:
+* 
+* ```typescript
+* const batch = operatorUpdateBatch().
+*   .addOperator('tzOwner1', 'tzOperator1', 1)
+*   .removeOperator('tzOwner2, 'tzOperator2', 2)
+*   .addOperators([
+*     { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+*     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+*   ])
+*   .updates;
+* 
+* contract.updateOperators(batch);
+* 
+* ```
+*/
 updateOperators: (
   updates: OperatorUpdate[]
-) => ContractMethod<ContractProvider>;
-```
-
-Updates here are either add or remove commands that can be built manually or
-using batch API like this:
-
-```typescript
-const batch = operatorUpdateBatch().
-  .addOperator('tzOwner1', 'tzOperator1', 1)
-  .removeOperator('tzOwner2, 'tzOperator2', 2)
-  .addOperators([
-    { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
-    { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
-  ])
-  .updates;
-
-contract.updateOperators(batch);
-
+)
 ```

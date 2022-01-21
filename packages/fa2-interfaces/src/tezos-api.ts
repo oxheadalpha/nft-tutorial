@@ -130,8 +130,10 @@ export const runMethod = async (
  * Usage example:*
  * ```typescript
  * const batch = toolkit.contract.batch();
+ * 
  * batch.withContractCall(fa2Contract.transferTokens(txs1));
- * * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * batch.withContractCall(fa2Contract.transferTokens(txs2));
+ * 
  * const op: BatchOperation = await fa2.runBatch(batch);
  * ```
  */
