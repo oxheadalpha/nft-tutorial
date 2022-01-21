@@ -127,7 +127,7 @@ export const runMethod = async (
  * @param batch - a Taquito OperationBatch
  * @returns  Taquito BatchOperation
  *
- * Usage example:*
+ * Usage example:
  * ```typescript
  * const batch = toolkit.contract.batch();
  * 

@@ -166,10 +166,10 @@ export interface Fa2Contract {
    *   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
    *   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
    *   .transfers;
+   * ```
    * 
    * It will merge automatically subsequent transaction from the same source in order
    * to optimise gas.
-   * ```
    */
   transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
 
