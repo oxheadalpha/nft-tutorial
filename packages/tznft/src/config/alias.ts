@@ -1,11 +1,6 @@
 import { validateAddress, ValidationResult } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
-
-export interface Alias {
-  name: string;
-  address: string;
-  secret?: string;
-}
+import { Alias } from './parser';
 
 export const isAddress = (address: string) =>
   validateAddress(address) === ValidationResult.VALID;
@@ -15,29 +10,23 @@ const checkAddress = (address: string): string => {
   throw new Error(`Invalid address ${address}`);
 };
 
-export const aliasFromAddress = (name: string, address: string): Alias => ({
-  name,
+export const aliasFromAddress = (address: string): Alias => ({
   address: checkAddress(address)
 });
 
-export const aliasFromSecret = async (
-  name: string,
-  secret: string
-): Promise<Alias> => {
+export const aliasFromSecret = async (secret: string): Promise<Alias> => {
   try {
     const signer = await InMemorySigner.fromSecretKey(secret);
     const address = await signer.publicKeyHash();
-    return { name, address, secret };
+    return { address, secret };
   } catch (e) {
     throw new Error(`Invalid secret key: ${secret}`);
   }
 };
 
 export const aliasFromAddressOrSecret = async (
-  name: string,
   addressOrSecret: string
 ): Promise<Alias> =>
   isAddress(addressOrSecret)
-    ? aliasFromAddress(name, addressOrSecret)
-    : aliasFromSecret(name, addressOrSecret);
-
+    ? aliasFromAddress(addressOrSecret)
+    : aliasFromSecret(addressOrSecret);
