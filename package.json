@@ -1,7 +1,7 @@
 {
   "name": "@oxheadalpha/nft-tutorial-ws",
   "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
-  "version": "2.0.1",
+  "version": "2.0.10",
   "keywords": [
     "tezos",
     "smart contracts",
@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "build": "yarn lerna run build",
+    "clear": "yarn lerna run clear",
     "build:watch": "tsc -w -p .",
     "test": "yarn lerna run test"
   },

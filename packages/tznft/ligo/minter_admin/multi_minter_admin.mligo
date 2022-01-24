@@ -1,6 +1,6 @@
 (**
-Definition of the minter module signature and implementation of the "null minter".
-Null minter - nobody can mint
+Definition of the minter module signature and implementation of the "multiple minters".
+There is a set of minter adresses that can mint tokens.
  *)
 
 #if !NULL_MINTER_ADMIN

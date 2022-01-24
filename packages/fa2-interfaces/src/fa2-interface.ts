@@ -1,132 +1,249 @@
-import * as kleur from 'kleur';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
-import { bytes } from './type-aliases';
-import { tzip12, Tzip12Module, TokenMetadata } from '@taquito/tzip12';
+import {
+  ContractMethod,
+  ContractProvider,
+  MichelsonMap
+} from '@taquito/taquito';
 
-type address = string;
-type nat = BigNumber;
+import { TokenMetadata } from '@taquito/tzip12';
+import { Tzip12Contract, address, nat, bytes } from './type-aliases';
 
-export interface Fa2TransferDestination {
-  to_: address;
+/**
+ * `balance_of` FA2 entry point parameter
+ */
+export interface BalanceRequest {
+  /**
+   * Address of the token owner which holds token balance
+   */
+  owner: address;
+
+  /**
+   * Token ID
+   */
   token_id: nat;
+}
+
+/**
+ * `balance_of` FA2 entry point response
+ */
+export interface BalanceResponse {
+  /**
+   * Balance hold by the owner address for the specified token ID
+   */
+  balance: nat;
+
+  /**
+   * Owner address and token ID for which balance was requested
+   */
+  request: BalanceRequest;
+}
+
+/**
+ *
+ */
+export interface TransferDestination {
+  /**
+   * Recipient address for the token transfer
+   */
+  to_: address;
+
+  /**
+   * ID of the token to be transferred
+   */
+  token_id: nat;
+
+  /**
+   * Amount to be transferred
+   */
   amount: nat;
 }
 
-export interface Fa2Transfer {
+/**
+ * A transfer from a single token owner address to multiple destinations.
+ * It is possible to transfer multiple tokens to multiple destinations with a
+ * single Transfer.
+ */
+export interface Transfer {
+  /**
+   * Owner address to transfer token(s) from
+   */
   from_: address;
-  txs: Fa2TransferDestination[];
+
+  /**
+   * One or more destinations to transfer tokens to. Each destination specifies
+   * destination address, token id and the amount to be transferred.
+   */
+  txs: TransferDestination[];
 }
 
-export interface BalanceOfRequest {
+/**
+ * Operator update parameters
+ */
+export interface OperatorUpdateParams {
+  /**
+   * Token owner which operators to be updated
+   */
   owner: address;
+
+  /**
+   * Operator to be added or removed from the list of the owner's operators for
+   * the specified token
+   */
+  operator: address;
+
+  /**
+   * Token ID (token type) which can be transferred on behalf of the owner by the
+   * operator
+   */
   token_id: nat;
 }
 
-export interface BalanceOfResponse {
-  balance: nat;
-  request: BalanceOfRequest;
+/**
+ * Describes an "Add Operator" operation
+ */
+export interface AddOperator {
+  add_operator: OperatorUpdateParams;
 }
 
-// this is how token metadata stored withing the contract internally
+/**
+ * Describes a "Remove Operator" operation
+ */
+ export interface RemoveOperator {
+  remove_operator: OperatorUpdateParams;
+}
+
+/**
+ * Describes an operator update which is either Add or Remove
+ */
+export type OperatorUpdate = AddOperator | RemoveOperator;
+
+/**
+ * This is how token metadata stored withing the contract internally
+ */
 export interface TokenMetadataInternal {
+  /** Token ID */
   token_id: nat;
+
+  /**
+   * Bytes encoding pieces of token metadata such as metadata external URI,
+   * decimals, etc.
+   */
   token_info: MichelsonMap<string, bytes>;
 }
 
-export async function transfer(
-  fa2: address,
-  operator: TezosToolkit,
-  txs: Fa2Transfer[]
-): Promise<void> {
-  console.log(kleur.yellow('transferring tokens...'));
-  const nftWithOperator = await operator.contract.at(fa2);
+/**
+ * API to access FA2 contract
+ */
+export interface Fa2Contract {
+  /**
+   * Query balances for multiple tokens and token owners.
+   * Invokes FA2 contract `balance_of` entry point
+   */
+  queryBalances: (requests: BalanceRequest[]) => Promise<BalanceResponse[]>;
 
-  const op = await nftWithOperator.methods.transfer(txs).send();
+  /**
+   * Query balances for multiple tokens and token owners and represents
+   * results as NFT ownership status.
+   * Invokes FA2 contract `balance_of` entry point
+   */
+  hasNftTokens: (requests: BalanceRequest[]) => Promise<boolean[]>;
 
-  const hash = await op.confirmation();
-  console.log(kleur.green('tokens transferred'));
+  /**
+   * Extract tokens metadata
+   */
+  tokensMetadata: (tokenIds: number[]) => Promise<TokenMetadata[]>;
+
+  /**
+   * Transfer tokens. In default implementation, only token owner or its operator
+   * can transfer tokens from the owner address.
+   * 
+   * This methods takes a list of transfers and executes them. Transfers can be
+   * constructed manually but it is easier to use "Transfers Batch API" to do that.
+   * Here is an example of using the batch API:
+   * 
+   * ```typescript
+   * const transfers = transferBatch()
+   *   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
+   *   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
+   *   .transfers;
+   * 
+   * const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
+   * ```
+   * 
+   * It will merge automatically subsequent transaction from the same source in order
+   * to optimise gas.
+   */
+  transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
+
+  /**
+   * Update list of operators who can transfer tokens on behalf of the token
+   * owner. In default implementation, only the owner can update its own operators.
+   *
+   * @param updates a list of either add or remove operator commands
+   * 
+   * Updates here can be built manually or using batch API like this:
+   * 
+   * ```typescript
+   * const batch = operatorUpdateBatch().
+   *   .addOperator('tzOwner1', 'tzOperator1', 1)
+   *   .removeOperator('tzOwner2, 'tzOperator2', 2)
+   *   .addOperators([
+   *     { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+   *     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+   *   ])
+   *   .updates;
+   * 
+   * const op = await fa2.runMethod(fa2Contract.updateOperators(batch));
+   * ```
+   */
+  updateOperators: (
+    updates: OperatorUpdate[]
+  ) => ContractMethod<ContractProvider>;
 }
 
-export interface OperatorParam {
-  owner: address;
-  operator: address;
-  token_id: nat;
-}
-interface AddOperator {
-  add_operator: OperatorParam;
-}
-interface RemoveOperator {
-  remove_operator: OperatorParam;
-}
-
-type UpdateOperator = AddOperator | RemoveOperator;
-
-export async function updateOperators(
-  fa2: address,
-  owner: TezosToolkit,
-  addOperators: OperatorParam[],
-  removeOperators: OperatorParam[]
-): Promise<void> {
-  console.log(kleur.yellow('updating operators...'));
-  const fa2WithOwner = await owner.contract.at(fa2);
-  const addParams: UpdateOperator[] = addOperators.map(param => {
-    return { add_operator: param };
-  });
-  const removeParams: UpdateOperator[] = removeOperators.map(param => {
-    return { remove_operator: param };
-  });
-  const allOperators = addParams.concat(removeParams);
-
-  const op = await fa2WithOwner.methods.update_operators(allOperators).send();
-  await op.confirmation();
-  console.log(kleur.green('updated operators'));
-}
-
-export interface BalanceOfRequest {
-  owner: address;
-  token_id: nat;
-}
-
-export interface BalanceOfResponse {
-  balance: nat;
-  request: BalanceOfRequest;
-}
-
-export const queryBalances = async (
-  fa2: address,
-  owner: TezosToolkit,
-  requests: BalanceOfRequest[],
+/**
+ * FA2 contract API extension
+ *
+ * Usage example:
+ * ```typescript
+ * const fa2Contract =
+ *   (await tezosApi(tz).at(contractAddress)).with(Fa2);
+ * await fa2Contract.transfer(...);
+ * ```
+ */
+export const Fa2 = (
+  contract: Tzip12Contract,
   lambdaView?: address
-): Promise<BalanceOfResponse[]> => {
-  const contract = await owner.contract.at(fa2);
-  return contract.views.balance_of(requests).read(lambdaView);
-};
+): Fa2Contract => {
+  const self: Fa2Contract = {
+    queryBalances: async requests =>
+      contract.views.balance_of(requests).read(lambdaView),
 
-export async function hasNftTokens(
-  fa2: address,
-  owner: TezosToolkit,
-  requests: BalanceOfRequest[],
-  lambdaView?: address
-): Promise<boolean[]> {
-  const responses = await queryBalances(fa2, owner, requests, lambdaView);
-  const results = responses.map(r => {
-    if (r.balance.eq(1)) return true;
-    else if (r.balance.eq(0)) return false;
-    else throw new Error(`Invalid NFT balance ${r.balance}`);
-  });
-  return results;
-}
+    hasNftTokens: async requests => {
+      const responses = await self.queryBalances(requests);
 
-export const tokenMetadata = async (
-  fa2: address,
-  owner: TezosToolkit,
-  tokenIds: number[]
-): Promise<TokenMetadata[]> => {
-  owner.addExtension(new Tzip12Module());
-  const contract = await owner.contract.at(fa2, tzip12);
-  const metaRequests = tokenIds.map(id =>
-    contract.tzip12().getTokenMetadata(id)
-  );
-  return Promise.all(metaRequests);
+      const one = new BigNumber(1);
+      const zero = new BigNumber(0);
+      const results = responses.map(r => {
+        if (one.eq(r.balance)) return true;
+        else if (zero.eq(r.balance)) return false;
+        else throw new Error(`Invalid NFT balance ${r.balance}`);
+      });
+
+      return results;
+    },
+
+    tokensMetadata: async tokenIds => {
+      const requests = tokenIds.map(id =>
+        contract.tzip12().getTokenMetadata(id)
+      );
+      return Promise.all(requests);
+    },
+
+    transferTokens: transfers => contract.methods.transfer(transfers),
+
+    updateOperators: updates => contract.methods.update_operators(updates)
+  };
+
+  return self;
 };

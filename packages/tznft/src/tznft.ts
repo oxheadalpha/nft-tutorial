@@ -2,12 +2,14 @@
 import { program } from 'commander';
 import * as kleur from 'kleur';
 import { TezosOperationError } from '@taquito/taquito';
+import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { initUserConfig } from './config-util';
 import * as networkConf from './config-network';
 import * as aliasConf from './config-aliases';
 import * as bootstrap from './bootstrap';
 import * as contracts from './contracts';
 import * as metadata from './metadata';
+import * as ipfs from './ipfs';
 const packageJson = require('../package.json');
 
 // configuration
@@ -134,8 +136,8 @@ program
 
 //prettier-ignore
 program
-  .command('create-token-meta')
-  .alias('ctm')
+  .command('create-nft-meta')
+  .alias('cnm')
   .description('create a new NFT token metadata template file')
   .arguments('<nft_name> <creator> <uri>')
   .action(metadata.createNftMeta)
@@ -158,7 +160,7 @@ program
 program
   .command('mint')
   .alias('m')
-  .description('create a new NFT contract and mint new tokens')
+  .description('mint new tokens into existing token collection contract')
   .arguments('<owner> <collection>')
   .requiredOption(
     '-t, --tokens <tokens...>',
@@ -166,6 +168,19 @@ program
     contracts.parseTokens, [])
   .action(async (owner, collection, options) => 
     contracts.mintNfts(owner, collection, options.tokens))
+  .passCommandToAction(false);
+
+//prettier-ignore
+program
+  .command('mint-from-file')
+  .alias('mff')
+  .description('mint new tokens into existing token collection contract')
+  .arguments('<owner> <collection>')
+  .requiredOption(
+    '-tf, --token_file <file>',
+    'path to a file with definitions of new tokens, each line is comma-separated pair of token_id, tokenMetadataUri')
+  .action(async (owner, collection, options) => 
+    contracts.mintNftsFromFile(owner, collection, options.token_file))
   .passCommandToAction(false);
 
 //prettier-ignore
@@ -193,11 +208,10 @@ program
   .command('show-meta')
   .alias('shm')
   .description('show metadata for all tokens in the NFT contract')
-  .requiredOption('-s, --signer <signer>', 'address that originates a query')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
-  .action(async options=>contracts.showMetadata(
-    options.signer, options.nft, options.tokens)).passCommandToAction(false);
+  .action(async options=>contracts.showMetadata( options.nft, options.tokens))
+  .passCommandToAction(false);
 
 //prettier-ignore
 program
@@ -209,7 +223,7 @@ program
   .requiredOption(
     '-b, --batch <batch...>', 
     'definition of individual transfers, a list of "from, to, token_id"',
-    contracts.parseTransfers, [])
+    contracts.addTransfer, fa2.transferBatch())
   .action(async options=>contracts.transfer(
     options.signer, options.nft, options.batch)).passCommandToAction(false);
 
@@ -228,6 +242,45 @@ program
     'list of the "operator, token_id" pairs to be removed by the token owner')
   .action(async (owner, options) => contracts.updateOperators(
     owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
+
+// pinning to IPFS
+
+//prettier-ignore
+program
+  .command('set-pinata-keys')
+  .alias('spk')
+  .description('set Pinata keys to configuration file')
+  .arguments('<pinata_api_key> <pinata_secret_key>')
+  .option(
+    '-f, --force',
+    'override existing keys'
+  )
+  .action( async (pinata_api_key, pinata_secret_key, options) =>
+    ipfs.setPinataKeys(pinata_api_key, pinata_secret_key, options.force));
+
+//prettier-ignore
+program
+  .command('pin-file')
+  .alias('pf')
+  .description('Pin file to Pinata IPFS')
+  .arguments('<file>')
+  .requiredOption(
+    '-t, --tag <tag>',
+    'IPFS tag name for the pinned file'
+  )
+  .action( async (file, options) => ipfs.pinFileToIpfs(options.tag, file));
+
+//prettier-ignore
+program
+  .command('pin-dir')
+  .alias('pd')
+  .description('Pin directory to Pinata IPFS')
+  .arguments('<dir>')
+  .requiredOption(
+    '-t, --tag <tag>',
+    'IPFS tag name for the pinned directory'
+  )
+  .action( async (dir, options) => ipfs.pinDirectoryToIpfs(options.tag, dir));
 
 //debugging command
 

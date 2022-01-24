@@ -8,8 +8,8 @@ import { validateTzip16, validateTzip21 } from '@oxheadalpha/fa2-interfaces';
 export function createCollectionMeta(name: string): void {
   const meta = {
     name,
-    description: '',
-    homepage: '',
+    description: 'Awesome NFT collection',
+    homepage: 'https://github.com/oxheadalpha/nft-tutorial',
     authors: ['John Doe <john.doe@johndoe.com>'],
     version: '1.0.0',
     license: { name: 'MIT' },
@@ -37,7 +37,7 @@ export async function createNftMeta(
     isBooleanAmount: true,
     name,
     description: '',
-    tags: ['awsome', 'nft'],
+    tags: ['awesome', 'nft'],
     minter: minterAddress,
     artifactUri,
     displayUri: artifactUri,

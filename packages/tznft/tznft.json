@@ -26,6 +26,10 @@
 					"secret": "edskRgnCAbzDb1nagnzH17VH2WoNnBpGHz93jbsTZihT6YSqKDH5NRRbokFvm2rPTtSdwUzY9EU6W2eF6VbDti8oRRbBjPGEKL"
 				}
 			}
+		},
+		"mainnet": {
+			"providerUrl": "https://mainnet.smartpy.io",
+			"aliases": {}
 		}
 	}
 }

@@ -3,6 +3,12 @@ import schema from './schemas/tzip16-metadata-schema.json';
 import * as v from './meta-validators';
 import isEmail from 'is-email';
 
+/**
+ * Validate contract metadata format in accordance with TZIP-16 standard
+ * @param meta object representing contract metadata.
+ * @returns list of validation errors and/or warnings. Each error string starts
+ * with `Error:` prefix and each warning string starts with `Warning:` prefix.
+ */
 export function validateTzip16(meta: object): string[] {
   const ajv = new Ajv();
   ajv.validate(schema, meta);
@@ -21,7 +27,9 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   yield nonEmptyString('name');
   yield v.validateRecommended(meta)('description');
   yield nonEmptyString('description');
+  yield validateDescription(meta);
   yield nonEmptyString('homepage');
+  yield validateHomepage(meta);
   yield v.validateUri(meta)('homepage');
   yield nonEmptyString('version');
   yield [...validateAuthors(meta)].flat();
@@ -31,6 +39,25 @@ function* validateHeuristic(meta: any): Generator<string[]> {
   else yield validateMissingInterfaces(meta);
 }
 
+function validateDescription(meta: any): string[] {
+  if (meta.description && meta.description === 'Awesome NFT collection')
+    return [
+      'Warning: It looks like "description" has a sample value. Replace with a real description or remove it'
+    ];
+  return [];
+}
+
+function validateHomepage(meta: any): string[] {
+  if (
+    meta.homepage &&
+    meta.homepage === 'https://github.com/oxheadalpha/nft-tutorial'
+  )
+    return [
+      'Warning: It looks like "homepage" has a sample value. Replace with a real URL or remove it'
+    ];
+  return [];
+}
+
 const sampleAuthor = 'John Doe <john.doe@johndoe.com>';
 
 function* validateAuthors(meta: any): Generator<string[]> {
@@ -38,7 +65,7 @@ function* validateAuthors(meta: any): Generator<string[]> {
   if (!authors) return;
   if (authors.find(a => a === sampleAuthor))
     yield [
-      `Warning: It looks like one of authors is a sample '${sampleAuthor}'. Replace with a real author e-mail or URL or remove it`
+      `Warning: It looks like one of the authors is a sample '${sampleAuthor}'. Replace with a real author e-mail or URL or remove it`
     ];
 
   yield authors

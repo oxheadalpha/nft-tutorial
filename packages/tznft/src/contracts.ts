@@ -2,10 +2,10 @@ import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
+import { TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
-import { TokenMetadata} from '@taquito/tzip12';
+import { TokenMetadata } from '@taquito/tzip12';
 import {
   loadUserConfig,
   loadFile,
@@ -18,9 +18,9 @@ import {
   addAlias
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
-import * as nft from './nft-interface';
-import { bytes } from '@oxheadalpha/fa2-interfaces';
-import { originateContract } from '@oxheadalpha/nft-contracts';
+import { Fa2 } from '@oxheadalpha/fa2-interfaces';
+import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
+import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
   address_or_alias: string,
@@ -34,6 +34,14 @@ export function createToolkitFromSigner(
   signer: InMemorySigner,
   config: Configstore
 ): TezosToolkit {
+  const toolkit = createToolkitWithoutSigner(config);
+  toolkit.setProvider({
+    signer
+  });
+  return toolkit;
+}
+
+export function createToolkitWithoutSigner(config: Configstore): TezosToolkit {
   const pk = `${activeNetworkKey(config)}.providerUrl`;
   const providerUrl = config.get(pk);
   if (!providerUrl) {
@@ -46,8 +54,6 @@ export function createToolkitFromSigner(
 
   const toolkit = new TezosToolkit(providerUrl);
   toolkit.setProvider({
-    signer,
-    rpc: providerUrl,
     config: { confirmationPollingIntervalSecond: 5 }
   });
   return toolkit;
@@ -70,7 +76,6 @@ export async function createCollection(
   const contract = await originateContract(tz, code, storage, 'nft');
 
   if (alias) {
-    const meta = JSON.parse(metaJson);
     await addAlias(alias, contract.address);
   }
 }
@@ -88,9 +93,52 @@ export async function mintNfts(
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
-  await nft.mintTokens(collectionAddress, tz, [
-    { owner: ownerAddress, tokens }
-  ]);
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+
+  console.log(kleur.yellow('minting tokens...'));
+  await fa2.runMethod(
+    nftContract.mintTokens([{ owner: ownerAddress, tokens }])
+  );
+  console.log(kleur.green('tokens minted'));
+}
+
+export async function mintNftsFromFile(
+  owner: string,
+  collection: string,
+  fileName: string
+): Promise<void> {
+  const tokens = await loadTokensFromFile(fileName);
+  if (tokens.length === 0)
+    return Promise.reject('there are no token definitions provided');
+
+  const config = loadUserConfig();
+  const tz = await createToolkit(owner, config);
+  const collectionAddress = await resolveAlias2Address(collection, config);
+  const ownerAddress = await tz.signer.publicKeyHash();
+
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+
+  console.log(kleur.yellow('minting tokens...'));
+  await fa2.runMethod(
+    nftContract.mintTokens([{ owner: ownerAddress, tokens }])
+  );
+  console.log(kleur.green('tokens minted'));
+}
+
+async function loadTokensFromFile(
+  fileName: string
+): Promise<fa2.TokenMetadataInternal[]> {
+  const data = await loadFile(fileName);
+  return data
+    .split('\n')
+    .filter(line => {
+      const l = line.trim();
+      return l.length > 0 && !l.startsWith('#');
+    })
+    .map(line => {
+      let [tokenId, metadataUri] = line.split(',').map(s => s.trim());
+      return createTokenMetadata(new BigNumber(tokenId), metadataUri);
+    });
 }
 
 export async function mintFreeze(
@@ -100,7 +148,12 @@ export async function mintFreeze(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const collectionAddress = await resolveAlias2Address(collection, config);
-  await nft.freezeCollection(collectionAddress, tz);
+
+  const nftContract = (await fa2.tezosApi(tz).at(collectionAddress)).with(Nft);
+
+  console.log(kleur.yellow('freezing nft collection...'));
+  fa2.runMethod(await nftContract.freezeCollection());
+  console.log(kleur.green('nft collection frozen'));
 }
 
 export function parseTokens(
@@ -108,35 +161,9 @@ export function parseTokens(
   tokens: fa2.TokenMetadataInternal[]
 ): fa2.TokenMetadataInternal[] {
   const [id, tokenMetadataUri] = descriptor.split(',').map(p => p.trim());
-  const token: fa2.TokenMetadataInternal = {
-    token_id: new BigNumber(id),
-    token_info: new MichelsonMap()
-  };
+  const token = createTokenMetadata(new BigNumber(id), tokenMetadataUri);
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
-}
-
-function createNftStorage(owner: string, metaJson: string) {
-  const assets = {
-    ledger: new MichelsonMap(),
-    operators: new MichelsonMap(),
-    token_metadata: new MichelsonMap()
-  };
-  const admin = {
-    admin: owner,
-    pending_admin: undefined,
-    paused: false
-  };
-  const metadata = new MichelsonMap<string, bytes>();
-  metadata.set('', char2Bytes('tezos-storage:content'));
-  metadata.set('content', char2Bytes(metaJson));
-
-  return {
-    assets,
-    admin,
-    metadata,
-    mint_freeze: false
-  };
 }
 
 export async function showBalances(
@@ -151,22 +178,21 @@ export async function showBalances(
   const ownerAddress = await resolveAlias2Address(owner, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const lambdaView = config.get(lambdaViewKey(config));
-  const requests: fa2.BalanceOfRequest[] = tokens.map(t => {
+  const requests: fa2.BalanceRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
+  const fa2Contract = (
+    await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
+  ).with(Fa2);
+
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
-  const balances: fa2.BalanceOfResponse[] = await fa2.queryBalances(
-    nftAddress,
-    tz,
-    requests,
-    lambdaView
-  );
+  const balances = await fa2Contract.queryBalances(requests);
 
   printBalances(balances);
 }
 
-function printBalances(balances: fa2.BalanceOfResponse[]): void {
+function printBalances(balances: fa2.BalanceResponse[]): void {
   console.log(kleur.green('requested NFT balances:'));
   for (let b of balances) {
     console.log(
@@ -180,17 +206,20 @@ function printBalances(balances: fa2.BalanceOfResponse[]): void {
 }
 
 export async function showMetadata(
-  signer: string,
   contract: string,
   tokens: string[]
 ): Promise<void> {
   const config = loadUserConfig();
 
-  const tz = await createToolkit(signer, config);
+  const tz = await createToolkitWithoutSigner(config);
   const nftAddress = await resolveAlias2Address(contract, config);
-  const tokenIds = tokens.map(t=>Number.parseInt(t));
+  const tokenIds = tokens.map(t => Number.parseInt(t));
+
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+
   console.log(kleur.yellow('querying token metadata...'));
-  const tokensMeta = await fa2.tokenMetadata(nftAddress, tz, tokenIds);
+  const tokensMeta = await fa2Contract.tokensMetadata(tokenIds);
+
   tokensMeta.forEach(printTokenMetadata);
 }
 
@@ -198,46 +227,35 @@ function printTokenMetadata(m: TokenMetadata) {
   console.log(kleur.green(JSON.stringify(m, null, 2)));
 }
 
-export function parseTransfers(
+export function addTransfer(
   description: string,
-  batch: fa2.Fa2Transfer[]
-): fa2.Fa2Transfer[] {
-  const [from_, to_, token_id] = description.split(',').map(p => p.trim());
-  const tx: fa2.Fa2Transfer = {
-    from_,
-    txs: [
-      {
-        to_,
-        token_id: new BigNumber(token_id),
-        amount: new BigNumber(1)
-      }
-    ]
-  };
-  if (batch.length > 0 && batch[0].from_ === from_) {
-    //merge last two transfers if their from_ addresses are the same
-    batch[0].txs = batch[0].txs.concat(tx.txs);
-    return batch;
-  }
-
-  return batch.concat(tx);
+  batch: fa2.TransferBatch
+): fa2.TransferBatch {
+  const [from, to, tokenId] = description.split(',').map(p => p.trim());
+  return batch.withTransfer(from, to, new BigNumber(tokenId), 1);
 }
 
 export async function transfer(
   signer: string,
   contract: string,
-  batch: fa2.Fa2Transfer[]
+  batch: fa2.TransferBatch
 ): Promise<void> {
   const config = loadUserConfig();
-  const txs = await resolveTxAddresses(batch, config);
+  const txs = await resolveTxAddresses(batch.transfers, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
-  await fa2.transfer(nftAddress, tz, txs);
+
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+
+  console.log(kleur.yellow('transferring tokens...'));
+  await fa2.runMethod(fa2Contract.transferTokens(txs));
+  console.log(kleur.green('tokens transferred'));
 }
 
 async function resolveTxAddresses(
-  transfers: fa2.Fa2Transfer[],
+  transfers: fa2.Transfer[],
   config: Configstore
-): Promise<fa2.Fa2Transfer[]> {
+): Promise<fa2.Transfer[]> {
   const resolved = transfers.map(async t => {
     return {
       from_: await resolveAlias2Address(t.from_, config),
@@ -248,9 +266,9 @@ async function resolveTxAddresses(
 }
 
 async function resolveTxDestinationAddresses(
-  txs: fa2.Fa2TransferDestination[],
+  txs: fa2.TransferDestination[],
   config: Configstore
-): Promise<fa2.Fa2TransferDestination[]> {
+): Promise<fa2.TransferDestination[]> {
   const resolved = txs.map(async t => {
     return {
       to_: await resolveAlias2Address(t.to_, config),
@@ -270,25 +288,37 @@ export async function updateOperators(
   const config = loadUserConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
+
+  const batch = fa2.operatorUpdateBatch();
+
   const resolvedAdd = await resolveOperators(
     ownerAddress,
     addOperators,
     config
   );
+  batch.addOperators(resolvedAdd);
+
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
+  batch.removeOperators(resolvedRemove);
+
   const nftAddress = await resolveAlias2Address(contract, config);
-  await fa2.updateOperators(nftAddress, tz, resolvedAdd, resolvedRemove);
+
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+
+  console.log(kleur.yellow('updating operators...'));
+  await fa2.runMethod(fa2Contract.updateOperators(batch.updates));
+  console.log(kleur.green('updated operators'));
 }
 
 async function resolveOperators(
   owner: string,
   operators: string[],
   config: Configstore
-): Promise<fa2.OperatorParam[]> {
+): Promise<fa2.OperatorUpdateParams[]> {
   const resolved = operators.map(async o => {
     try {
       const [op, token] = o.split(',');

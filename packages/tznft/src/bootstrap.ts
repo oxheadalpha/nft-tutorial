@@ -1,9 +1,12 @@
 import * as kleur from 'kleur';
-import retry from 'async-retry';
 import { loadUserConfig, lambdaViewKey } from './config-util';
-import { createToolkit } from './contracts';
+import { createToolkit, createToolkitWithoutSigner } from './contracts';
 import Configstore from 'configstore';
-import { startSandbox, killSandbox } from '@oxheadalpha/nft-contracts';
+import {
+  startSandbox,
+  killSandbox,
+  awaitForSandbox
+} from '@oxheadalpha/tezos-tools';
 import { TezosToolkit, VIEW_LAMBDA } from '@taquito/taquito';
 
 export async function bootstrap(): Promise<void> {
@@ -33,14 +36,8 @@ export async function kill(): Promise<void> {
 
 async function awaitForNetwork(): Promise<void> {
   const config = loadUserConfig();
-  const toolkit = await createToolkit('bob', config);
-  await retry(
-    async () => {
-      console.log('connecting to Tezos node rpc...');
-      await toolkit.rpc.getBlockHeader({ block: '2' });
-    },
-    { retries: 8 }
-  );
+  const toolkit = await createToolkitWithoutSigner(config);
+  await awaitForSandbox(toolkit);
 }
 
 async function originateLambdaViewContract(
@@ -52,9 +49,7 @@ async function originateLambdaViewContract(
   const a = await contractAddressIfExists(config, tezos, configKey);
   if (a) return;
 
-  console.log(
-    kleur.yellow(`originating Taquito lambda view contract...`)
-  );
+  console.log(kleur.yellow(`originating Taquito lambda view contract...`));
   const op = await tezos.contract.originate({
     code: VIEW_LAMBDA.code,
     storage: VIEW_LAMBDA.storage
