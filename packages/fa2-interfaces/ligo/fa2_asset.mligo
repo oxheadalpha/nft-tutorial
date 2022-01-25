@@ -49,6 +49,7 @@ A generic implemenation of the asset contract.
 
 #if USE_NFT_TOKEN
 #include "./token/fa2_nft_token.mligo"
+#include "./minter/nft_minter.mligo"
 #endif
 
 #if USE_FUNGIBLE_TOKEN
@@ -65,12 +66,14 @@ type asset_storage = {
   asset : token_storage;
   admin : admin_storage;
   minter_admin : minter_admin_storage;
+  minter : minter_storage;
 }
 
 type asset_entrypoints =
   | Assets of fa2_entry_points
   | Admin of admin_entrypoints
   | Minter_admin of minter_admin_entrypoints
+  | Minter of minter_entrypoints
 
 
 #if USE_ADMIN_AS_MINTER
@@ -107,5 +110,12 @@ let asset_main (param, storage : asset_entrypoints * asset_storage)
     let ops, new_minter = minter_admin_main (a, storage.minter_admin) in
     let new_s = { storage with minter_admin = new_minter; } in
     (ops, new_s)
+
+  | Minter m ->
+    let _ = fail_if_paused storage.admin in
+    let _ = fail_if_not_minter storage in
+    let new_asset, new_minter = minter_main (m, storage.asset, storage.minter) in
+    let new_s = { storage with asset = new_asset; minter = new_minter; } in
+    ([] : operation list), new_s
 
 #endif

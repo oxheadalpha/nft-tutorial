@@ -17,11 +17,17 @@
 #define USE_MULI_MINTER_ADMIN
 (* #define USE_ADMIN_AS_MINTER *)
 
+
+(* Choose minter functionality to plug-in *)
+#define CAN_FREEZE
+#define CAN_MINT
+#define CAN_BURN
+
 (* Choose one of the FA2 core implementations *)
 
-(* #define USE_NFT_TOKEN *)
+#define USE_NFT_TOKEN
 (* #define USE_FUNGIBLE_TOKEN *)
-#define USE_MULTI_FUNGIBLE_TOKEN
+(* #define USE_MULTI_FUNGIBLE_TOKEN *)
 
 
 
