@@ -20,8 +20,8 @@
 (* Choose one of the FA2 core implementations *)
 
 (* #define USE_NFT_TOKEN *)
-#define USE_FUNGIBLE_TOKEN
-(* #define USE_MULTI_FUNGIBLE_TOKEN *)
+(* #define USE_FUNGIBLE_TOKEN *)
+#define USE_MULTI_FUNGIBLE_TOKEN
 
 
 
