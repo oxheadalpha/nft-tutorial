@@ -51,6 +51,10 @@ A generic implemenation of the asset contract.
 #include "./token/fa2_nft_token.mligo"
 #endif
 
+#if USE_FUNGIBLE_TOKEN
+#include "./token/fa2_fungible_token.mligo"
+#endif
+
 
 type asset_storage = {
   metadata : contract_metadata;
