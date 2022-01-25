@@ -1,24 +1,49 @@
 import { promises as fs } from 'fs';
+import * as kleur from 'kleur';
+import * as path from 'path';
+
 import {
   configStorage as storageParser,
   Config,
   ConfigStorage
 } from './parser';
+
 import { defaultStorage } from './defaultStorage';
 
-export const configStorage = (fileName: string) => {
+const defaultFileName = 'tznft.json';
+
+export const configStorage = (fileName?: string) => {
+  const name = fileName ? fileName : defaultFileName;
+
+  const filePath = path.isAbsolute(name)
+    ? name
+    : path.join(process.cwd(), name);
+
   const loadStorage = async () => {
-    const text = await fs.readFile(fileName, { encoding: 'utf8', flag: 'r' });
+    const text = await fs.readFile(filePath, { encoding: 'utf8', flag: 'r' });
     return storageParser.parseAsync(JSON.parse(text));
   };
 
   const saveStorage = async (storage: ConfigStorage) => {
     const text = JSON.stringify(storage, null, 2);
-    fs.writeFile(fileName, text, { encoding: 'utf8' });
+    fs.writeFile(filePath, text, { encoding: 'utf8' });
+  };
+
+  // fs.exists deprecated and is not available in fs.promises
+  const filePathExists = async () => {
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const self = {
-    createDefault: async () => {
+    createDefault: async (): Promise<void> => {
+      if (await filePathExists())
+        throw new Error(kleur.yellow(`${filePath} config file already exists`));
+
       saveStorage(defaultStorage);
     },
 
@@ -36,7 +61,11 @@ export const configStorage = (fileName: string) => {
       const storage = await loadStorage();
 
       if (!storage.availableNetworks[network])
-        throw new Error(`Trying to set an invalid network: ${network}`);
+        throw new Error(
+          kleur.red(
+            `network ${kleur.yellow(network)} is not available in configuration`
+          )
+        );
 
       storage.activeNetwork = network;
       saveStorage(storage);
@@ -51,12 +80,6 @@ export const configStorage = (fileName: string) => {
     save: async (config: Config, network?: string) => {
       const storage = await loadStorage();
       const usedNetwork = network ? network : storage.activeNetwork;
-
-      if (!storage.availableNetworks[usedNetwork])
-        throw new Error(
-          `Trying to write config into an invalid network: ${usedNetwork}`
-        );
-
       storage.availableNetworks[usedNetwork] = config;
       saveStorage(storage);
     }
