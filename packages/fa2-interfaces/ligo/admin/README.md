@@ -47,3 +47,4 @@ let admin_main(param, storage : admin_entrypoints * admin_storage)
 ```
 
 Implementation of the admin entry points defined by the `admin_entrypoints` type.
+Admin privileged operations should be already guarded.
