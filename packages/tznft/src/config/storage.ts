@@ -9,11 +9,11 @@ import { defaultStorage } from './defaultStorage';
 export const configStorage = (fileName: string) => {
   const loadStorage = async () => {
     const text = await fs.readFile(fileName, { encoding: 'utf8', flag: 'r' });
-    return storageParser.parseAsync(text);
+    return storageParser.parseAsync(JSON.parse(text));
   };
 
   const saveStorage = async (storage: ConfigStorage) => {
-    const text = JSON.stringify(storage);
+    const text = JSON.stringify(storage, null, 2);
     fs.writeFile(fileName, text, { encoding: 'utf8' });
   };
 
