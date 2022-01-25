@@ -24,13 +24,15 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsc -p .  && chmod +x dist/compile-contract.js",
     "clear": "yarn rimraf dist",
-    "prepare": "yarn clear && yarn build"
+    "prepare": "yarn clear && yarn build",
+    "compile-contract": "./dist/compile-contract.js"
   },
   "bin": {
     "kill-sandbox": "./flextesa/kill-sandbox.sh",
-    "start-sandbox": "./flextesa/start-sandbox.sh"
+    "start-sandbox": "./flextesa/start-sandbox.sh",
+    "compile-contract": "./dist/compile-contract.js"
   },
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^3.0.0",
