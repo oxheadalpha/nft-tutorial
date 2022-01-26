@@ -3,11 +3,11 @@ import * as kleur from 'kleur';
 import * as path from 'path';
 
 import { config as configParser, Config } from './parser';
-import { defaultConfig } from './defaultConfig';
+import { defaultConfig } from './default-config';
 
 const defaultFileName = 'tznft.json';
 
-export const config = (fileName?: string) => {
+export const configProvider = (fileName?: string) => {
   const name = fileName ? fileName : defaultFileName;
 
   const filePath = path.isAbsolute(name)
@@ -15,6 +15,8 @@ export const config = (fileName?: string) => {
     : path.join(process.cwd(), name);
 
   const self = {
+    filePath,
+    
     exists: async (): Promise<boolean> => {
       // fs.exists deprecated and is not available in fs.promises
       try {
