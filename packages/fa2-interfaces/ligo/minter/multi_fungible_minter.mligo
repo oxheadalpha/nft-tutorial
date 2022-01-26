@@ -32,17 +32,43 @@ type mint_burn_tx =
 
 type mint_burn_param = mint_burn_tx list
 
+type create_token_tx =
+[@layout:comb]
+{
+  token_id : token_id;
+  metadata : token_metadata;
+}
+
+type create_token_param = create_token_tx list
+
 type minter_entrypoints =
   | Never of never
 #if CAN_FREEZE
   | Freeze
 #endif
 #if CAN_MINT
+  | Create_tokens of create_token_param
   | Mint of mint_burn_param
 #endif
 #if CAN_BURN
   | Burn of mint_burn_param
 #endif
+
+let create_token (storage, tx : token_storage * create_token_tx) : token_storage =
+  (* extract token id *)
+  let existing_meta = Big_map.find_opt tx.token_id storage.token_metadata in
+  match existing_meta with
+  | Some _ -> (failwith "FA2_DUP_TOKEN_ID" : token_storage)
+  | None ->
+    let new_meta = Big_map.add tx.token_id tx.metadata storage.token_metadata in
+    let new_supply = Big_map.add tx.token_id 0n storage.total_supply in
+    { storage with
+      token_metadata = new_meta;
+      total_supply = new_supply;
+    }
+
+let create_tokens (txs, storage : create_token_param * token_storage) : token_storage =
+  List.fold create_token txs storage
 
 let  mint_update_balances (txs, ledger : mint_burn_param * ledger) : ledger =
   let mint = fun (l, tx : ledger * mint_burn_tx) ->
@@ -112,6 +138,10 @@ let minter_main (param, _tokens, _minter
   | Freeze -> _tokens, true
 #endif
 #if CAN_MINT
+  | Create_tokens t ->
+    let new_tokens = create_tokens (t, _tokens) in
+    new_tokens, _minter
+
   | Mint m ->
     let _ = fail_if_frozen _minter in
     let new_tokens = mint_tokens (m, _tokens) in
