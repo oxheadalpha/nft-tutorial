@@ -1,6 +1,6 @@
-import { ConfigStorage } from './parser';
+import { Config } from './parser';
 
-export const defaultStorage: ConfigStorage = {
+export const defaultConfig: Config = {
   activeNetwork: 'sandbox',
   availableNetworks: {
     sandbox: {

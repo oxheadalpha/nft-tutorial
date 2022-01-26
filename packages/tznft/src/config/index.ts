@@ -1,2 +1,2 @@
-export { configStorage } from './storage'
-export { Alias, Config } from './parser'
+export { config } from './config';
+export { Alias, PinataIpfs, Network, Config } from './parser';
