@@ -79,34 +79,34 @@ let burn_tokens(ledger, param : ledger * burn_param list) : ledger =
   ) in
   List.fold burn param ledger
 
-let minter_main (param, tokens, minter
+let minter_main (param, _tokens, _minter
   : minter_entrypoints * token_storage * minter_storage)
   : token_storage * minter_storage =
   match param with
   | Never _ -> (failwith "INVALID_INVOCATION" : token_storage * minter_storage)
 #if CAN_FREEZE
-  | Freeze -> tokens, true
+  | Freeze -> _tokens, true
 #endif
 #if CAN_MINT
   | Mint m ->
-    let _ = fail_if_frozen minter in
+    let _ = fail_if_frozen _minter in
     let mint_in = {
-      ledger = tokens.ledger;
-      token_metadata = tokens.token_metadata;
+      ledger = _tokens.ledger;
+      token_metadata = _tokens.token_metadata;
     } in
     let minted = mint_tokens (mint_in, m) in
-    let new_tokens = {tokens with 
+    let new_tokens = { _tokens with 
       ledger = minted.ledger;
       token_metadata = minted.token_metadata;
     } in
-    new_tokens, minter
+    new_tokens, _minter
 #endif
 #if CAN_BURN
   | Burn b ->
-    let _ = fail_if_frozen minter in
-    let new_ledger = burn_tokens (tokens.ledger, b) in
-    let new_tokens = { tokens with ledger = new_ledger; } in
-    new_tokens, minter
+    let _ = fail_if_frozen _minter in
+    let new_ledger = burn_tokens (_tokens.ledger, b) in
+    let new_tokens = { _tokens with ledger = new_ledger; } in
+    new_tokens, _minter
 #endif
 
 #endif
