@@ -22,12 +22,16 @@ let fail_if_frozen (_storage: minter_storage) : unit = unit
 
 #endif
 
-type mint_param = {
+type mint_param =
+[@layout:comb]
+{
   owner : address;
   tokens : token_metadata list;
 }
 
-type burn_param = {
+type burn_param =
+[@layout:comb]
+{
   owner : address;
   tokens : token_id list;
 }
