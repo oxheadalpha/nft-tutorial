@@ -54,6 +54,7 @@ A generic implemenation of the asset contract.
 
 #if USE_FUNGIBLE_TOKEN
 #include "./token/fa2_fungible_token.mligo"
+#include "./minter/fungible_minter.mligo"
 #endif
 
 #if USE_MULTI_FUNGIBLE_TOKEN
