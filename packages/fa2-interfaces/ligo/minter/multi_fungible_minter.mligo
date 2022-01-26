@@ -139,6 +139,7 @@ let minter_main (param, _tokens, _minter
 #endif
 #if CAN_MINT
   | Create_tokens t ->
+    let _ = fail_if_frozen _minter in
     let new_tokens = create_tokens (t, _tokens) in
     new_tokens, _minter
 
