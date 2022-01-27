@@ -1,4 +1,7 @@
-import { z } from 'zod';
+import { unknown, z } from 'zod';
+
+const toPartial = <T>(o: T): Partial<T> => o;
+const partialRecord = <T>(o: z.ZodType<T>) => z.record(o).transform(toPartial)
 
 const alias = z.object({
   address: z.string(),
@@ -8,7 +11,7 @@ const alias = z.object({
 const network = z.object({
   providerUrl: z.string().url(),
   lambdaView: z.string().optional(),
-  aliases: z.record(alias)
+  aliases: partialRecord(alias)
 });
 
 const pinataIpfs = z.object({
@@ -18,7 +21,7 @@ const pinataIpfs = z.object({
 
 export const config = z.object({
   activeNetwork: z.string(),
-  availableNetworks: z.record(network),
+  availableNetworks: partialRecord(network),
   pinataIpfs: pinataIpfs.optional()
 });
 

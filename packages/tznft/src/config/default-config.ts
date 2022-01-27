@@ -8,7 +8,7 @@ export const defaultConfig: Config = {
       aliases: {
         bob: {
           address: 'tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU',
-          secret: 'edsk3RFgDiCt7tWB2oe96w1eRw72iYiiqZPLu9nnEY23MYRp2d8Kkx'
+          secret: 'edsk3RFgDiCt7tWB2oe96w1eRw72iYiiqZPLu9nnEY23MYRp2d8Kkx',
         },
         alice: {
           address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',

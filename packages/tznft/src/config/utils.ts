@@ -1,4 +1,5 @@
 import * as kleur from 'kleur';
+import { Network } from '.';
 
 import { configProvider } from './config-provider';
 import { Config } from './parser';
@@ -34,4 +35,13 @@ export const saveConfig = async (c: Config): Promise<void> => {
   const config = configProvider();
   await config.save(c);
   console.log(`${kleur.green(config.filePath)} config file was updated`);
+};
+
+export const activeNetwork = (c: Config): Network => {
+  const network = c.availableNetworks[c.activeNetwork];
+
+  if (!network)
+    throw new Error(`Invalid active network in config ${c.activeNetwork}`);
+
+  return network;
 };

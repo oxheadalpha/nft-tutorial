@@ -18,7 +18,7 @@ export const configProvider = (fileName?: string) => {
     filePath,
     
     exists: async (): Promise<boolean> => {
-      // fs.exists deprecated and is not available in fs.promises
+      // fs.exists is deprecated and is not available in fs.promises
       try {
         await fs.access(filePath);
         return true;
@@ -40,8 +40,7 @@ export const configProvider = (fileName?: string) => {
     },
 
     save: async (config: Config) => {
-      const parsedConfig = await configParser.parseAsync(config);
-      const text = JSON.stringify(parsedConfig, null, 2);
+      const text = JSON.stringify(config, null, 2);
       fs.writeFile(filePath, text, { encoding: 'utf8' });
     }
   };
