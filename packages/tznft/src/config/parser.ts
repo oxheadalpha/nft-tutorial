@@ -1,11 +1,17 @@
 import { z } from 'zod';
+import { isAddress } from './alias';
 
 const toPartial = <T>(o: T): Partial<T> => o;
 const partialRecord = <T>(o: z.ZodType<T>) => z.record(o).transform(toPartial);
 
+const address = z.string().refine(
+  a => isAddress(a),
+  a => ({ message: `Invalid Tezos address: ${a}` })
+);
+
 const alias = z
   .object({
-    address: z.string(),
+    address: address,
     secret: z.string().optional()
   })
   .strict();
