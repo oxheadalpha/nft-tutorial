@@ -41,7 +41,7 @@ export const activeNetwork = (c: Config): Network => {
   const network = c.availableNetworks[c.activeNetwork];
 
   if (!network)
-    throw new Error(`Invalid active network in config ${c.activeNetwork}`);
+    throw new Error(`Invalid active network in config ${kleur.yellow(c.activeNetwork)}`);
 
   return network;
 };

@@ -9,6 +9,7 @@ import {
   aliasKey
 } from './config-util';
 import { createToolkitFromSigner } from './contracts';
+import { loadConfig, activeNetwork, Config } from './config';
 
 export function showAlias(alias: string): void {
   const config = loadUserConfig();
@@ -83,7 +84,7 @@ async function activateFaucet(
   signer: InMemorySigner,
   secret: string
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = createToolkitFromSigner(signer, config);
   const address = await signer.publicKeyHash();
   const bal = await tz.tz.getBalance(address);
@@ -127,50 +128,34 @@ export function removeAlias(alias: string): void {
 }
 
 export async function resolveAlias2Signer(
-  alias_or_address: string,
-  config: Configstore
+  aliasOrAddress: string,
+  config: Config
 ): Promise<InMemorySigner> {
-  const aliasDef = config.get(aliasKey(alias_or_address, config));
-  if (aliasDef?.secret) {
-    const ad = await validateKey(aliasDef.secret);
+  const alias = activeNetwork(config).aliases[aliasOrAddress]
+  if (alias?.secret) {
+    const ad = await validateKey(alias.secret);
     if (ad?.signer) return ad.signer;
   }
 
-  if (validateAddress(alias_or_address) !== ValidationResult.VALID)
-    return cannotResolve(alias_or_address);
+  if (validateAddress(aliasOrAddress) !== ValidationResult.VALID)
+    return cannotResolve(aliasOrAddress);
 
-  const ad = findAlias(config, ad => ad.address === alias_or_address);
-  if (!ad?.secret) return cannotResolve(alias_or_address);
+  const aliasWithAddress = Object.values(activeNetwork(config).aliases).find(a => a?.address == aliasOrAddress)
+  if (!aliasWithAddress?.secret) return cannotResolve(aliasOrAddress);
 
-  return InMemorySigner.fromSecretKey(ad.secret);
-}
-
-function findAlias(
-  config: Configstore,
-  predicate: (aliasDef: any) => boolean
-): any {
-  const allAliases = Object.getOwnPropertyNames(
-    config.get(allAliasesKey(config))
-  );
-  for (let a of allAliases) {
-    const aliasDef: any = config.get(aliasKey(a, config));
-    if (predicate(aliasDef)) return aliasDef;
-  }
-  return undefined;
+  return InMemorySigner.fromSecretKey(aliasWithAddress.secret);
 }
 
 export async function resolveAlias2Address(
-  alias_or_address: string,
-  config: Configstore
+  aliasOrAddress: string,
+  config: Config
 ): Promise<string> {
-  if (validateAddress(alias_or_address) === ValidationResult.VALID)
-    return alias_or_address;
+  if (validateAddress(aliasOrAddress) === ValidationResult.VALID)
+    return aliasOrAddress;
 
-  const ak = aliasKey(alias_or_address, config);
-  if (!config.has(ak)) return cannotResolve(alias_or_address);
-
-  const aliasDef: any = config.get(ak);
-  return aliasDef.address;
+  const alias = activeNetwork(config).aliases[aliasOrAddress];
+  if (!alias) return cannotResolve(aliasOrAddress);
+  return alias.address;
 }
 
 function cannotResolve<T>(alias_or_address: string): Promise<T> {

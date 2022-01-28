@@ -1,4 +1,3 @@
-import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
@@ -6,12 +5,7 @@ import { TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { TokenMetadata } from '@taquito/tzip12';
-import {
-  loadUserConfig,
-  loadFile,
-  activeNetworkKey,
-  lambdaViewKey
-} from './config-util';
+import { loadFile } from './config-util';
 import {
   resolveAlias2Signer,
   resolveAlias2Address,
@@ -21,10 +15,11 @@ import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { Fa2 } from '@oxheadalpha/fa2-interfaces';
 import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
+import { loadConfig, Config, activeNetwork } from './config';
 
 export async function createToolkit(
   address_or_alias: string,
-  config: Configstore
+  config: Config
 ): Promise<TezosToolkit> {
   const signer = await resolveAlias2Signer(address_or_alias, config);
   return createToolkitFromSigner(signer, config);
@@ -32,7 +27,7 @@ export async function createToolkit(
 
 export function createToolkitFromSigner(
   signer: InMemorySigner,
-  config: Configstore
+  config: Config
 ): TezosToolkit {
   const toolkit = createToolkitWithoutSigner(config);
   toolkit.setProvider({
@@ -41,17 +36,8 @@ export function createToolkitFromSigner(
   return toolkit;
 }
 
-export function createToolkitWithoutSigner(config: Configstore): TezosToolkit {
-  const pk = `${activeNetworkKey(config)}.providerUrl`;
-  const providerUrl = config.get(pk);
-  if (!providerUrl) {
-    const msg = `network provider for ${kleur.yellow(
-      config.get('activeNetwork')
-    )} URL is not configured`;
-    console.log(kleur.red(msg));
-    throw new Error(msg);
-  }
-
+export function createToolkitWithoutSigner(config: Config): TezosToolkit {
+  const providerUrl = activeNetwork(config).providerUrl;
   const toolkit = new TezosToolkit(providerUrl);
   toolkit.setProvider({
     config: { confirmationPollingIntervalSecond: 5 }
@@ -64,7 +50,7 @@ export async function createCollection(
   metaFile: string,
   alias?: string
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
@@ -88,7 +74,7 @@ export async function mintNfts(
   if (tokens.length === 0)
     return Promise.reject('there are no token definitions provided');
 
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = await createToolkit(owner, config);
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
@@ -111,7 +97,7 @@ export async function mintNftsFromFile(
   if (tokens.length === 0)
     return Promise.reject('there are no token definitions provided');
 
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = await createToolkit(owner, config);
   const collectionAddress = await resolveAlias2Address(collection, config);
   const ownerAddress = await tz.signer.publicKeyHash();
@@ -145,7 +131,7 @@ export async function mintFreeze(
   owner: string,
   collection: string
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = await createToolkit(owner, config);
   const collectionAddress = await resolveAlias2Address(collection, config);
 
@@ -172,19 +158,22 @@ export async function showBalances(
   owner: string,
   tokens: string[]
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
 
   const tz = await createToolkit(signer, config);
   const ownerAddress = await resolveAlias2Address(owner, config);
   const nftAddress = await resolveAlias2Address(contract, config);
-  const lambdaView = config.get(lambdaViewKey(config));
+  const lambdaView = activeNetwork(config).lambdaView;
   const requests: fa2.BalanceRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const fa2Contract = (
-    await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
-  ).with(Fa2);
+  const apiWithoutLambda = fa2.tezosApi(tz);
+  const api = lambdaView
+    ? apiWithoutLambda.useLambdaView(lambdaView)
+    : apiWithoutLambda;
+
+  const fa2Contract = (await api.at(nftAddress)).with(Fa2);
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
   const balances = await fa2Contract.queryBalances(requests);
@@ -209,7 +198,7 @@ export async function showMetadata(
   contract: string,
   tokens: string[]
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
 
   const tz = await createToolkitWithoutSigner(config);
   const nftAddress = await resolveAlias2Address(contract, config);
@@ -240,7 +229,7 @@ export async function transfer(
   contract: string,
   batch: fa2.TransferBatch
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const txs = await resolveTxAddresses(batch.transfers, config);
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
@@ -254,7 +243,7 @@ export async function transfer(
 
 async function resolveTxAddresses(
   transfers: fa2.Transfer[],
-  config: Configstore
+  config: Config
 ): Promise<fa2.Transfer[]> {
   const resolved = transfers.map(async t => {
     return {
@@ -267,7 +256,7 @@ async function resolveTxAddresses(
 
 async function resolveTxDestinationAddresses(
   txs: fa2.TransferDestination[],
-  config: Configstore
+  config: Config
 ): Promise<fa2.TransferDestination[]> {
   const resolved = txs.map(async t => {
     return {
@@ -285,7 +274,7 @@ export async function updateOperators(
   addOperators: string[],
   removeOperators: string[]
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = await createToolkit(owner, config);
   const ownerAddress = await tz.signer.publicKeyHash();
 
@@ -317,7 +306,7 @@ export async function updateOperators(
 async function resolveOperators(
   owner: string,
   operators: string[],
-  config: Configstore
+  config: Config
 ): Promise<fa2.OperatorUpdateParams[]> {
   const resolved = operators.map(async o => {
     try {
