@@ -1,4 +1,4 @@
-export * from './interfaces/fa2-interface';
+export * from './interfaces/fa2';
 export * from './tezos-api';
 export * from './type-aliases';
 export * from './transfer-batch';
