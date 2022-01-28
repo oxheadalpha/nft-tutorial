@@ -1,7 +1,7 @@
 import kleur from 'kleur';
 import path from 'path';
 import * as fs from 'fs';
-import { loadFile } from './config-util';
+import { loadFile } from './config';
 import { resolveAlias2Address } from './config-aliases';
 import { validateTzip16, validateTzip21 } from '@oxheadalpha/fa2-interfaces';
 import { loadConfig } from './config';

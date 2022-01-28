@@ -3,7 +3,7 @@ import { program } from 'commander';
 import * as kleur from 'kleur';
 import { TezosOperationError } from '@taquito/taquito';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
-import { initUserConfig } from './config-util';
+import { initConfig } from './config';
 import * as networkConf from './config-network';
 import * as aliasConf from './config-aliases';
 import * as bootstrap from './bootstrap';
@@ -21,7 +21,7 @@ program
   .command('init')
   .alias('i')
   .description('Create tznft.config file')
-  .action(initUserConfig);
+  .action(initConfig);
 
 // selecting network
 
@@ -292,7 +292,9 @@ program
 
 program.parseAsync().catch(error => {
   if (typeof error === 'string') console.log(kleur.red(error));
-  else if (error instanceof TezosOperationError) {
+  else if (error instanceof Error) {
+    console.log(kleur.red(error.message));
+  } else if (error instanceof TezosOperationError) {
     console.log(
       kleur.red(`Tezos operation error: ${kleur.bold(error.message)}`)
     );

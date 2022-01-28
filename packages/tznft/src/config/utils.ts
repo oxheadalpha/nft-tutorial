@@ -1,8 +1,9 @@
+import * as path from 'path';
+import { promises as fs } from 'fs';
 import * as kleur from 'kleur';
-import { Network } from '.';
 
+import { Network, Config } from './parser';
 import { configProvider } from './config-provider';
-import { Config } from './parser';
 
 const suggestCommand = (cmd: string) => {
   console.log(`Try to run ${kleur.green(`tznft ${cmd}`)} command first`);
@@ -41,7 +42,24 @@ export const activeNetwork = (c: Config): Network => {
   const network = c.availableNetworks[c.activeNetwork];
 
   if (!network)
-    throw new Error(`Invalid active network in config ${kleur.yellow(c.activeNetwork)}`);
+    throw new Error(
+      `Invalid active network in config ${kleur.yellow(c.activeNetwork)}`
+    );
 
   return network;
 };
+
+export async function loadFile(filePath: string): Promise<string> {
+  const resolvedPath = path.isAbsolute(filePath)
+    ? filePath
+    : path.join(process.cwd(), filePath);
+
+  try {
+    await fs.access(resolvedPath);
+  } catch {
+    throw new Error(`file ${resolvedPath} does not exist`);
+  }
+
+  const text = await fs.readFile(resolvedPath, { encoding: 'utf8', flag: 'r' });
+  return text;
+}

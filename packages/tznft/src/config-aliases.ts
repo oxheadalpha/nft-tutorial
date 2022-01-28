@@ -1,39 +1,34 @@
-import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import { validateAddress, ValidationResult } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
-import {
-  loadUserConfig,
-  loadFile,
-  allAliasesKey,
-  aliasKey
-} from './config-util';
+import { loadFile } from './config';
 import { createToolkitFromSigner } from './contracts';
-import { loadConfig, activeNetwork, Config } from './config';
+import { loadConfig, activeNetwork, Config, Alias, saveConfig } from './config';
 
-export function showAlias(alias: string): void {
-  const config = loadUserConfig();
+export async function showAlias(alias: string): Promise<void> {
+  const config = await loadConfig();
   if (alias) printAlias(alias, config);
   else printAllAliases(config);
 }
 
-function printAllAliases(config: Configstore) {
-  const allAliasesCfg = config.get(allAliasesKey(config));
-  if (allAliasesCfg) {
-    const allAliases = Object.getOwnPropertyNames(allAliasesCfg);
-    for (let a of allAliases) {
-      printAlias(a, config);
+function printAllAliases(config: Config) {
+  const aliases = activeNetwork(config).aliases;
+  const aliasNames = Object.keys(aliases);
+
+  if (aliasNames.length > 0) {
+    for (let n of aliasNames) {
+      printAlias(n, config);
     }
   } else console.log(kleur.yellow('there are no configured aliases'));
 }
 
-function printAlias(alias: string, config: Configstore) {
-  const aliasDef = config.get(aliasKey(alias, config));
+function printAlias(alias: string, config: Config) {
+  const aliasDef = activeNetwork(config).aliases[alias];
   if (aliasDef) console.log(formatAlias(alias, aliasDef));
   else console.log(kleur.red(`alias ${kleur.yellow(alias)} is not configured`));
 }
 
-function formatAlias(alias: string, def: any): string {
+function formatAlias(alias: string, def: Alias): string {
   return kleur.yellow(
     `${alias}\t${def.address}\t${def.secret ? def.secret : ''}`
   );
@@ -43,19 +38,20 @@ export async function addAlias(
   alias: string,
   key_or_address: string
 ): Promise<void> {
-  const config = loadUserConfig();
-  const ak = aliasKey(alias, config);
-  if (config.has(ak)) {
+  const config = await loadConfig();
+  const aliasDefByName = activeNetwork(config).aliases[alias];
+  if (aliasDefByName) {
     console.log(kleur.red(`alias ${kleur.yellow(alias)} already exists`));
     return;
   }
   const aliasDef = await validateKey(key_or_address);
   if (!aliasDef) console.log(kleur.red('invalid address or secret key'));
   else {
-    config.set(ak, {
+    activeNetwork(config).aliases[alias] = {
       address: aliasDef.address,
       secret: aliasDef.secret
-    });
+    };
+    saveConfig(config);
     console.log(kleur.yellow(`alias ${kleur.green(alias)} has been added`));
   }
 }
@@ -116,14 +112,15 @@ async function validateKey(
     }
 }
 
-export function removeAlias(alias: string): void {
-  const config = loadUserConfig();
-  const ak = aliasKey(alias, config);
-  if (!config.has(ak)) {
+export async function removeAlias(alias: string): Promise<void> {
+  const config = await loadConfig();
+  const aliasDef = activeNetwork(config).aliases[alias];
+  if (!aliasDef) {
     console.log(kleur.red(`alias ${kleur.yellow(alias)} does not exists`));
     return;
   }
-  config.delete(ak);
+  delete activeNetwork(config).aliases[alias];
+  saveConfig(config);
   console.log(kleur.yellow(`alias ${kleur.green(alias)} has been deleted`));
 }
 
@@ -131,7 +128,7 @@ export async function resolveAlias2Signer(
   aliasOrAddress: string,
   config: Config
 ): Promise<InMemorySigner> {
-  const alias = activeNetwork(config).aliases[aliasOrAddress]
+  const alias = activeNetwork(config).aliases[aliasOrAddress];
   if (alias?.secret) {
     const ad = await validateKey(alias.secret);
     if (ad?.signer) return ad.signer;
@@ -140,7 +137,9 @@ export async function resolveAlias2Signer(
   if (validateAddress(aliasOrAddress) !== ValidationResult.VALID)
     return cannotResolve(aliasOrAddress);
 
-  const aliasWithAddress = Object.values(activeNetwork(config).aliases).find(a => a?.address == aliasOrAddress)
+  const aliasWithAddress = Object.values(activeNetwork(config).aliases).find(
+    a => a?.address == aliasOrAddress
+  );
   if (!aliasWithAddress?.secret) return cannotResolve(aliasOrAddress);
 
   return InMemorySigner.fromSecretKey(aliasWithAddress.secret);

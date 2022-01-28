@@ -5,7 +5,7 @@ import { TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { TokenMetadata } from '@taquito/tzip12';
-import { loadFile } from './config-util';
+import { loadFile } from './config';
 import {
   resolveAlias2Signer,
   resolveAlias2Address,
