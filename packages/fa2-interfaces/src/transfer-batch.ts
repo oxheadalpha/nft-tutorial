@@ -1,5 +1,5 @@
 import { address, nat } from './type-aliases';
-import { Transfer } from './fa2-interface';
+import { Transfer } from './interfaces/fa2-interface';
 
 /**
  * A batch builder that can create transfers for the method Fa2Contract.transferTokens

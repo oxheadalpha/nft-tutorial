@@ -6,7 +6,7 @@ import {
 } from '@taquito/taquito';
 
 import { TokenMetadata } from '@taquito/tzip12';
-import { Tzip12Contract, address, nat, bytes } from './type-aliases';
+import { Tzip12Contract, address, nat, bytes } from '../type-aliases';
 
 /**
  * `balance_of` FA2 entry point parameter

@@ -1,5 +1,5 @@
 import { address, nat } from './type-aliases';
-import { OperatorUpdate, OperatorUpdateParams } from './fa2-interface';
+import { OperatorUpdate, OperatorUpdateParams } from './interfaces/fa2-interface';
 
 /**
  * A batch builder that can create operator updates the method
