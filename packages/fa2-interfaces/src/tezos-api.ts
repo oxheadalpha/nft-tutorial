@@ -72,11 +72,11 @@ const adminApi = (): UseAdmin => ({
 });
 
 interface UseImplementation {
-  isNft: <I extends UseImplementation & ContractApi>(
+  asNft: <I extends UseImplementation & ContractApi>(
     this: I
   ) => Omit<I & UseNftMint & UseNftBurn, keyof UseImplementation>;
 
-  isFungible: <I extends UseImplementation & ContractApi>(
+  asFungible: <I extends UseImplementation & ContractApi>(
     this: I
   ) => Omit<I & UseFungibleMint & UseFungibleBurn, keyof UseImplementation>;
 }
@@ -104,17 +104,17 @@ export const fungibleImplementation = (
 });
 
 const implementationApi = (): UseImplementation => ({
-  isNft() {
+  asNft() {
     return this.with(nftImplementation);
   },
-  isFungible() {
+  asFungible() {
     return this.with(fungibleImplementation);
   }
 });
 
 const test = async (api: TezosApi) => {
   const k = await api.at('KT1');
-  const nft = k.isNft();
+  const nft = k.asNft();
   const m = nft.withBurn();
   const f = m.asFreezable();
 };
