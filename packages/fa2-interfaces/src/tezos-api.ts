@@ -9,7 +9,80 @@ import {
   TransactionOperation
 } from '@taquito/taquito';
 
-import { Tzip12Contract, address } from './type-aliases';
+import { Tzip12Contract, address, Contract } from './type-aliases';
+import {
+  SimpleAdminContract,
+  NonPausableSimpleAdminContract
+} from './interfaces/admin';
+import { Fa2Contract } from '.';
+import {
+  FreezableContract,
+  FungibleBurnableContract,
+  FungibleMintableContract,
+  NftBurnableContract,
+  NftMintableContract
+} from './interfaces/minter';
+
+interface UseAdmin {
+  withSimpleAdmin: <I extends UseAdmin & ContractApi>(
+    this: I
+  ) => Exclude<I, UseAdmin> & SimpleAdminContract;
+
+  withNonPausableSimpleAdmin: <I extends UseAdmin & ContractApi>(
+    this: I
+  ) => Exclude<I, UseAdmin> & NonPausableSimpleAdminContract;
+
+  withMultiAdmin: <I extends UseAdmin & ContractApi>(
+    this: I
+  ) => Exclude<I, UseAdmin> & SimpleAdminContract;
+}
+
+interface UseFa2 {
+  withFa2: <I extends UseFa2 & ContractApi>(
+    this: I
+  ) => Exclude<I, UseFa2> & Fa2Contract;
+}
+
+interface HasMintOrBurn {}
+interface UseNftMint {
+  withMint: <I extends UseNftMint & ContractApi>(
+    this: I
+  ) => Exclude<I, UseNftMint> & NftMintableContract & HasMintOrBurn;
+}
+
+interface UseNftBurn {
+  withBurn: <I extends UseNftBurn & ContractApi>(
+    this: I
+  ) => Exclude<I, UseNftBurn> & NftBurnableContract & HasMintOrBurn;
+}
+
+interface UseFungibleMint {
+  withMint: <I extends UseFungibleMint & ContractApi>(
+    this: I
+  ) => Exclude<I, UseFungibleMint> & FungibleMintableContract & HasMintOrBurn;
+}
+
+interface UseFungibleBurn {
+  withBurn: <I extends UseFungibleBurn & ContractApi>(
+    this: I
+  ) => Exclude<I, UseFungibleBurn> & FungibleBurnableContract & HasMintOrBurn;
+}
+
+interface UseFreeze {
+  asFreezable: <I extends UseFreeze & HasMintOrBurn & ContractApi>(
+    this: I
+  ) => Exclude<I, UseFreeze> & FreezableContract;
+}
+
+interface UseImplementation {
+  isNft: <I extends UseImplementation & ContractApi>(
+    this: I
+  ) => Exclude<I, UseImplementation> & UseNftMint & UseNftBurn;
+
+  isFungible: <I extends UseImplementation & ContractApi>(
+    this: I
+  ) => Exclude<I, UseImplementation> & UseFungibleMint & UseFungibleBurn;
+}
 
 /**
  * A type-safe API to a contract at specific address that, by default,
@@ -44,7 +117,9 @@ export interface TezosApi {
   /**
    * Create an API to the contract at the specified address
    */
-  at: (contractAddress: address) => Promise<ContractApi>;
+  at: (
+    contractAddress: address
+  ) => Promise<ContractApi & UseAdmin & UseFa2 & UseAdmin & UseImplementation>;
 
   /**
    * Specify Taquito lambda view contract address to access contract CPS style
@@ -66,6 +141,10 @@ const contractApi = (
     return { ...this, ...createApi(contract, lambdaView) };
   }
 });
+
+const adminApi = (contract: Contract): UseAdmin =>({
+  
+})
 
 /**
  * Create Tezos API to build modular contract APIs.
@@ -130,10 +209,10 @@ export const runMethod = async (
  * Usage example:
  * ```typescript
  * const batch = toolkit.contract.batch();
- * 
+ *
  * batch.withContractCall(fa2Contract.transferTokens(txs1));
  * batch.withContractCall(fa2Contract.transferTokens(txs2));
- * 
+ *
  * const op: BatchOperation = await fa2.runBatch(batch);
  * ```
  */
