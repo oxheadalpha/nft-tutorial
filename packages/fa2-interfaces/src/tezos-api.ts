@@ -88,18 +88,17 @@ export const nftImplementation = (
     return { ...this.with(BurnNft), ...freezeApi() };
   },
   withMint() {
-    return {...this.with(MintNft), ...freezeApi()};
+    return { ...this.with(MintNft), ...freezeApi() };
   }
 });
 
-export const fungibleImplementation = (
-  contract: Contract
-): UseFungibleBurn & UseFungibleMint => ({
+export const fungibleImplementation = (): UseFungibleBurn &
+  UseFungibleMint => ({
   withBurn() {
-    return {...this.with(BurnFungible), ...freezeApi()};
+    return { ...this.with(BurnFungible), ...freezeApi() };
   },
   withMint() {
-    return {...this.with(MintFungible), ...freezeApi()};
+    return { ...this.with(MintFungible), ...freezeApi() };
   }
 });
 
