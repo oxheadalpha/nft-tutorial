@@ -22,6 +22,7 @@ import {
   BurnFungible,
   BurnNft,
   FreezableContract,
+  Freeze,
   FungibleBurnableContract,
   FungibleMintableContract,
   MintFungible,
@@ -83,15 +84,23 @@ interface UseImplementation {
 export const nftImplementation = (
   contract: Contract
 ): UseNftBurn & UseNftMint => ({
-  withBurn() { return this.with(BurnNft)},
-  withMint() { return this.with(MintNft)}
+  withBurn() {
+    return { ...this.with(BurnNft), ...freezeApi() };
+  },
+  withMint() {
+    return {...this.with(MintNft), ...freezeApi()};
+  }
 });
 
 export const fungibleImplementation = (
   contract: Contract
 ): UseFungibleBurn & UseFungibleMint => ({
-  withBurn() { return this.with(BurnFungible)},
-  withMint() { return this.with(MintFungible)}
+  withBurn() {
+    return {...this.with(BurnFungible), ...freezeApi()};
+  },
+  withMint() {
+    return {...this.with(MintFungible), ...freezeApi()};
+  }
 });
 
 const implementationApi = (): UseImplementation => ({
@@ -99,7 +108,7 @@ const implementationApi = (): UseImplementation => ({
     return this.with(nftImplementation);
   },
   isFungible() {
-    return this.with(fungibleImplementation)
+    return this.with(fungibleImplementation);
   }
 });
 
@@ -107,45 +116,43 @@ const test = async (api: TezosApi) => {
   const k = await api.at('KT1');
   const nft = k.isNft();
   const m = nft.withBurn();
-  // const f = m.
-}
-
-interface HasMintOrBurn {}
+  const f = m.asFreezable();
+};
 interface UseNftMint {
   withMint: <I extends UseNftMint & ContractApi>(
     this: I
-  ) => Omit<I & NftMintableContract & HasMintOrBurn, keyof UseNftMint>;
+  ) => Omit<I & NftMintableContract & UseFreeze, keyof UseNftMint>;
 }
 
 interface UseNftBurn {
   withBurn: <I extends UseNftBurn & ContractApi>(
     this: I
-  ) => Omit<I & NftBurnableContract & HasMintOrBurn, keyof UseNftBurn>;
+  ) => Omit<I & NftBurnableContract & UseFreeze, keyof UseNftBurn>;
 }
 
 interface UseFungibleMint {
   withMint: <I extends UseFungibleMint & ContractApi>(
     this: I
-  ) => Omit<
-    I & FungibleMintableContract & HasMintOrBurn,
-    keyof UseFungibleMint
-  >;
+  ) => Omit<I & FungibleMintableContract & UseFreeze, keyof UseFungibleMint>;
 }
 
 interface UseFungibleBurn {
   withBurn: <I extends UseFungibleBurn & ContractApi>(
     this: I
-  ) => Omit<
-    I & FungibleBurnableContract & HasMintOrBurn,
-    keyof UseFungibleBurn
-  >;
+  ) => Omit<I & FungibleBurnableContract & UseFreeze, keyof UseFungibleBurn>;
 }
 
 interface UseFreeze {
-  asFreezable: <I extends UseFreeze & HasMintOrBurn & ContractApi>(
+  asFreezable: <I extends UseFreeze & ContractApi>(
     this: I
   ) => Omit<I & FreezableContract, keyof UseFreeze>;
 }
+
+const freezeApi = (): UseFreeze => ({
+  asFreezable() {
+    return this.with(Freeze);
+  }
+});
 
 /**
  * A type-safe API to a contract at specific address that, by default,

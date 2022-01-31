@@ -78,3 +78,7 @@ export const BurnFungible = (contract: Contract): FungibleBurnableContract => ({
 export const MintFungible = (contract: Contract): FungibleMintableContract => ({
   mint: (params: FungibleMintBurnParam[]) => contract.methods.mint(params)
 });
+
+export const Freeze = (contract: Contract): FreezableContract => ({
+  freeze: () => contract.methods.freeze()
+});
