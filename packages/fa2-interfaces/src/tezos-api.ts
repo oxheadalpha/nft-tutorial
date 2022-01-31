@@ -19,9 +19,13 @@ import {
 } from './interfaces/admin';
 import { Fa2, Fa2Contract } from './interfaces/fa2';
 import {
+  BurnFungible,
+  BurnNft,
   FreezableContract,
   FungibleBurnableContract,
   FungibleMintableContract,
+  MintFungible,
+  MintNft,
   NftBurnableContract,
   NftMintableContract
 } from './interfaces/minter';
@@ -76,6 +80,36 @@ interface UseImplementation {
   ) => Omit<I & UseFungibleMint & UseFungibleBurn, keyof UseImplementation>;
 }
 
+export const nftImplementation = (
+  contract: Contract
+): UseNftBurn & UseNftMint => ({
+  withBurn() { return this.with(BurnNft)},
+  withMint() { return this.with(MintNft)}
+});
+
+export const fungibleImplementation = (
+  contract: Contract
+): UseFungibleBurn & UseFungibleMint => ({
+  withBurn() { return this.with(BurnFungible)},
+  withMint() { return this.with(MintFungible)}
+});
+
+const implementationApi = (): UseImplementation => ({
+  isNft() {
+    return this.with(nftImplementation);
+  },
+  isFungible() {
+    return this.with(fungibleImplementation)
+  }
+});
+
+const test = async (api: TezosApi) => {
+  const k = await api.at('KT1');
+  const nft = k.isNft();
+  const m = nft.withBurn();
+  // const f = m.
+}
+
 interface HasMintOrBurn {}
 interface UseNftMint {
   withMint: <I extends UseNftMint & ContractApi>(
@@ -92,21 +126,26 @@ interface UseNftBurn {
 interface UseFungibleMint {
   withMint: <I extends UseFungibleMint & ContractApi>(
     this: I
-  ) => Omit<I & FungibleMintableContract & HasMintOrBurn, keyof UseFungibleMint>;
+  ) => Omit<
+    I & FungibleMintableContract & HasMintOrBurn,
+    keyof UseFungibleMint
+  >;
 }
 
 interface UseFungibleBurn {
   withBurn: <I extends UseFungibleBurn & ContractApi>(
     this: I
-  ) => Omit<I & FungibleBurnableContract & HasMintOrBurn, keyof UseFungibleBurn>;
+  ) => Omit<
+    I & FungibleBurnableContract & HasMintOrBurn,
+    keyof UseFungibleBurn
+  >;
 }
 
 interface UseFreeze {
   asFreezable: <I extends UseFreeze & HasMintOrBurn & ContractApi>(
     this: I
-  ) => Omit<I  & FreezableContract, keyof UseFreeze>;
+  ) => Omit<I & FreezableContract, keyof UseFreeze>;
 }
-
 
 /**
  * A type-safe API to a contract at specific address that, by default,
@@ -143,7 +182,7 @@ export interface TezosApi {
    */
   at: (
     contractAddress: address
-  ) => Promise<ContractApi & UseAdmin & UseFa2 /*& UseImplementation*/>;
+  ) => Promise<ContractApi & UseAdmin & UseFa2 & UseImplementation>;
 
   /**
    * Specify Taquito lambda view contract address to access contract CPS style
@@ -197,7 +236,8 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
       return {
         ...contractApi(contract, lambdaView),
         ...adminApi(),
-        ...fa2Api()
+        ...fa2Api(),
+        ...implementationApi()
       };
     },
 

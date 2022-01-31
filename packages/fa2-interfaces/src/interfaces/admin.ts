@@ -68,35 +68,22 @@ export type MultiAdminContract =
       removeAdmin(admin: address): ContractMethod<ContractProvider>;
     };
 
-export const NoAdmin = (contract: Contract): NoAdminContract => {
-  return {};
-};
-
-export const SimpleAdmin = (contract: Contract): SimpleAdminContract => {
-  const self = {
-    setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
-    confirmAdmin: () => contract.methods.confirm_admin(),
-    pause: (pause: boolean) => contract.methods.pause(pause)
-  };
-  return self;
-};
+export const SimpleAdmin = (contract: Contract): SimpleAdminContract => ({
+  setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
+  confirmAdmin: () => contract.methods.confirm_admin(),
+  pause: (pause: boolean) => contract.methods.pause(pause)
+});
 
 export const NonPausableSimpleAdmin = (
   contract: Contract
-): NonPausableSimpleAdminContract => {
-  const self = {
-    setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
-    confirmAdmin: () => contract.methods.confirm_admin()
-  };
-  return self;
-};
+): NonPausableSimpleAdminContract => ({
+  setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
+  confirmAdmin: () => contract.methods.confirm_admin()
+});
 
-export const MultiAdmin = (contract: Contract): MultiAdminContract => {
-  const self = {
-    setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
-    confirmAdmin: () => contract.methods.confirm_admin(),
-    removeAdmin: (admin: address) => contract.methods.remove_admin(admin),
-    pause: (pause: boolean) => contract.methods.pause(pause)
-  }
-  return self;
-}
+export const MultiAdmin = (contract: Contract): MultiAdminContract => ({
+  setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
+  confirmAdmin: () => contract.methods.confirm_admin(),
+  removeAdmin: (admin: address) => contract.methods.remove_admin(admin),
+  pause: (pause: boolean) => contract.methods.pause(pause)
+});

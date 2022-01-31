@@ -62,3 +62,19 @@ export interface MultiFungibleMintableContract {
 export interface MultiFungibleBurnableContract {
   burn(params: MultiFungibleMintBurnParam[]): ContractMethod<ContractProvider>;
 }
+
+export const BurnNft = (contract: Contract): NftBurnableContract => ({
+  burn: (params: NftBurnParam[]) => contract.methods.burn(params)
+});
+
+export const MintNft = (contract: Contract): NftMintableContract => ({
+  mint: (params: NftMintParam[]) => contract.methods.mint(params)
+});
+
+export const BurnFungible = (contract: Contract): FungibleBurnableContract => ({
+  burn: (params: FungibleMintBurnParam[]) => contract.methods.burn(params)
+});
+
+export const MintFungible = (contract: Contract): FungibleMintableContract => ({
+  mint: (params: FungibleMintBurnParam[]) => contract.methods.mint(params)
+});
