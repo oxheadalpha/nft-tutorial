@@ -25,13 +25,19 @@ import {
   NftBurnableContract,
   NftMintableContract
 } from './interfaces/minter';
-interface UseFa2 {
+export interface UseFa2 {
   withFa2: <I extends ContractApi & UseFa2>(
     this: I
-  ) => Omit<I & Fa2Contract, keyof UseFa2> ;
+  ) => Omit<I & Fa2Contract, keyof UseFa2>;
 }
 
-interface UseAdmin {
+const fa2Api = (): UseFa2 => ({
+  withFa2() {
+    return this.with(Fa2);
+  }
+});
+
+export interface UseAdmin {
   withSimpleAdmin: <I extends ContractApi>(
     this: I
   ) => Omit<I & SimpleAdminContract, keyof UseAdmin>;
@@ -45,46 +51,62 @@ interface UseAdmin {
   ) => Omit<I & MultiAdminContract, keyof UseAdmin>;
 }
 
+const adminApi = (): UseAdmin => ({
+  withSimpleAdmin() {
+    const r = this.with(SimpleAdmin);
+    return r;
+  },
+  withNonPausableSimpleAdmin() {
+    const r = this.with(NonPausableSimpleAdmin);
+    return r;
+  },
+  withMultiAdmin() {
+    const r = this.with(NonPausableSimpleAdmin);
+    return r;
+  }
+});
+
+interface UseImplementation {
+  isNft: <I extends UseImplementation & ContractApi>(
+    this: I
+  ) => Omit<I & UseNftMint & UseNftBurn, keyof UseImplementation>;
+
+  isFungible: <I extends UseImplementation & ContractApi>(
+    this: I
+  ) => Omit<I & UseFungibleMint & UseFungibleBurn, keyof UseImplementation>;
+}
+
 interface HasMintOrBurn {}
 interface UseNftMint {
   withMint: <I extends UseNftMint & ContractApi>(
     this: I
-  ) => Exclude<I, UseNftMint> & NftMintableContract & HasMintOrBurn;
+  ) => Omit<I & NftMintableContract & HasMintOrBurn, keyof UseNftMint>;
 }
 
 interface UseNftBurn {
   withBurn: <I extends UseNftBurn & ContractApi>(
     this: I
-  ) => Exclude<I & NftBurnableContract & HasMintOrBurn, UseNftBurn>;
+  ) => Omit<I & NftBurnableContract & HasMintOrBurn, keyof UseNftBurn>;
 }
 
 interface UseFungibleMint {
   withMint: <I extends UseFungibleMint & ContractApi>(
     this: I
-  ) => Exclude<I & FungibleMintableContract & HasMintOrBurn, UseFungibleMint>;
+  ) => Omit<I & FungibleMintableContract & HasMintOrBurn, keyof UseFungibleMint>;
 }
 
 interface UseFungibleBurn {
   withBurn: <I extends UseFungibleBurn & ContractApi>(
     this: I
-  ) => Exclude<I & FungibleBurnableContract & HasMintOrBurn, UseFungibleBurn>;
+  ) => Omit<I & FungibleBurnableContract & HasMintOrBurn, keyof UseFungibleBurn>;
 }
 
 interface UseFreeze {
   asFreezable: <I extends UseFreeze & HasMintOrBurn & ContractApi>(
     this: I
-  ) => Exclude<I, UseFreeze> & FreezableContract;
+  ) => Omit<I  & FreezableContract, keyof UseFreeze>;
 }
 
-interface UseImplementation {
-  isNft: <I extends UseImplementation & ContractApi>(
-    this: I
-  ) => Exclude<I, UseImplementation> & UseNftMint & UseNftBurn;
-
-  isFungible: <I extends UseImplementation & ContractApi>(
-    this: I
-  ) => Exclude<I, UseImplementation> & UseFungibleMint & UseFungibleBurn;
-}
 
 /**
  * A type-safe API to a contract at specific address that, by default,
@@ -141,27 +163,6 @@ const contractApi = (
 ): ContractApi => ({
   with(createApi) {
     return { ...this, ...createApi(contract, lambdaView) };
-  }
-});
-
-
-type UFA2 = ContractApi & UseFa2;
-const fa2Api = (): UseFa2 => ({
-  withFa2() {
-    return this.with(Fa2);
-  }
-});
-
-const adminApi = (): UseAdmin => ({
-  withSimpleAdmin() { const r = this.with(SimpleAdmin);
-  return r; },
-  withNonPausableSimpleAdmin() {
-    const r =  this.with(NonPausableSimpleAdmin);
-    return r;
-  },
-  withMultiAdmin(){ 
-    const r = this.with(NonPausableSimpleAdmin);
-    return r;
   }
 });
 
