@@ -12,9 +12,12 @@ import {
 import { Tzip12Contract, address, Contract } from './type-aliases';
 import {
   SimpleAdminContract,
-  NonPausableSimpleAdminContract
+  NonPausableSimpleAdminContract,
+  MultiAdminContract,
+  SimpleAdmin,
+  NonPausableSimpleAdmin
 } from './interfaces/admin';
-import { Fa2Contract } from '.';
+import { Fa2, Fa2Contract } from './interfaces/fa2';
 import {
   FreezableContract,
   FungibleBurnableContract,
@@ -22,25 +25,24 @@ import {
   NftBurnableContract,
   NftMintableContract
 } from './interfaces/minter';
+interface UseFa2 {
+  withFa2: <I extends ContractApi & UseFa2>(
+    this: I
+  ) => Omit<I & Fa2Contract, keyof UseFa2> ;
+}
 
 interface UseAdmin {
-  withSimpleAdmin: <I extends UseAdmin & ContractApi>(
+  withSimpleAdmin: <I extends ContractApi>(
     this: I
-  ) => Exclude<I, UseAdmin> & SimpleAdminContract;
+  ) => Omit<I & SimpleAdminContract, keyof UseAdmin>;
 
   withNonPausableSimpleAdmin: <I extends UseAdmin & ContractApi>(
     this: I
-  ) => Exclude<I, UseAdmin> & NonPausableSimpleAdminContract;
+  ) => Omit<I & NonPausableSimpleAdminContract, keyof UseAdmin>;
 
   withMultiAdmin: <I extends UseAdmin & ContractApi>(
     this: I
-  ) => Exclude<I, UseAdmin> & SimpleAdminContract;
-}
-
-interface UseFa2 {
-  withFa2: <I extends UseFa2 & ContractApi>(
-    this: I
-  ) => Exclude<I, UseFa2> & Fa2Contract;
+  ) => Omit<I & MultiAdminContract, keyof UseAdmin>;
 }
 
 interface HasMintOrBurn {}
@@ -53,19 +55,19 @@ interface UseNftMint {
 interface UseNftBurn {
   withBurn: <I extends UseNftBurn & ContractApi>(
     this: I
-  ) => Exclude<I, UseNftBurn> & NftBurnableContract & HasMintOrBurn;
+  ) => Exclude<I & NftBurnableContract & HasMintOrBurn, UseNftBurn>;
 }
 
 interface UseFungibleMint {
   withMint: <I extends UseFungibleMint & ContractApi>(
     this: I
-  ) => Exclude<I, UseFungibleMint> & FungibleMintableContract & HasMintOrBurn;
+  ) => Exclude<I & FungibleMintableContract & HasMintOrBurn, UseFungibleMint>;
 }
 
 interface UseFungibleBurn {
   withBurn: <I extends UseFungibleBurn & ContractApi>(
     this: I
-  ) => Exclude<I, UseFungibleBurn> & FungibleBurnableContract & HasMintOrBurn;
+  ) => Exclude<I & FungibleBurnableContract & HasMintOrBurn, UseFungibleBurn>;
 }
 
 interface UseFreeze {
@@ -119,7 +121,7 @@ export interface TezosApi {
    */
   at: (
     contractAddress: address
-  ) => Promise<ContractApi & UseAdmin & UseFa2 & UseAdmin & UseImplementation>;
+  ) => Promise<ContractApi & UseAdmin & UseFa2 /*& UseImplementation*/>;
 
   /**
    * Specify Taquito lambda view contract address to access contract CPS style
@@ -142,9 +144,26 @@ const contractApi = (
   }
 });
 
-const adminApi = (contract: Contract): UseAdmin =>({
-  
-})
+
+type UFA2 = ContractApi & UseFa2;
+const fa2Api = (): UseFa2 => ({
+  withFa2() {
+    return this.with(Fa2);
+  }
+});
+
+const adminApi = (): UseAdmin => ({
+  withSimpleAdmin() { const r = this.with(SimpleAdmin);
+  return r; },
+  withNonPausableSimpleAdmin() {
+    const r =  this.with(NonPausableSimpleAdmin);
+    return r;
+  },
+  withMultiAdmin(){ 
+    const r = this.with(NonPausableSimpleAdmin);
+    return r;
+  }
+});
 
 /**
  * Create Tezos API to build modular contract APIs.
@@ -174,7 +193,11 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
   return {
     at: async (contractAddress: address) => {
       const contract = await tzt.contract.at(contractAddress, tzip12);
-      return contractApi(contract, lambdaView);
+      return {
+        ...contractApi(contract, lambdaView),
+        ...adminApi(),
+        ...fa2Api()
+      };
     },
 
     useLambdaView: (lambdaView: address) => tezosApi(tzt, lambdaView),
