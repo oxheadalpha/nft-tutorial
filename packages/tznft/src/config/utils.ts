@@ -27,7 +27,7 @@ export const loadConfig = async (): Promise<Config> => {
   } else {
     const msg = `Config file ${config.filePath} does not exist`;
     console.log(kleur.red(msg));
-    suggestCommand('init-config');
+    suggestCommand('init');
     throw new Error(msg);
   }
 };
