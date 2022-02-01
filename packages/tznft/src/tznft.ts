@@ -286,7 +286,7 @@ program
 
 //prettier-ignore
 program
-  .command('config-show-all')
+  .command('show-config')
   .description('shows whole raw config')
   .action(networkConf.showConfig);
 
