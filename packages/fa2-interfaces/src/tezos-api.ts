@@ -20,13 +20,17 @@ import {
 import { Fa2, Fa2Contract } from './interfaces/fa2';
 import {
   BurnFungible,
+  BurnMultiFungible,
   BurnNft,
   FreezableContract,
   Freeze,
   FungibleBurnableContract,
   FungibleMintableContract,
   MintFungible,
+  MintMultiFungible,
   MintNft,
+  MultiFungibleBurnableContract,
+  MultiFungibleMintableContract,
   NftBurnableContract,
   NftMintableContract
 } from './interfaces/minter';
@@ -79,11 +83,16 @@ interface UseImplementation {
   asFungible: <I extends UseImplementation & ContractApi>(
     this: I
   ) => Omit<I & UseFungibleMint & UseFungibleBurn, keyof UseImplementation>;
+
+  asMultiFungible: <I extends UseImplementation & ContractApi>(
+    this: I
+  ) => Omit<
+    I & UseMultiFungibleMint & UseMultiFungibleBurn,
+    keyof UseImplementation
+  >;
 }
 
-export const nftImplementation = (
-  contract: Contract
-): UseNftBurn & UseNftMint => ({
+const nftImplementation = (): UseNftBurn & UseNftMint => ({
   withBurn() {
     return { ...this.with(BurnNft), ...freezeApi() };
   },
@@ -92,13 +101,22 @@ export const nftImplementation = (
   }
 });
 
-export const fungibleImplementation = (): UseFungibleBurn &
-  UseFungibleMint => ({
+const fungibleImplementation = (): UseFungibleBurn & UseFungibleMint => ({
   withBurn() {
     return { ...this.with(BurnFungible), ...freezeApi() };
   },
   withMint() {
     return { ...this.with(MintFungible), ...freezeApi() };
+  }
+});
+
+const multiFungibleImplementation = (): UseMultiFungibleBurn &
+  UseMultiFungibleMint => ({
+  withBurn() {
+    return { ...this.with(BurnMultiFungible), ...freezeApi() };
+  },
+  withMint() {
+    return { ...this.with(MintMultiFungible), ...freezeApi() };
   }
 });
 
@@ -108,6 +126,9 @@ const implementationApi = (): UseImplementation => ({
   },
   asFungible() {
     return this.with(fungibleImplementation);
+  },
+  asMultiFungible() {
+    return this.with(multiFungibleImplementation);
   }
 });
 
@@ -139,6 +160,24 @@ interface UseFungibleBurn {
   withBurn: <I extends UseFungibleBurn & ContractApi>(
     this: I
   ) => Omit<I & FungibleBurnableContract & UseFreeze, keyof UseFungibleBurn>;
+}
+
+interface UseMultiFungibleMint {
+  withMint: <I extends UseMultiFungibleMint & ContractApi>(
+    this: I
+  ) => Omit<
+    I & MultiFungibleMintableContract & UseFreeze,
+    keyof UseMultiFungibleMint
+  >;
+}
+
+interface UseMultiFungibleBurn {
+  withBurn: <I extends UseMultiFungibleBurn & ContractApi>(
+    this: I
+  ) => Omit<
+    I & MultiFungibleBurnableContract & UseFreeze,
+    keyof UseMultiFungibleBurn
+  >;
 }
 
 interface UseFreeze {
