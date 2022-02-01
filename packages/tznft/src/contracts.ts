@@ -123,6 +123,12 @@ async function loadTokensFromFile(
     })
     .map(line => {
       let [tokenId, metadataUri] = line.split(',').map(s => s.trim());
+
+      if (!tokenId || !metadataUri)
+        throw new Error(
+          `Invalid token file format: ${fileName}. Each line should be 'id, metadataUri'`
+        );
+
       return createTokenMetadata(new BigNumber(tokenId), metadataUri);
     });
 }
@@ -147,6 +153,12 @@ export function parseTokens(
   tokens: fa2.TokenMetadataInternal[]
 ): fa2.TokenMetadataInternal[] {
   const [id, tokenMetadataUri] = descriptor.split(',').map(p => p.trim());
+
+  if (!id || !tokenMetadataUri)
+    throw new Error(
+      `Invalid token format: ${descriptor}. It should be 'id, metadataUri'`
+    );
+
   const token = createTokenMetadata(new BigNumber(id), tokenMetadataUri);
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
