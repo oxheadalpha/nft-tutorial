@@ -1,38 +1,34 @@
-import Configstore from 'configstore';
 import * as kleur from 'kleur';
 import { validateAddress, ValidationResult } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
-import {
-  loadUserConfig,
-  loadFile,
-  allAliasesKey,
-  aliasKey
-} from './config-util';
+import { loadFile } from './config';
 import { createToolkitFromSigner } from './contracts';
+import { loadConfig, activeNetwork, Config, Alias, saveConfig } from './config';
 
-export function showAlias(alias: string): void {
-  const config = loadUserConfig();
+export async function showAlias(alias: string): Promise<void> {
+  const config = await loadConfig();
   if (alias) printAlias(alias, config);
   else printAllAliases(config);
 }
 
-function printAllAliases(config: Configstore) {
-  const allAliasesCfg = config.get(allAliasesKey(config));
-  if (allAliasesCfg) {
-    const allAliases = Object.getOwnPropertyNames(allAliasesCfg);
-    for (let a of allAliases) {
-      printAlias(a, config);
+function printAllAliases(config: Config) {
+  const aliases = activeNetwork(config).aliases;
+  const aliasNames = Object.keys(aliases);
+
+  if (aliasNames.length > 0) {
+    for (let n of aliasNames) {
+      printAlias(n, config);
     }
   } else console.log(kleur.yellow('there are no configured aliases'));
 }
 
-function printAlias(alias: string, config: Configstore) {
-  const aliasDef = config.get(aliasKey(alias, config));
+function printAlias(alias: string, config: Config) {
+  const aliasDef = activeNetwork(config).aliases[alias];
   if (aliasDef) console.log(formatAlias(alias, aliasDef));
   else console.log(kleur.red(`alias ${kleur.yellow(alias)} is not configured`));
 }
 
-function formatAlias(alias: string, def: any): string {
+function formatAlias(alias: string, def: Alias): string {
   return kleur.yellow(
     `${alias}\t${def.address}\t${def.secret ? def.secret : ''}`
   );
@@ -42,19 +38,20 @@ export async function addAlias(
   alias: string,
   key_or_address: string
 ): Promise<void> {
-  const config = loadUserConfig();
-  const ak = aliasKey(alias, config);
-  if (config.has(ak)) {
+  const config = await loadConfig();
+  const aliasDefByName = activeNetwork(config).aliases[alias];
+  if (aliasDefByName) {
     console.log(kleur.red(`alias ${kleur.yellow(alias)} already exists`));
     return;
   }
   const aliasDef = await validateKey(key_or_address);
   if (!aliasDef) console.log(kleur.red('invalid address or secret key'));
   else {
-    config.set(ak, {
+    activeNetwork(config).aliases[alias] = {
       address: aliasDef.address,
       secret: aliasDef.secret
-    });
+    };
+    saveConfig(config);
     console.log(kleur.yellow(`alias ${kleur.green(alias)} has been added`));
   }
 }
@@ -83,7 +80,7 @@ async function activateFaucet(
   signer: InMemorySigner,
   secret: string
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const tz = createToolkitFromSigner(signer, config);
   const address = await signer.publicKeyHash();
   const bal = await tz.tz.getBalance(address);
@@ -115,62 +112,52 @@ async function validateKey(
     }
 }
 
-export function removeAlias(alias: string): void {
-  const config = loadUserConfig();
-  const ak = aliasKey(alias, config);
-  if (!config.has(ak)) {
+export async function removeAlias(alias: string): Promise<void> {
+  const config = await loadConfig();
+  const aliasDef = activeNetwork(config).aliases[alias];
+  if (!aliasDef) {
     console.log(kleur.red(`alias ${kleur.yellow(alias)} does not exists`));
     return;
   }
-  config.delete(ak);
+  delete activeNetwork(config).aliases[alias];
+  saveConfig(config);
   console.log(kleur.yellow(`alias ${kleur.green(alias)} has been deleted`));
 }
 
+const aliasByName = (name: string, config: Config) =>
+  activeNetwork(config).aliases[name];
+
+const aliasByAddress = (address: string, config: Config) =>
+  validateAddress(address) == ValidationResult.VALID
+    ? Object.values(activeNetwork(config).aliases).find(
+        a => a?.address == address
+      )
+    : undefined;
+
 export async function resolveAlias2Signer(
-  alias_or_address: string,
-  config: Configstore
+  aliasOrAddress: string,
+  config: Config
 ): Promise<InMemorySigner> {
-  const aliasDef = config.get(aliasKey(alias_or_address, config));
-  if (aliasDef?.secret) {
-    const ad = await validateKey(aliasDef.secret);
-    if (ad?.signer) return ad.signer;
-  }
+  const alias =
+    aliasByName(aliasOrAddress, config) ||
+    aliasByAddress(aliasOrAddress, config);
 
-  if (validateAddress(alias_or_address) !== ValidationResult.VALID)
-    return cannotResolve(alias_or_address);
-
-  const ad = findAlias(config, ad => ad.address === alias_or_address);
-  if (!ad?.secret) return cannotResolve(alias_or_address);
-
-  return InMemorySigner.fromSecretKey(ad.secret);
-}
-
-function findAlias(
-  config: Configstore,
-  predicate: (aliasDef: any) => boolean
-): any {
-  const allAliases = Object.getOwnPropertyNames(
-    config.get(allAliasesKey(config))
-  );
-  for (let a of allAliases) {
-    const aliasDef: any = config.get(aliasKey(a, config));
-    if (predicate(aliasDef)) return aliasDef;
-  }
-  return undefined;
+  return alias?.secret
+    ? InMemorySigner.fromSecretKey(alias?.secret).catch(_ =>
+        cannotResolve(aliasOrAddress)
+      )
+    : cannotResolve(aliasOrAddress);
 }
 
 export async function resolveAlias2Address(
-  alias_or_address: string,
-  config: Configstore
+  aliasOrAddress: string,
+  config: Config
 ): Promise<string> {
-  if (validateAddress(alias_or_address) === ValidationResult.VALID)
-    return alias_or_address;
+  if (validateAddress(aliasOrAddress) === ValidationResult.VALID)
+    return aliasOrAddress;
 
-  const ak = aliasKey(alias_or_address, config);
-  if (!config.has(ak)) return cannotResolve(alias_or_address);
-
-  const aliasDef: any = config.get(ak);
-  return aliasDef.address;
+  const alias = activeNetwork(config).aliases[aliasOrAddress];
+  return alias ? alias.address : cannotResolve(aliasOrAddress);
 }
 
 function cannotResolve<T>(alias_or_address: string): Promise<T> {

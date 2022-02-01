@@ -1,9 +1,9 @@
 import * as kleur from 'kleur';
-import { loadUserConfig } from './config-util';
+import { loadConfig, saveConfig } from './config';
 
-export function showActiveNetwork(all: boolean): void {
-  const config = loadUserConfig();
-  const network = config.get('activeNetwork');
+export async function showActiveNetwork(all: boolean): Promise<void> {
+  const config = await loadConfig();
+  const network = config.activeNetwork;
   if (!all)
     console.log(
       `active network: ${
@@ -11,10 +11,8 @@ export function showActiveNetwork(all: boolean): void {
       }`
     );
   else {
-    const allNetworks = Object.getOwnPropertyNames(
-      config.all.availableNetworks
-    );
-    for (let n of allNetworks) {
+    const networkNames = Object.keys(config.availableNetworks);
+    for (let n of networkNames) {
       if (n === network) console.log(kleur.bold().green(`* ${n}`));
       else console.log(kleur.yellow(`  ${n}`));
     }
@@ -22,22 +20,23 @@ export function showActiveNetwork(all: boolean): void {
   }
 }
 
-export function setNetwork(network: string): void {
-  const config = loadUserConfig();
-  if (!config.has(`availableNetworks.${network}`))
+export async function setNetwork(network: string): Promise<void> {
+  const config = await loadConfig();
+  if (!config.availableNetworks[network])
     console.log(
       kleur.red(
         `network ${kleur.yellow(network)} is not available in configuration`
       )
     );
   else {
-    config.set('activeNetwork', network);
+    config.activeNetwork = network;
+    saveConfig(config);
     console.log(`network ${kleur.green(network)} is selected`);
   }
 }
 
-export function showConfig(): void {
-  const config = loadUserConfig();
-  const c = JSON.stringify(config.all, null, 2);
+export async function showConfig(): Promise<void> {
+  const config = await loadConfig();
+  const c = JSON.stringify(config, null, 2);
   console.info(c);
 }

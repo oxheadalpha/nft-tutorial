@@ -1,7 +1,6 @@
 import * as kleur from 'kleur';
-import { loadUserConfig, lambdaViewKey } from './config-util';
+import { loadConfig, saveConfig, Config, activeNetwork } from './config';
 import { createToolkit, createToolkitWithoutSigner } from './contracts';
-import Configstore from 'configstore';
 import {
   startSandbox,
   killSandbox,
@@ -11,9 +10,9 @@ import { TezosToolkit, VIEW_LAMBDA } from '@taquito/taquito';
 
 export async function bootstrap(): Promise<void> {
   try {
-    const config = loadUserConfig();
+    const config = await loadConfig();
 
-    const network = config.get('activeNetwork');
+    const network = config.activeNetwork;
     if (network === 'sandbox') {
       await startSandbox();
       console.log(kleur.yellow('starting sandbox...'));
@@ -29,24 +28,23 @@ export async function bootstrap(): Promise<void> {
 }
 
 export async function kill(): Promise<void> {
-  const config = loadUserConfig();
-  const network = config.get('activeNetwork');
+  const config = await loadConfig();
+  const network = config.activeNetwork;
   if (network === 'sandbox') await killSandbox();
 }
 
 async function awaitForNetwork(): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const toolkit = await createToolkitWithoutSigner(config);
   await awaitForSandbox(toolkit);
 }
 
 async function originateLambdaViewContract(
-  config: Configstore,
+  config: Config,
   orig_alias: string
 ): Promise<void> {
   const tezos = await createToolkit(orig_alias, config);
-  const configKey = lambdaViewKey(config);
-  const a = await contractAddressIfExists(config, tezos, configKey);
+  const a = await lambdaViewAddressIfExists(config, tezos);
   if (a) return;
 
   console.log(kleur.yellow(`originating Taquito lambda view contract...`));
@@ -56,7 +54,9 @@ async function originateLambdaViewContract(
   });
   const lambdaContract = await op.contract();
 
-  config.set(configKey, lambdaContract.address);
+  activeNetwork(config).lambdaView = lambdaContract.address;
+  saveConfig(config);
+
   console.log(
     kleur.yellow(
       `originated Taquito lambda view ${kleur.green(lambdaContract.address)}`
@@ -64,12 +64,11 @@ async function originateLambdaViewContract(
   );
 }
 
-async function contractAddressIfExists(
-  config: Configstore,
-  tz: TezosToolkit,
-  configKey: string
+async function lambdaViewAddressIfExists(
+  config: Config,
+  tz: TezosToolkit
 ): Promise<string | undefined> {
-  const existingAddress = config.get(configKey);
+  const existingAddress = activeNetwork(config).lambdaView;
   if (!existingAddress) return undefined;
 
   return tz.contract
