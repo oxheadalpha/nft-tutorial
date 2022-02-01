@@ -124,25 +124,29 @@ export async function removeAlias(alias: string): Promise<void> {
   console.log(kleur.yellow(`alias ${kleur.green(alias)} has been deleted`));
 }
 
+const aliasByName = (name: string, config: Config) =>
+  activeNetwork(config).aliases[name];
+
+const aliasByAddress = (address: string, config: Config) =>
+  validateAddress(address) == ValidationResult.VALID
+    ? Object.values(activeNetwork(config).aliases).find(
+        a => a?.address == address
+      )
+    : undefined;
+
 export async function resolveAlias2Signer(
   aliasOrAddress: string,
   config: Config
 ): Promise<InMemorySigner> {
-  const alias = activeNetwork(config).aliases[aliasOrAddress];
-  if (alias?.secret) {
-    const ad = await validateKey(alias.secret);
-    if (ad?.signer) return ad.signer;
-  }
+  const alias =
+    aliasByName(aliasOrAddress, config) ||
+    aliasByAddress(aliasOrAddress, config);
 
-  if (validateAddress(aliasOrAddress) !== ValidationResult.VALID)
-    return cannotResolve(aliasOrAddress);
-
-  const aliasWithAddress = Object.values(activeNetwork(config).aliases).find(
-    a => a?.address == aliasOrAddress
-  );
-  if (!aliasWithAddress?.secret) return cannotResolve(aliasOrAddress);
-
-  return InMemorySigner.fromSecretKey(aliasWithAddress.secret);
+  return alias?.secret
+    ? InMemorySigner.fromSecretKey(alias?.secret).catch(_ =>
+        cannotResolve(aliasOrAddress)
+      )
+    : cannotResolve(aliasOrAddress);
 }
 
 export async function resolveAlias2Address(
@@ -153,8 +157,7 @@ export async function resolveAlias2Address(
     return aliasOrAddress;
 
   const alias = activeNetwork(config).aliases[aliasOrAddress];
-  if (!alias) return cannotResolve(aliasOrAddress);
-  return alias.address;
+  return alias ? alias.address : cannotResolve(aliasOrAddress);
 }
 
 function cannotResolve<T>(alias_or_address: string): Promise<T> {
