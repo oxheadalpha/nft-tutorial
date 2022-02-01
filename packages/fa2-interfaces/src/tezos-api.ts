@@ -75,6 +75,60 @@ const adminApi = (): UseAdmin => ({
   }
 });
 
+interface UseNftMint {
+  withMint: <I extends UseNftMint & ContractApi>(
+    this: I
+  ) => Omit<I & NftMintableContract & UseFreeze, keyof UseNftMint>;
+}
+
+interface UseNftBurn {
+  withBurn: <I extends UseNftBurn & ContractApi>(
+    this: I
+  ) => Omit<I & NftBurnableContract & UseFreeze, keyof UseNftBurn>;
+}
+
+interface UseFungibleMint {
+  withMint: <I extends UseFungibleMint & ContractApi>(
+    this: I
+  ) => Omit<I & FungibleMintableContract & UseFreeze, keyof UseFungibleMint>;
+}
+
+interface UseFungibleBurn {
+  withBurn: <I extends UseFungibleBurn & ContractApi>(
+    this: I
+  ) => Omit<I & FungibleBurnableContract & UseFreeze, keyof UseFungibleBurn>;
+}
+
+interface UseMultiFungibleMint {
+  withMint: <I extends UseMultiFungibleMint & ContractApi>(
+    this: I
+  ) => Omit<
+    I & MultiFungibleMintableContract & UseFreeze,
+    keyof UseMultiFungibleMint
+  >;
+}
+
+interface UseMultiFungibleBurn {
+  withBurn: <I extends UseMultiFungibleBurn & ContractApi>(
+    this: I
+  ) => Omit<
+    I & MultiFungibleBurnableContract & UseFreeze,
+    keyof UseMultiFungibleBurn
+  >;
+}
+
+interface UseFreeze {
+  withFreeze: <I extends UseFreeze & ContractApi>(
+    this: I
+  ) => Omit<I & FreezableContract, keyof UseFreeze>;
+}
+
+const freezeApi = (): UseFreeze => ({
+  withFreeze() {
+    return this.with(Freeze);
+  }
+});
+
 interface UseImplementation {
   asNft: <I extends UseImplementation & ContractApi>(
     this: I
@@ -138,59 +192,6 @@ const test = async (api: TezosApi) => {
   const m = nft.withBurn();
   const f = m.withFreeze();
 };
-interface UseNftMint {
-  withMint: <I extends UseNftMint & ContractApi>(
-    this: I
-  ) => Omit<I & NftMintableContract & UseFreeze, keyof UseNftMint>;
-}
-
-interface UseNftBurn {
-  withBurn: <I extends UseNftBurn & ContractApi>(
-    this: I
-  ) => Omit<I & NftBurnableContract & UseFreeze, keyof UseNftBurn>;
-}
-
-interface UseFungibleMint {
-  withMint: <I extends UseFungibleMint & ContractApi>(
-    this: I
-  ) => Omit<I & FungibleMintableContract & UseFreeze, keyof UseFungibleMint>;
-}
-
-interface UseFungibleBurn {
-  withBurn: <I extends UseFungibleBurn & ContractApi>(
-    this: I
-  ) => Omit<I & FungibleBurnableContract & UseFreeze, keyof UseFungibleBurn>;
-}
-
-interface UseMultiFungibleMint {
-  withMint: <I extends UseMultiFungibleMint & ContractApi>(
-    this: I
-  ) => Omit<
-    I & MultiFungibleMintableContract & UseFreeze,
-    keyof UseMultiFungibleMint
-  >;
-}
-
-interface UseMultiFungibleBurn {
-  withBurn: <I extends UseMultiFungibleBurn & ContractApi>(
-    this: I
-  ) => Omit<
-    I & MultiFungibleBurnableContract & UseFreeze,
-    keyof UseMultiFungibleBurn
-  >;
-}
-
-interface UseFreeze {
-  withFreeze: <I extends UseFreeze & ContractApi>(
-    this: I
-  ) => Omit<I & FreezableContract, keyof UseFreeze>;
-}
-
-const freezeApi = (): UseFreeze => ({
-  withFreeze() {
-    return this.with(Freeze);
-  }
-});
 
 /**
  * A type-safe API to a contract at specific address that, by default,
