@@ -115,7 +115,7 @@ const test = async (api: TezosApi) => {
   const k = await api.at('KT1');
   const nft = k.asNft();
   const m = nft.withBurn();
-  const f = m.asFreezable();
+  const f = m.withFreeze();
 };
 interface UseNftMint {
   withMint: <I extends UseNftMint & ContractApi>(
@@ -142,13 +142,13 @@ interface UseFungibleBurn {
 }
 
 interface UseFreeze {
-  asFreezable: <I extends UseFreeze & ContractApi>(
+  withFreeze: <I extends UseFreeze & ContractApi>(
     this: I
   ) => Omit<I & FreezableContract, keyof UseFreeze>;
 }
 
 const freezeApi = (): UseFreeze => ({
-  asFreezable() {
+  withFreeze() {
     return this.with(Freeze);
   }
 });
