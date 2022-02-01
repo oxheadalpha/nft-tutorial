@@ -34,6 +34,7 @@ import {
   NftBurnableContract,
   NftMintableContract
 } from './interfaces/minter';
+import { MultiMinterAdmin, MultiMinterAdminContract } from './interfaces/minter-admin';
 export interface UseFa2 {
   withFa2: <I extends ContractApi & UseFa2>(
     this: I
@@ -75,31 +76,43 @@ const adminApi = (): UseAdmin => ({
   }
 });
 
-interface UseNftMint {
+export interface UseMinterAdmin {
+  withMultiMinterAdmin: <I extends UseMinterAdmin & ContractApi>(
+    this: I
+  ) => Omit<I & MultiMinterAdminContract, keyof UseMinterAdmin>;
+}
+
+const minterAdminApi = (): UseMinterAdmin =>({
+  withMultiMinterAdmin() {
+    return this.with(MultiMinterAdmin)
+  }
+})
+
+export interface UseNftMint {
   withMint: <I extends UseNftMint & ContractApi>(
     this: I
   ) => Omit<I & NftMintableContract & UseFreeze, keyof UseNftMint>;
 }
 
-interface UseNftBurn {
+export interface UseNftBurn {
   withBurn: <I extends UseNftBurn & ContractApi>(
     this: I
   ) => Omit<I & NftBurnableContract & UseFreeze, keyof UseNftBurn>;
 }
 
-interface UseFungibleMint {
+export interface UseFungibleMint {
   withMint: <I extends UseFungibleMint & ContractApi>(
     this: I
   ) => Omit<I & FungibleMintableContract & UseFreeze, keyof UseFungibleMint>;
 }
 
-interface UseFungibleBurn {
+export interface UseFungibleBurn {
   withBurn: <I extends UseFungibleBurn & ContractApi>(
     this: I
   ) => Omit<I & FungibleBurnableContract & UseFreeze, keyof UseFungibleBurn>;
 }
 
-interface UseMultiFungibleMint {
+export interface UseMultiFungibleMint {
   withMint: <I extends UseMultiFungibleMint & ContractApi>(
     this: I
   ) => Omit<
@@ -108,7 +121,7 @@ interface UseMultiFungibleMint {
   >;
 }
 
-interface UseMultiFungibleBurn {
+export interface UseMultiFungibleBurn {
   withBurn: <I extends UseMultiFungibleBurn & ContractApi>(
     this: I
   ) => Omit<
@@ -117,7 +130,7 @@ interface UseMultiFungibleBurn {
   >;
 }
 
-interface UseFreeze {
+export interface UseFreeze {
   withFreeze: <I extends UseFreeze & ContractApi>(
     this: I
   ) => Omit<I & FreezableContract, keyof UseFreeze>;
@@ -129,7 +142,7 @@ const freezeApi = (): UseFreeze => ({
   }
 });
 
-interface UseImplementation {
+export interface UseImplementation {
   asNft: <I extends UseImplementation & ContractApi>(
     this: I
   ) => Omit<I & UseNftMint & UseNftBurn, keyof UseImplementation>;
@@ -282,6 +295,7 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
       return {
         ...contractApi(contract, lambdaView),
         ...adminApi(),
+        ...minterAdminApi(),
         ...fa2Api(),
         ...implementationApi()
       };
