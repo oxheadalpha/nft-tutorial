@@ -168,12 +168,9 @@ export async function showBalances(
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const apiWithoutLambda = fa2.tezosApi(tz);
-  const api = lambdaView
-    ? apiWithoutLambda.useLambdaView(lambdaView)
-    : apiWithoutLambda;
-
-  const fa2Contract = (await api.at(nftAddress)).with(Fa2);
+  const fa2Contract = (
+    await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
+  ).with(Fa2);
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
   const balances = await fa2Contract.queryBalances(requests);

@@ -4,14 +4,15 @@ import { isAddress } from './alias';
 const toPartial = <T>(o: T): Partial<T> => o;
 const partialRecord = <T>(o: z.ZodType<T>) => z.record(o).transform(toPartial);
 
-const address = z.string().refine(
-  a => isAddress(a),
-  a => ({ message: `Invalid Tezos address: ${a}` })
-);
+const address = () =>
+  z.string().refine(
+    a => isAddress(a),
+    a => ({ message: `Invalid Tezos address: ${a}` })
+  );
 
 const alias = z
   .object({
-    address: address,
+    address: address(),
     secret: z.string().optional()
   })
   .strict();
@@ -19,7 +20,7 @@ const alias = z
 const network = z
   .object({
     providerUrl: z.string().url(),
-    lambdaView: z.string().optional(),
+    lambdaView: address().optional(),
     aliases: partialRecord(alias)
   })
   .strict();
@@ -37,7 +38,11 @@ const config = z
     availableNetworks: partialRecord(network),
     pinataIpfs: pinataIpfs.optional()
   })
-  .strict();
+  .strict()
+  .refine(
+    c => c.availableNetworks[c.activeNetwork],
+    c => ({ message: `Active network ${c.activeNetwork} does not exist in availableNetworks` })
+  );
 
 export type Alias = z.infer<typeof alias>;
 export type Network = z.infer<typeof network>;

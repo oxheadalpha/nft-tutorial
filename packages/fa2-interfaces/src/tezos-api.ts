@@ -50,7 +50,7 @@ export interface TezosApi {
    * Specify Taquito lambda view contract address to access contract CPS style
    * view entry points.
    */
-  useLambdaView: (lambdaView: address) => TezosApi;
+  useLambdaView: (lambdaView?: address) => TezosApi;
 
   /**
    * Underlying `TezosToolkit`
@@ -98,7 +98,7 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
       return contractApi(contract, lambdaView);
     },
 
-    useLambdaView: (lambdaView: address) => tezosApi(tzt, lambdaView),
+    useLambdaView: (lambdaView?: address) => tezosApi(tzt, lambdaView),
 
     toolkit: tzt
   };

@@ -44,7 +44,7 @@ async function originateLambdaViewContract(
   orig_alias: string
 ): Promise<void> {
   const tezos = await createToolkit(orig_alias, config);
-  const a = await contractAddressIfExists(config, tezos);
+  const a = await lambdaViewAddressIfExists(config, tezos);
   if (a) return;
 
   console.log(kleur.yellow(`originating Taquito lambda view contract...`));
@@ -64,7 +64,7 @@ async function originateLambdaViewContract(
   );
 }
 
-async function contractAddressIfExists(
+async function lambdaViewAddressIfExists(
   config: Config,
   tz: TezosToolkit
 ): Promise<string | undefined> {

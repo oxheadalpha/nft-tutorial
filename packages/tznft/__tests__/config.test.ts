@@ -12,11 +12,11 @@ import {
 describe('tznft configuration tests', () => {
   let config: Config;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await initConfig();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     fs.unlink('./tznft.json');
   });
 

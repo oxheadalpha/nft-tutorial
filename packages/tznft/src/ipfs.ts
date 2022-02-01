@@ -1,5 +1,5 @@
 import { pinFile, pinDirectory } from '@oxheadalpha/tezos-tools';
-import { loadConfig, saveConfig } from './config';
+import { loadConfig, saveConfig, PinataIpfs } from './config';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -59,7 +59,7 @@ export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
   console.log(kleur.green(`ipfs://${cid}`));
 }
 
-async function loadPinataKeys(): Promise<PinataKeys | undefined> {
+async function loadPinataKeys(): Promise<PinataIpfs | undefined> {
   const config = await loadConfig();
   if (!config.pinataIpfs) {
     console.log(
