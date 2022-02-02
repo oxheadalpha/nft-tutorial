@@ -1,40 +1,39 @@
 import { tzip12, Tzip12Module } from '@taquito/tzip12';
+import { TezosToolkit } from '@taquito/taquito';
 
-import {
-  BatchOperation,
-  ContractMethod,
-  ContractProvider,
-  OperationBatch,
-  TezosToolkit,
-  TransactionOperation
-} from '@taquito/taquito';
-
-import { Tzip12Contract, address, Contract } from './type-aliases';
+import { Tzip12Contract, address } from './type-aliases';
 import {
   SimpleAdminContract,
   NonPausableSimpleAdminContract,
-  MultiAdminContract,
+  MultiAdminContract
+} from './interfaces/admin';
+import {
+  MultiAdmin,
   SimpleAdmin,
   NonPausableSimpleAdmin
-} from './interfaces/admin';
-import { Fa2, Fa2Contract } from './interfaces/fa2';
+} from './interfaces/admin-combinators';
+import { Fa2Contract } from './interfaces/fa2';
+import { Fa2 } from './interfaces/fa2-combinator';
 import {
-  BurnFungible,
-  BurnMultiFungible,
-  BurnNft,
   FreezableContract,
-  Freeze,
   FungibleBurnableContract,
   FungibleMintableContract,
-  MintFungible,
-  MintMultiFungible,
-  MintNft,
   MultiFungibleBurnableContract,
   MultiFungibleMintableContract,
   NftBurnableContract,
   NftMintableContract
 } from './interfaces/minter';
-import { MultiMinterAdmin, MultiMinterAdminContract } from './interfaces/minter-admin';
+import {
+  BurnFungible,
+  BurnMultiFungible,
+  BurnNft,
+  Freeze,
+  MintFungible,
+  MintMultiFungible,
+  MintNft
+} from './interfaces/minter-combinators';
+import { MultiMinterAdminContract } from './interfaces/minter-admin';
+import { MultiMinterAdmin } from './interfaces/minter-admin-combinator';
 
 const subtract = <T1, T2>(a: T1, b: T2): Omit<T1, keyof T2> => {
   const bKeys = new Set(Object.keys(b));
@@ -78,7 +77,7 @@ const adminApi = (): UseAdmin => ({
     return subtract(r, adminApi());
   },
   withMultiAdmin() {
-    const r = this.with(NonPausableSimpleAdmin);
+    const r = this.with(MultiAdmin);
     return subtract(r, adminApi());
   }
 });
@@ -89,12 +88,12 @@ export interface UseMinterAdmin {
   ) => Omit<I & MultiMinterAdminContract, keyof UseMinterAdmin>;
 }
 
-const minterAdminApi = (): UseMinterAdmin =>({
+const minterAdminApi = (): UseMinterAdmin => ({
   withMultiMinterAdmin() {
     const r = this.with(MultiMinterAdmin);
     return subtract(r, minterAdminApi());
   }
-})
+});
 
 export interface UseNftMint {
   withMint: <I extends UseNftMint & ContractApi>(
@@ -317,45 +316,4 @@ export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
 
     toolkit: tzt
   };
-};
-
-/**
- * Run and confirms a Taquito ContractMethod
- * @param cm - a Taquito ContractMethod
- * @returns  Taquito TransactionOperation
- *
- * Usage example:
- * ```typescript
- * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
- * ```
- */
-export const runMethod = async (
-  cm: ContractMethod<ContractProvider>
-): Promise<TransactionOperation> => {
-  const op = await cm.send();
-  await op.confirmation();
-  return op;
-};
-
-/**
- * Run and confirms a Taquito batch
- * @param batch - a Taquito OperationBatch
- * @returns  Taquito BatchOperation
- *
- * Usage example:
- * ```typescript
- * const batch = toolkit.contract.batch();
- *
- * batch.withContractCall(fa2Contract.transferTokens(txs1));
- * batch.withContractCall(fa2Contract.transferTokens(txs2));
- *
- * const op: BatchOperation = await fa2.runBatch(batch);
- * ```
- */
-export const runBatch = async (
-  batch: OperationBatch
-): Promise<BatchOperation> => {
-  const op = await batch.send();
-  await op.confirmation();
-  return op;
 };

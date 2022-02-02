@@ -3,7 +3,7 @@ import {
   ContractProvider,
   MichelsonMap
 } from '@taquito/taquito';
-import { address, unit, Contract } from '../type-aliases';
+import { address, unit } from '../type-aliases';
 
 export type NoAdminStorage = unit;
 
@@ -67,23 +67,3 @@ export type MultiAdminContract =
        */
       removeAdmin(admin: address): ContractMethod<ContractProvider>;
     };
-
-export const SimpleAdmin = (contract: Contract): SimpleAdminContract => ({
-  setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
-  confirmAdmin: () => contract.methods.confirm_admin(),
-  pause: (pause: boolean) => contract.methods.pause(pause)
-});
-
-export const NonPausableSimpleAdmin = (
-  contract: Contract
-): NonPausableSimpleAdminContract => ({
-  setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
-  confirmAdmin: () => contract.methods.confirm_admin()
-});
-
-export const MultiAdmin = (contract: Contract): MultiAdminContract => ({
-  setAdmin: (new_admin: address) => contract.methods.set_admin(new_admin),
-  confirmAdmin: () => contract.methods.confirm_admin(),
-  removeAdmin: (admin: address) => contract.methods.remove_admin(admin),
-  pause: (pause: boolean) => contract.methods.pause(pause)
-});

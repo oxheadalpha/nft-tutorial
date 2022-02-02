@@ -18,7 +18,6 @@ import {
   addAlias
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
-import { Fa2 } from '@oxheadalpha/fa2-interfaces';
 import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
@@ -184,7 +183,7 @@ export async function showBalances(
 
   const fa2Contract = (
     await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
-  ).with(Fa2);
+  ).withFa2();
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
   const balances = await fa2Contract.queryBalances(requests);
@@ -215,7 +214,7 @@ export async function showMetadata(
   const nftAddress = await resolveAlias2Address(contract, config);
   const tokenIds = tokens.map(t => Number.parseInt(t));
 
-  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).withFa2();
 
   console.log(kleur.yellow('querying token metadata...'));
   const tokensMeta = await fa2Contract.tokensMetadata(tokenIds);
@@ -245,7 +244,7 @@ export async function transfer(
   const nftAddress = await resolveAlias2Address(contract, config);
   const tz = await createToolkit(signer, config);
 
-  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).withFa2();
 
   console.log(kleur.yellow('transferring tokens...'));
   await fa2.runMethod(fa2Contract.transferTokens(txs));
@@ -307,7 +306,7 @@ export async function updateOperators(
 
   const nftAddress = await resolveAlias2Address(contract, config);
 
-  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).with(Fa2);
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).withFa2();
 
   console.log(kleur.yellow('updating operators...'));
   await fa2.runMethod(fa2Contract.updateOperators(batch.updates));
