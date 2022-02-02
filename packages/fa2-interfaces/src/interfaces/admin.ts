@@ -30,24 +30,20 @@ export interface NonPausableSimpleAdminContract {
   confirmAdmin(): ContractMethod<ContractProvider>;
 }
 
-export type SimpleAdminStorage =
-  | NonPausableSimpleAdminStorage
-  | {
-      paused: boolean;
-    };
+export type SimpleAdminStorage = NonPausableSimpleAdminStorage & {
+  paused: boolean;
+};
 /**
  * Only a single address can be an admin of the contract.
  * Contract can be paused by the admin.
  */
-export type SimpleAdminContract =
-  | NonPausableSimpleAdminContract
-  | {
-      /**
-       * Pause/unpause the contract. Only callable by the current admin address.
-       * If a contract is paused, all non-admin entry points will fail.
-       */
-      pause(pause: boolean): ContractMethod<ContractProvider>;
-    };
+export type SimpleAdminContract = NonPausableSimpleAdminContract & {
+  /**
+   * Pause/unpause the contract. Only callable by the current admin address.
+   * If a contract is paused, all non-admin entry points will fail.
+   */
+  pause(pause: boolean): ContractMethod<ContractProvider>;
+};
 
 export type MultiAdminStorage = {
   admins: Set<address>;
@@ -59,11 +55,9 @@ export type MultiAdminStorage = {
  * Multiple addresses can be contract admins.
  * Contract can be paused by an admin.
  */
-export type MultiAdminContract =
-  | SimpleAdminContract
-  | {
-      /**
-       * Removes one of the existing admins. Only callable by an admin address.
-       */
-      removeAdmin(admin: address): ContractMethod<ContractProvider>;
-    };
+export type MultiAdminContract = SimpleAdminContract & {
+  /**
+   * Removes one of the existing admins. Only callable by an admin address.
+   */
+  removeAdmin(admin: address): ContractMethod<ContractProvider>;
+};
