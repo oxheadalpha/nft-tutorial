@@ -18,7 +18,7 @@ import {
   addAlias
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
-import { createNftStorage, createTokenMetadata } from './nft-interface';
+import { createNftStorage, createTokenMetadata } from './nft-util';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 export async function createToolkit(
