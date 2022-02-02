@@ -1,14 +1,11 @@
 import * as kleur from 'kleur';
-import { BigNumber } from 'bignumber.js';
 import {
   address,
-  Fa2,
   runMethod,
   Transfer,
   Fa2Contract,
   operatorUpdateBatch
 } from '@oxheadalpha/fa2-interfaces';
-import { Nft } from '../src/nft-interface';
 
 import { TestApi, bootstrap } from './test-bootstrap';
 import { mintTestTokens, originateCollection } from './collection-bootstrap';
@@ -30,7 +27,7 @@ describe('FA2 Token Transfer Tests', () => {
 
   beforeEach(async () => {
     collectionAddress = await originateCollection(api.bob.toolkit);
-    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+    const nft = (await api.bob.at(collectionAddress)).asNft().withMint();
     await runMethod(mintTestTokens(nft, bobAddress));
   });
 
@@ -55,7 +52,7 @@ describe('FA2 Token Transfer Tests', () => {
     ]);
 
   test('transfer', async () => {
-    const fa2 = (await api.bob.at(collectionAddress)).with(Fa2);
+    const fa2 = (await api.bob.at(collectionAddress)).withFa2();
     await runMethod(
       fa2.transferTokens([nftTransfer(bobAddress, aliceAddress, 1)])
     );
@@ -67,7 +64,7 @@ describe('FA2 Token Transfer Tests', () => {
   });
 
   test('transfer non existing token', async () => {
-    const fa2 = (await api.bob.at(collectionAddress)).with(Fa2);
+    const fa2 = (await api.bob.at(collectionAddress)).withFa2();
     const run = runMethod(
       fa2.transferTokens([nftTransfer(bobAddress, aliceAddress, 10)])
     );
@@ -76,7 +73,7 @@ describe('FA2 Token Transfer Tests', () => {
   });
 
   test('transfer other owner token', async () => {
-    const fa2 = (await api.alice.at(collectionAddress)).with(Fa2);
+    const fa2 = (await api.alice.at(collectionAddress)).withFa2();
     const run = runMethod(
       fa2.transferTokens([nftTransfer(bobAddress, aliceAddress, 1)])
     );
@@ -85,8 +82,8 @@ describe('FA2 Token Transfer Tests', () => {
   });
 
   test('operator transfer', async () => {
-    const bobFa2 = (await api.bob.at(collectionAddress)).with(Fa2);
-    const aliceFa2 = (await api.alice.at(collectionAddress)).with(Fa2);
+    const bobFa2 = (await api.bob.at(collectionAddress)).withFa2();
+    const aliceFa2 = (await api.alice.at(collectionAddress)).withFa2();
 
     const batch = operatorUpdateBatch().addOperator(
       bobAddress,

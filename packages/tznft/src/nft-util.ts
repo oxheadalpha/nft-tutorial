@@ -1,13 +1,7 @@
-import { BigNumber } from 'bignumber.js';
-import {
-  ContractMethod,
-  ContractProvider,
-  MichelsonMap
-} from '@taquito/taquito';
+import { MichelsonMap } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 
 import {
-  Tzip12Contract,
   address,
   nat,
   TokenMetadataInternal,
@@ -18,16 +12,6 @@ export interface MintParam {
   owner: address;
   tokens: TokenMetadataInternal[];
 }
-
-export interface NftContract {
-  mintTokens: (tokens: MintParam[]) => ContractMethod<ContractProvider>;
-  freezeCollection: () => ContractMethod<ContractProvider>;
-}
-
-export const Nft = (contract: Tzip12Contract): NftContract => ({
-  mintTokens: tokens => contract.methods.mint(tokens),
-  freezeCollection: () => contract.methods.mint_freeze()
-});
 
 export function createNftStorage(owner: string, metaJson: string) {
   const assets = {
