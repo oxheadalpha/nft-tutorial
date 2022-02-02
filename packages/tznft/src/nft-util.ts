@@ -1,12 +1,7 @@
-import {
-  ContractMethod,
-  ContractProvider,
-  MichelsonMap
-} from '@taquito/taquito';
+import { MichelsonMap } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 
 import {
-  Tzip12Contract,
   address,
   nat,
   TokenMetadataInternal,
