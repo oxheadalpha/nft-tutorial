@@ -35,6 +35,12 @@ import {
   NftMintableContract
 } from './interfaces/minter';
 import { MultiMinterAdmin, MultiMinterAdminContract } from './interfaces/minter-admin';
+
+const subtract = <T1, T2>(a: T1, b: T2): Omit<T1, keyof T2> => {
+  const bKeys = new Set(Object.keys(b));
+  const newEntries = Object.entries(a).filter(([k, v]) => !bKeys.has(k));
+  return Object.fromEntries(newEntries) as Omit<T1, keyof T2>;
+};
 export interface UseFa2 {
   withFa2: <I extends ContractApi & UseFa2>(
     this: I
@@ -43,7 +49,8 @@ export interface UseFa2 {
 
 const fa2Api = (): UseFa2 => ({
   withFa2() {
-    return this.with(Fa2);
+    const r = this.with(Fa2);
+    return subtract(r, fa2Api());
   }
 });
 
@@ -64,15 +71,15 @@ export interface UseAdmin {
 const adminApi = (): UseAdmin => ({
   withSimpleAdmin() {
     const r = this.with(SimpleAdmin);
-    return r;
+    return subtract(r, adminApi());
   },
   withNonPausableSimpleAdmin() {
     const r = this.with(NonPausableSimpleAdmin);
-    return r;
+    return subtract(r, adminApi());
   },
   withMultiAdmin() {
     const r = this.with(NonPausableSimpleAdmin);
-    return r;
+    return subtract(r, adminApi());
   }
 });
 
@@ -84,7 +91,8 @@ export interface UseMinterAdmin {
 
 const minterAdminApi = (): UseMinterAdmin =>({
   withMultiMinterAdmin() {
-    return this.with(MultiMinterAdmin)
+    const r = this.with(MultiMinterAdmin);
+    return subtract(r, minterAdminApi());
   }
 })
 
@@ -138,7 +146,8 @@ export interface UseFreeze {
 
 const freezeApi = (): UseFreeze => ({
   withFreeze() {
-    return this.with(Freeze);
+    const r = this.with(Freeze);
+    return subtract(r, freezeApi());
   }
 });
 
@@ -189,13 +198,16 @@ const multiFungibleImplementation = (): UseMultiFungibleBurn &
 
 const implementationApi = (): UseImplementation => ({
   asNft() {
-    return this.with(nftImplementation);
+    const r = this.with(nftImplementation);
+    return subtract(r, implementationApi());
   },
   asFungible() {
-    return this.with(fungibleImplementation);
+    const r = this.with(fungibleImplementation);
+    return subtract(r, implementationApi());
   },
   asMultiFungible() {
-    return this.with(multiFungibleImplementation);
+    const r = this.with(multiFungibleImplementation);
+    return subtract(r, implementationApi());
   }
 });
 
