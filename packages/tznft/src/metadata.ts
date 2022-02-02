@@ -1,9 +1,10 @@
 import kleur from 'kleur';
 import path from 'path';
 import * as fs from 'fs';
-import { loadFile, loadUserConfig } from './config-util';
+import { loadFile } from './config';
 import { resolveAlias2Address } from './config-aliases';
 import { validateTzip16, validateTzip21 } from '@oxheadalpha/fa2-interfaces';
+import { loadConfig } from './config';
 
 export function createCollectionMeta(name: string): void {
   const meta = {
@@ -30,7 +31,7 @@ export async function createNftMeta(
   minter: string,
   artifactUri: string
 ): Promise<void> {
-  const config = loadUserConfig();
+  const config = await loadConfig();
   const minterAddress = await resolveAlias2Address(minter, config);
   const meta = {
     decimals: 0,

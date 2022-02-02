@@ -1,10 +1,8 @@
 import { pinFile, pinDirectory } from '@oxheadalpha/tezos-tools';
-import { loadUserConfig } from './config-util';
+import { loadConfig, saveConfig, PinataIpfs } from './config';
 import * as kleur from 'kleur';
 import * as path from 'path';
 import * as fs from 'fs';
-
-const ipfsKey = 'ipfs-pinata';
 
 export async function setPinataKeys(
   apiKey: string,
@@ -12,25 +10,27 @@ export async function setPinataKeys(
   force: boolean
 ) {
   console.log(apiKey, secretKey, force);
-  const config = loadUserConfig();
-  if (config.has(ipfsKey) && !force) {
+  const config = await loadConfig();
+  config.pinataIpfs;
+  if (config.pinataIpfs && !force) {
     console.log(
       kleur.red('Pinata keys already exist. Use --force option to override.')
     );
     return;
   }
-  config.set(ipfsKey, { apiKey, secretKey });
+  config.pinataIpfs = { apiKey, secretKey };
+  saveConfig(config);
   console.log(kleur.green('Pinata keys have been added.'));
 }
 
 type PinataKeys = { apiKey: string; secretKey: string };
 
 export async function pinFileToIpfs(tag: string, filePath: string) {
-  const pinataKeys = loadPinataKeys();
-  if(!pinataKeys) return;
+  const pinataKeys = await loadPinataKeys();
+  if (!pinataKeys) return;
 
   const resolvedPath = resolvePath(filePath);
-  if(!resolvedPath) return;
+  if (!resolvedPath) return;
 
   const cid = await pinFile(
     pinataKeys.apiKey,
@@ -43,11 +43,11 @@ export async function pinFileToIpfs(tag: string, filePath: string) {
 }
 
 export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
-  const pinataKeys = loadPinataKeys();
-  if(!pinataKeys) return;
+  const pinataKeys = await loadPinataKeys();
+  if (!pinataKeys) return;
 
   const resolvedPath = resolvePath(dirPath);
-  if(!resolvedPath) return;
+  if (!resolvedPath) return;
 
   const cid = await pinDirectory(
     pinataKeys.apiKey,
@@ -59,9 +59,9 @@ export async function pinDirectoryToIpfs(tag: string, dirPath: string) {
   console.log(kleur.green(`ipfs://${cid}`));
 }
 
-function loadPinataKeys() : PinataKeys | undefined {
-  const config = loadUserConfig();
-  if (!config.has(ipfsKey)) {
+async function loadPinataKeys(): Promise<PinataIpfs | undefined> {
+  const config = await loadConfig();
+  if (!config.pinataIpfs) {
     console.log(
       kleur.red(
         'Pinata keys are not configured. Run set-pinata-keys command first.'
@@ -69,7 +69,7 @@ function loadPinataKeys() : PinataKeys | undefined {
     );
     return undefined;
   }
-  return config.get(ipfsKey);
+  return config.pinataIpfs;
 }
 
 function resolvePath(fileOrDir: string): string | undefined {

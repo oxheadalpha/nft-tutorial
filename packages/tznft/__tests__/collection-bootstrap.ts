@@ -2,8 +2,8 @@ import * as kleur from 'kleur';
 import * as path from 'path';
 import { address, NftMintableContract } from '@oxheadalpha/fa2-interfaces';
 import { TezosToolkit } from '@taquito/taquito';
-import { loadFile } from '../src/config-util';
-import { createNftStorage, createTokenMetadata } from '../src/nft-interface';
+import { loadFile } from '../src/config';
+import { createNftStorage, createTokenMetadata } from '../src/nft-util';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 const tzip16Meta = {
