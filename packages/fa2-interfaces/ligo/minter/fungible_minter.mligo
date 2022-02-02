@@ -34,7 +34,7 @@ type mint_burn_param = mint_burn_tx list
 type minter_entrypoints =
   | Never of never
 #if CAN_FREEZE
-  | Freeze
+  | Mint_freeze
 #endif
 #if CAN_MINT
   | Mint of mint_burn_param
@@ -77,7 +77,7 @@ let minter_main (param, _tokens, _minter
   match param with
   | Never _ -> (failwith "INVALID_INVOCATION" : token_storage * minter_storage)
 #if CAN_FREEZE
-  | Freeze -> _tokens, true
+  | Mint_freeze -> _tokens, true
 #endif
 #if CAN_MINT
   | Mint m ->

@@ -32,7 +32,7 @@ export interface CreateFungibleTokenParam {
 }
 
 export interface FreezableContract {
-  freeze(): ContractMethod<ContractProvider>;
+  mintFreeze(): ContractMethod<ContractProvider>;
 }
 
 export interface NftMintableContract {

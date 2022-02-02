@@ -45,5 +45,5 @@ export const MintMultiFungible = (
 });
 
 export const Freeze = (contract: Contract): FreezableContract => ({
-  freeze: () => contract.methods.freeze()
+  mintFreeze: () => contract.methods.mint_freeze()
 });
