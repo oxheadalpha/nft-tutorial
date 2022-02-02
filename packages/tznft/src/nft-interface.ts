@@ -18,16 +18,6 @@ export interface MintParam {
   tokens: TokenMetadataInternal[];
 }
 
-export interface NftContract {
-  mintTokens: (tokens: MintParam[]) => ContractMethod<ContractProvider>;
-  freezeCollection: () => ContractMethod<ContractProvider>;
-}
-
-export const Nft = (contract: Tzip12Contract): NftContract => ({
-  mintTokens: tokens => contract.methods.mint(tokens),
-  freezeCollection: () => contract.methods.mint_freeze()
-});
-
 export function createNftStorage(owner: string, metaJson: string) {
   const assets = {
     ledger: new MichelsonMap(),
