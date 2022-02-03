@@ -16,6 +16,9 @@ The repo has three following yarn workspaces (packages):
 * [fa2-interfaces](./packages/fa2-interfaces/) - TypeScript interfaces to
   interact with FA2 contracts on blockchain.
 
+* [fa2-contracts](./packages/fa2-interfaces/) - modular [LIGO](https://ligolang.org/)
+  implementation of FA2 smart contracts
+
 * [tznft](./packages/tznft/) - CLI `tznft` tool and tutorial.
 
 ## How to Install And Use CLI Tool
@@ -34,4 +37,4 @@ $ yarn build
 ```
 
 If you want to run `tznft` CLI from your local build, run `yarn link` command from
-[nft-tznft](./packages/tznft/).
+[tznft](./packages/tznft/) package directory.
