@@ -33,6 +33,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@oxheadalpha/fa2-contracts": "^3.1.0",
     "@jest/types": "^27.4.2",
     "@types/async-retry": "^1.4.3",
     "@types/jest": "^27.0.3",
