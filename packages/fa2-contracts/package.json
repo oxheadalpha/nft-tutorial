@@ -1,7 +1,7 @@
 {
-  "name": "@oxheadalpha/fa2-interfaces",
+  "name": "@oxheadalpha/fa2-contracts",
   "version": "3.1.0",
-  "description": "Typescript interfaces for FA2 Tezos smart contracts",
+  "description": "Modular implementation of FA2 Tezos smart contracts in LIGO language",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
     "tezos",
@@ -14,7 +14,8 @@
   "license": "MIT",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/*"
+    "dist/*",
+    "ligo/*"
   ],
   "publishConfig": {
     "access": "public"
@@ -24,14 +25,16 @@
   },
   "scripts": {
     "clear": "yarn rimraf dist",
-    "build": "tsc -p .",
+    "build": "tsc -p . && chmod +x ./dist/export-ligo.js",
     "prepare": "yarn clear && yarn build",
     "test": "jest"
+  },
+  "bin": {
+    "export-ligo": "./dist/export-ligo.js"
   },
   "devDependencies": {
     "@jest/types": "^27.4.2",
     "@types/jest": "^27.0.3",
-    "@types/valid-url": "^1.0.3",
     "jest": "^27.4.5",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
@@ -43,16 +46,11 @@
     "@taquito/taquito": "^11.0.2",
     "@taquito/tzip12": "^11.0.2",
     "@taquito/tzip16": "^11.0.2",
-    "ajv": "^8.8.2",
-    "ajv-formats": "^2.1.1",
     "bignumber": "^1.1.0",
     "fs": "^0.0.1-security",
-    "is-email": "^1.0.2",
-    "is-ipfs": "^6.0.2",
     "kleur": "^4.1.4",
     "path": "^0.12.7",
-    "process": "^0.11.10",
-    "valid-url": "^1.0.9"
+    "process": "^0.11.10"
   },
   "gitHead": "1c80cc3e323b7dcadaf1ff8c3b80ebfe8d407369"
 }
