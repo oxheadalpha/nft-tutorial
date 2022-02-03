@@ -33,17 +33,21 @@ export interface NonPausableSimpleAdminContract {
 export type SimpleAdminStorage = NonPausableSimpleAdminStorage & {
   paused: boolean;
 };
-/**
- * Only a single address can be an admin of the contract.
- * Contract can be paused by the admin.
- */
-export type SimpleAdminContract = NonPausableSimpleAdminContract & {
+
+export interface PausableContract {
   /**
    * Pause/unpause the contract. Only callable by the current admin address.
    * If a contract is paused, all non-admin entry points will fail.
    */
   pause(pause: boolean): ContractMethod<ContractProvider>;
-};
+}
+
+/**
+ * Only a single address can be an admin of the contract.
+ * Contract can be paused by the admin.
+ */
+export type SimpleAdminContract = NonPausableSimpleAdminContract &
+  PausableContract;
 
 export type MultiAdminStorage = {
   admins: Set<address>;
