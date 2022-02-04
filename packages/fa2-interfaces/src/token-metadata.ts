@@ -26,13 +26,16 @@ export const createOffChainTokenMetadata = (
  */
 export const createOnChainTokenMetadata = (
   tokenId: nat,
-  jsonMetadata: string
+  metadata: object
 ): TokenMetadataInternal => {
   const m: TokenMetadataInternal = {
     token_id: tokenId,
     token_info: new MichelsonMap()
   };
-  m.token_info.set('', char2Bytes(jsonMetadata));
+  Object.entries(metadata).forEach(([k, v]) => {
+    const stringValue = JSON.stringify(v, null, 2);
+    m.token_info.set(k, char2Bytes(stringValue));
+  });
   return m;
 };
 
