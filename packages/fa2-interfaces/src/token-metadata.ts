@@ -32,8 +32,7 @@ export const createOnChainTokenMetadata = (
     token_id: tokenId,
     token_info: new MichelsonMap()
   };
-  m.token_info.set('', char2Bytes('tezos-storage:content'));
-  m.token_info.set('content', char2Bytes(jsonMetadata));
+  m.token_info.set('', char2Bytes(jsonMetadata));
   return m;
 };
 
@@ -86,8 +85,15 @@ export const createSimpleTokenMetadata = (
  *
  * @param tokenId token id.
  * @param name display token name.
+ * @artifactUri optional URI to the digital asset. Used for display purposes
  */
 export const createSimpleNftMetadata = (
   tokenId: nat,
-  name: string
-): TokenMetadataInternal => createSimpleTokenMetadata(tokenId, name, 0, true);
+  name: string,
+  artifactUri?: string
+): TokenMetadataInternal => {
+  const m = createSimpleTokenMetadata(tokenId, name, 0, true);
+  if(artifactUri)
+    m.token_info.set('artifactUri', char2Bytes(artifactUri))
+  return m;
+}

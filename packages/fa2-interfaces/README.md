@@ -314,10 +314,12 @@ export const createSimpleTokenMetadata = (
  *
  * @param tokenId token id.
  * @param name display token name.
+ * @artifactUri optional URI to the digital asset. Used for display purposes
  */
 export const createSimpleNftMetadata = (
   tokenId: nat,
-  name: string
+  name: string,
+  artifactUri?: string
 ): TokenMetadataInternal
 ```
 
