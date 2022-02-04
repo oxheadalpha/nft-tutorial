@@ -16,6 +16,7 @@
   * [Taquito and Michelson Type Aliases](#taquito-and-michelson-type-aliases)
   * [Taquito Wrappers Providing Type-Safe Contract API](#taquito-wrappers-providing-type-safe-contract-api)
   * [Helpers to Run Taquito `ContractMethod`](#helpers-to-run-taquito-contractmethod)
+  * [Helpers to Create TokenMetadata](#helpers-to-create-token-metadata)
   * [FA2 Contract API Methods](#fa2-contract-api-methods)
 
 ## LIGO
@@ -255,6 +256,69 @@ const batch = toolkit.contract.batch();
 batch.withContractCall(fa2Contract.transferTokens(txs1));
 batch.withContractCall(fa2Contract.transferTokens(txs2));
 const op: BatchOperation = await fa2.runBatch(batch);
+```
+
+### Helpers to Create Token Metadata
+
+There are following functions that help to prepare `TokenMetadataInternal` object
+required to mint a new token.
+
+```typescript
+/**
+ * Create a contract internal token metadata representation where token metadata
+ * JSON is stored off chain and referred by the tokenMetadataUri
+ */
+export const createOffChainTokenMetadata = (
+  tokenId: nat,
+  tokenMetadataUri: string
+): TokenMetadataInternal
+```
+
+```typescript
+/**
+ * Create a contract internal token metadata representation where token metadata
+ * JSON is stored on chain in the contract storage
+ */
+export const createOnChainTokenMetadata = (
+  tokenId: nat,
+  jsonMetadata: string
+): TokenMetadataInternal
+```
+
+```typescript
+/**
+ * Create a contract internal token metadata representation with on-chain
+ * storage of a few essential attributes.
+ *
+ * @param tokenId token id.
+ * @param name display token name.
+ * @param decimals the position of the decimal point in token balances for display
+ * purposes. The default value is 0. NFT tokens must have decimals value 0.
+ * @param isBooleanAmount describes whether an account can have an amount of
+ * exactly 0 or 1. The default value is false. Should be true for NFT tokens.
+ * @param symbol optional short identifier of the token for display purposes.
+ */
+export const createSimpleTokenMetadata = (
+  tokenId: nat,
+  name: string,
+  decimals?: nat,
+  isBooleanAmount?: boolean,
+  symbol?: string
+): TokenMetadataInternal
+```
+
+```typescript
+/**
+ * Create a contract internal non-fungible token metadata representation with
+ * on-chain storage of a few essential attributes.
+ *
+ * @param tokenId token id.
+ * @param name display token name.
+ */
+export const createSimpleNftMetadata = (
+  tokenId: nat,
+  name: string
+): TokenMetadataInternal
 ```
 
 ### FA2 Contract API Methods

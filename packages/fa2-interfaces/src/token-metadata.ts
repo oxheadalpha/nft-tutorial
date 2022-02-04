@@ -55,7 +55,7 @@ export const createSimpleTokenMetadata = (
   decimals?: nat,
   isBooleanAmount?: boolean,
   symbol?: string
-) => {
+): TokenMetadataInternal => {
   const m: TokenMetadataInternal = {
     token_id: tokenId,
     token_info: new MichelsonMap()
@@ -87,5 +87,7 @@ export const createSimpleTokenMetadata = (
  * @param tokenId token id.
  * @param name display token name.
  */
-export const createSimpleNftMetadata = (tokenId: nat, name: string) =>
-  createSimpleTokenMetadata(tokenId, name, 0, true);
+export const createSimpleNftMetadata = (
+  tokenId: nat,
+  name: string
+): TokenMetadataInternal => createSimpleTokenMetadata(tokenId, name, 0, true);
