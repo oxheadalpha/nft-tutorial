@@ -277,33 +277,10 @@ export const createOffChainTokenMetadata = (
 ```typescript
 /**
  * Create a contract internal token metadata representation where token metadata
- * JSON is stored on chain in the contract storage
+ * is stored on chain in the contract storage
  */
 export const createOnChainTokenMetadata = (
-  tokenId: nat,
-  jsonMetadata: string
-): TokenMetadataInternal
-```
-
-```typescript
-/**
- * Create a contract internal token metadata representation with on-chain
- * storage of a few essential attributes.
- *
- * @param tokenId token id.
- * @param name display token name.
- * @param decimals the position of the decimal point in token balances for display
- * purposes. The default value is 0. NFT tokens must have decimals value 0.
- * @param isBooleanAmount describes whether an account can have an amount of
- * exactly 0 or 1. The default value is false. Should be true for NFT tokens.
- * @param symbol optional short identifier of the token for display purposes.
- */
-export const createSimpleTokenMetadata = (
-  tokenId: nat,
-  name: string,
-  decimals?: nat,
-  isBooleanAmount?: boolean,
-  symbol?: string
+  metadata: TokenMetadata
 ): TokenMetadataInternal
 ```
 

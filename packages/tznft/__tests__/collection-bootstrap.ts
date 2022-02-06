@@ -61,8 +61,10 @@ const tokenOffChainMeta = (tokenId: number) =>
     'ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU'
   );
 
-const tokenOnChainMeta = (tokenId: number) =>
-  createOnChainTokenMetadata(tokenId, sampleMetadata);
+const tokenOnChainMeta = (tokenId: number) => {
+  const meta = { token_id: tokenId, ...sampleMetadata };
+  return createOnChainTokenMetadata(meta);
+};
 
 const tokenSimpleMeta = (tokenId: number) =>
   createSimpleNftMetadata(
