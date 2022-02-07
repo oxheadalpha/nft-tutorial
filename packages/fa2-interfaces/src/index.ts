@@ -5,6 +5,7 @@ export * from './interfaces/minter';
 export * from './tezos-api';
 export * from './taquito-run';
 export * from './type-aliases';
+export * from './token-metadata';
 export * from './transfer-batch';
 export * from './operator-update-batch';
 export { validateTzip16 } from './validate-tzip16';
