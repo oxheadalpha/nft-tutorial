@@ -13,7 +13,7 @@ import {
 } from './config-aliases';
 import * as fa2 from '@oxheadalpha/fa2-interfaces';
 import { Fa2 } from '@oxheadalpha/fa2-interfaces';
-import { createNftStorage, createTokenMetadata, Nft } from './nft-interface';
+import { createNftStorage, Nft } from './nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 import { loadConfig, Config, activeNetwork } from './config';
 
@@ -129,7 +129,10 @@ async function loadTokensFromFile(
           `Invalid token file format: ${fileName}. Each line should be 'id, metadataUri'`
         );
 
-      return createTokenMetadata(new BigNumber(tokenId), metadataUri);
+      return fa2.createOffChainTokenMetadata(
+        new BigNumber(tokenId),
+        metadataUri
+      );
     });
 }
 
@@ -159,7 +162,10 @@ export function parseTokens(
       `Invalid token format: ${descriptor}. It should be 'id, metadataUri'`
     );
 
-  const token = createTokenMetadata(new BigNumber(id), tokenMetadataUri);
+  const token = fa2.createOffChainTokenMetadata(
+    new BigNumber(id),
+    tokenMetadataUri
+  );
   token.token_info.set('', char2Bytes(tokenMetadataUri));
   return [token].concat(tokens);
 }

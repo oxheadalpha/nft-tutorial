@@ -1,13 +1,14 @@
 import * as kleur from 'kleur';
 import * as path from 'path';
-import { address } from '@oxheadalpha/fa2-interfaces';
+import {
+  address,
+  createOnChainTokenMetadata,
+  createOffChainTokenMetadata,
+  createSimpleNftMetadata
+} from '@oxheadalpha/fa2-interfaces';
 import { TezosToolkit } from '@taquito/taquito';
 import { loadFile } from '../src/config';
-import {
-  createNftStorage,
-  createTokenMetadata,
-  NftContract
-} from '../src/nft-interface';
+import { createNftStorage, NftContract } from '../src/nft-interface';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 const tzip16Meta = {
@@ -37,11 +38,42 @@ export async function originateCollection(tzt: TezosToolkit): Promise<address> {
   return contract.address;
 }
 
-export const tokenMeta = (tokenId: number) =>
-  createTokenMetadata(
+const sampleMetadata = {
+  decimals: 0,
+  isBooleanAmount: true,
+  name: 'Token 1',
+  description: 'Awesome Tezos NFT',
+  tags: ['awsome', 'nft'],
+  minter: 'tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU',
+  artifactUri: 'ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj',
+  creators: [],
+  attributes: [
+    {
+      name: 'sample attribute',
+      value: 'sample value'
+    }
+  ]
+};
+
+const tokenOffChainMeta = (tokenId: number) =>
+  createOffChainTokenMetadata(
     tokenId,
     'ipfs://QmbYcvb4B6dtEGAmHcUM9ZaMDBBJLFLh6Jsno218M9iQMU'
   );
+
+const tokenOnChainMeta = (tokenId: number) => {
+  const meta = { token_id: tokenId, ...sampleMetadata };
+  return createOnChainTokenMetadata(meta);
+};
+
+const tokenSimpleMeta = (tokenId: number) =>
+  createSimpleNftMetadata(
+    tokenId,
+    `Token ${tokenId}`,
+    'ipfs://QmRyTc9KbD7ZSkmEf4e7fk6A44RPciW5pM4iyqRGrhbyvj'
+  );
+
+export const tokenMeta = tokenOnChainMeta;
 
 export const mintTestTokens = (nft: NftContract, owner: address) => {
   const tokens = [1, 2].map(tokenMeta);
