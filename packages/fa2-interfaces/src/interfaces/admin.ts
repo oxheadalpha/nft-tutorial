@@ -9,7 +9,7 @@ export type NoAdminStorage = unit;
 
 export interface NoAdminContract {}
 
-export type NonPausableSimpleAdminStorage = {
+export type SimpleAdminStorage = {
   admin: address;
   pending_admin: address | undefined;
 };
@@ -17,7 +17,7 @@ export type NonPausableSimpleAdminStorage = {
 /**
  * Only a single address can be an admin of the contract.
  */
-export interface NonPausableSimpleAdminContract {
+export interface SimpleAdminContract {
   /**
    * Set a new pending admin. Only callable by the current admin.
    */
@@ -30,7 +30,7 @@ export interface NonPausableSimpleAdminContract {
   confirmAdmin(): ContractMethod<ContractProvider>;
 }
 
-export type SimpleAdminStorage = NonPausableSimpleAdminStorage & {
+export type PausableSimpleAdminStorage = SimpleAdminStorage & {
   paused: boolean;
 };
 
@@ -46,7 +46,7 @@ export interface PausableContract {
  * Only a single address can be an admin of the contract.
  * Contract can be paused by the admin.
  */
-export type SimpleAdminContract = NonPausableSimpleAdminContract &
+export type PausableSimpleAdminContract = SimpleAdminContract &
   PausableContract;
 
 export type MultiAdminStorage = {
@@ -59,7 +59,7 @@ export type MultiAdminStorage = {
  * Multiple addresses can be contract admins.
  * Contract can be paused by an admin.
  */
-export type MultiAdminContract = SimpleAdminContract & {
+export type MultiAdminContract = PausableSimpleAdminContract & {
   /**
    * Removes one of the existing admins. Only callable by an admin address.
    */
