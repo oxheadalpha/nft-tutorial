@@ -1,5 +1,5 @@
-#if !NON_SIMPLE_ADMIN
-#define NON_SIMPLE_ADMIN
+#if !SIMPLE_ADMIN
+#define SIMPLE_ADMIN
 
 type admin_storage = {
   admin : address;
