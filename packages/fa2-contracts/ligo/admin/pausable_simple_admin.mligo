@@ -1,5 +1,5 @@
-#if !SIMPLE_PAUSABLE_ADMIN
-#define SIMPLE_PAUSABLE_ADMIN
+#if !PAUSABLE_SIMPLE_ADMIN
+#define PAUSABLE_SIMPLE_ADMIN
 
 type admin_storage = {
   admin : address;

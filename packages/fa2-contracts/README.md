@@ -38,7 +38,7 @@ $yarn export-ligo ./ligo
     module where everyone is admin of the contract
   * [admin/simple_admin.mligo](./ligo/admin/simple_admin.mligo) implementation of
     the admin module that has a single admin address; admin address can be changed.
-  * [admin/simple_pausable_admin.mligo](./ligo/admin/simple_pausable_admin.mligo)
+  * [admin/pausable_simple_admin.mligo](./ligo/admin/pausable_simple_admin.mligo)
     same as `simple_admin`, but lets pause/unpause the contract.
   * [admin/multi_admin.mligo](./ligo/admin/multi_admin.mligo) implementation of
     the admin module that may have multiple admins; lets pause/unpause the contract

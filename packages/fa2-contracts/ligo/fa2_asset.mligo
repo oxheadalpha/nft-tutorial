@@ -12,8 +12,8 @@ A generic implemenation of the asset contract.
 #include "./admin/simple_admin.mligo"
 #endif
 
-#if USE_SIMPLE_PAUSABLE_ADMIN
-#include "./admin/simple_pausable_admin.mligo"
+#if USE_PAUSABLE_SIMPLE_ADMIN
+#include "./admin/pausable_simple_admin.mligo"
 #endif
 
 #if USE_MULTI_ADMIN
