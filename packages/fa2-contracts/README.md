@@ -37,19 +37,15 @@ $yarn export-ligo ./ligo
   * [admin/no_admin.mligo](./ligo/admin/no_admin.mligo) implementation of the admin
     module where everyone is admin of the contract
   * [admin/simple_admin.mligo](./ligo/admin/simple_admin.mligo) implementation of
-    the admin module that has a single admin address; lets pause/unpause the contract
-    and change the admin
-  * [admin/non_pausable_simple_admin.mligo](./ligo/admin/non_pausable_simple_admin.mligo)
-    same as `simple_admin`, but without ability to pause/unpause the contract.
+    the admin module that has a single admin address; admin address can be changed.
+  * [admin/pausable_simple_admin.mligo](./ligo/admin/pausable_simple_admin.mligo)
+    same as `simple_admin`, but lets pause/unpause the contract.
   * [admin/multi_admin.mligo](./ligo/admin/multi_admin.mligo) implementation of
     the admin module that may have multiple admins; lets pause/unpause the contract
     and add/remove the admins
 * [minter_admin](./ligo/minter_admin) various implementations of the contract
   minter admin (minter is an address that has rights to mint new tokens). Each
   minter admin implementation has a common LIGO module signature.
-  * [minter_admin/no_minter_admin.mligo](./ligo/minter_admin/no_minter_admin.mligo)
-    implementation of the minter admin module that prevent everyone from minting
-    new tokens
   * [minter_admin/null_minter_admin.mligo](./ligo/minter_admin/null_minter_admin.mligo)
     implementation of the minter admin module that allows everyone to mint
     new tokens

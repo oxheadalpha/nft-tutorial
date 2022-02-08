@@ -4,13 +4,13 @@ import { TezosToolkit } from '@taquito/taquito';
 import { Tzip12Contract, address } from './type-aliases';
 import {
   SimpleAdminContract,
-  NonPausableSimpleAdminContract,
+  PausableSimpleAdminContract,
   MultiAdminContract
 } from './interfaces/admin';
 import {
   MultiAdmin,
   SimpleAdmin,
-  NonPausableSimpleAdmin
+  PausableSimpleAdmin
 } from './interfaces/admin-combinators';
 import { Fa2Contract } from './interfaces/fa2';
 import { Fa2 } from './interfaces/fa2-combinator';
@@ -58,9 +58,9 @@ export interface UseAdmin {
     this: I
   ) => Omit<I & SimpleAdminContract, keyof UseAdmin>;
 
-  withNonPausableSimpleAdmin: <I extends UseAdmin & ContractApi>(
+  withPausableSimpleAdmin: <I extends UseAdmin & ContractApi>(
     this: I
-  ) => Omit<I & NonPausableSimpleAdminContract, keyof UseAdmin>;
+  ) => Omit<I & PausableSimpleAdminContract, keyof UseAdmin>;
 
   withMultiAdmin: <I extends UseAdmin & ContractApi>(
     this: I
@@ -72,8 +72,8 @@ const adminApi = (): UseAdmin => ({
     const r = this.with(SimpleAdmin);
     return subtract(r, adminApi());
   },
-  withNonPausableSimpleAdmin() {
-    const r = this.with(NonPausableSimpleAdmin);
+  withPausableSimpleAdmin() {
+    const r = this.with(PausableSimpleAdmin);
     return subtract(r, adminApi());
   },
   withMultiAdmin() {
