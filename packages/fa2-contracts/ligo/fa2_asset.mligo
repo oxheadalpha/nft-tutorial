@@ -12,29 +12,17 @@ A generic implemenation of the asset contract.
 #include "./admin/simple_admin.mligo"
 #endif
 
-#if USE_NON_PAUSABLE_SIMPLE_ADMIN
-#include "./admin/non_pausable_simple_admin.mligo"
+#if USE_SIMPLE_PAUSABLE_ADMIN
+#include "./admin/simple_pausable_admin.mligo"
 #endif
 
 #if USE_MULTI_ADMIN
 #include "./admin/multi_admin.mligo"
 #endif
 
-#if USE_NO_ADMIN
-#include "./admin/no_admin.mligo"
-#endif
-
-#if USE_NULL_ADMIN
-#include "./admin/null_admin.mligo"
-#endif
-
 (* Definition of the contract minter admin module *)
 #if USE_NULL_MINTER_ADMIN
 #include "./minter_admin/null_minter_admin.mligo"
-#endif
-
-#if USE_NOT_MINTER_ADMIN
-#include "./minter_admin/not_minter_admin.mligo"
 #endif
 
 #if USE_MULI_MINTER_ADMIN
