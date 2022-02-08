@@ -18,6 +18,6 @@ const Pausable = storageBuilder(() => ({
 
 const addAdminKey = <S>(s: S) => ({ admin: s });
 
-export const SimpleAmdin = Simple.transfer(addAdminKey);
-export const PausableSimpleAdmin = Simple.with(Pausable).transfer(addAdminKey);
-export const MultiAdminStorage = Multi.with(Pausable).transfer(addAdminKey);
+export const SimpleAmdin = Simple.transform(addAdminKey);
+export const PausableSimpleAdmin = Simple.with(Pausable).transform(addAdminKey);
+export const MultiAdminStorage = Multi.with(Pausable).transform(addAdminKey);
