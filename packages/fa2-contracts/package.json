@@ -33,6 +33,7 @@
     "export-ligo": "./dist/export-ligo.js"
   },
   "devDependencies": {
+    "@oxheadalpha/tezos-tools": "^3.1.0",
     "@jest/types": "^27.4.2",
     "@types/jest": "^27.0.3",
     "jest": "^27.4.5",

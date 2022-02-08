@@ -5,12 +5,10 @@ import {
 } from '@taquito/taquito';
 import { address, unit } from '../type-aliases';
 
-export type NoMinterAdminStorage = unit;
 export type NullMinterAdminStorage = unit;
 export type AdminAsMinterStorage = unit;
 export type MultiMinterAdminStorage = MichelsonMap<address, unit>;
 
-export interface NoMinterAdminContract {}
 export interface NullMinterAdminContract {}
 export interface AdminAsMinterContract {}
 
@@ -24,10 +22,6 @@ export interface MultiMinterAdminContract {
    */
   removeMinter(minter: address): ContractMethod<ContractProvider>;
 }
-
-// export const NoMinterAdmin = (): NoMinterAdminContract => {
-//   return {};
-// };
 
 // export const NullMinterAdmin = (
 //   contract: Contract

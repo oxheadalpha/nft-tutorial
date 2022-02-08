@@ -35,15 +35,3 @@ export function createNftStorage(owner: string, metaJson: string) {
     mint_freeze: false
   };
 }
-
-export function createTokenMetadata(
-  tokenId: nat,
-  tokenMetadataUri: string
-): TokenMetadataInternal {
-  const m: TokenMetadataInternal = {
-    token_id: tokenId,
-    token_info: new MichelsonMap()
-  };
-  m.token_info.set('', char2Bytes(tokenMetadataUri));
-  return m;
-}
