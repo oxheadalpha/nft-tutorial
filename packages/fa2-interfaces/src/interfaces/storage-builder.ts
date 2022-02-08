@@ -30,14 +30,6 @@ export const storageBuilder = <I, S>(
   return self;
 };
 
-export const SimpleAdmin = storageBuilder(({ owner }: { owner: string }) => ({
-  admin: {
-    admin: owner,
-    pending_admin: undefined,
-    paused: false
-  }
-}));
-
 export const Assets = storageBuilder(() => ({
   assets: {
     ledger: new MichelsonMap<nat, address>(),
@@ -46,6 +38,3 @@ export const Assets = storageBuilder(() => ({
     mint_freeze: false
   }
 }));
-
-const createStorage = SimpleAdmin.with(Assets).build;
-export const storage = createStorage({ owner: '' });
