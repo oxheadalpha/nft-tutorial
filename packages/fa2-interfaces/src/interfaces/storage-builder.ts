@@ -5,6 +5,7 @@ import { TokenMetadataInternal } from './fa2';
 export interface StorageBuilder<I, S> {
   build: (params: I) => S;
   with: <I1, S1>(sb: StorageBuilder<I1, S1>) => StorageBuilder<I & I1, S & S1>;
+  transfer: <S1>(f: (s: S) => S1) => StorageBuilder<I, S1>;
 }
 
 export const storageBuilder = <I, S>(
@@ -18,6 +19,10 @@ export const storageBuilder = <I, S>(
         const otherStorage = other.build(params);
         return { ...selfStorage, ...otherStorage };
       };
+      return storageBuilder(newBuild);
+    },
+    transfer: <S1>(f: (s: S) => S1) => {
+      const newBuild = (params: I) => f(self.build(params));
       return storageBuilder(newBuild);
     }
   };
