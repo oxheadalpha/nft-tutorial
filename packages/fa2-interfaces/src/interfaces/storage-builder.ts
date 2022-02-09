@@ -33,12 +33,3 @@ export const storageBuilder = <I, S>(
 
   return self;
 };
-
-export const Assets = storageBuilder(() => ({
-  assets: {
-    ledger: new MichelsonMap<nat, address>(),
-    operators: new MichelsonMap<[address, [address, nat]], unit>(),
-    token_metadata: new MichelsonMap<nat, TokenMetadataInternal>(),
-    mint_freeze: false
-  }
-}));
