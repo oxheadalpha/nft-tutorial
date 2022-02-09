@@ -1,18 +1,9 @@
-import {
-  ContractMethod,
-  ContractProvider,
-  MichelsonMap
-} from '@taquito/taquito';
+import { ContractMethod, ContractProvider } from '@taquito/taquito';
 import { address, unit } from '../type-aliases';
 
 export type NoAdminStorage = unit;
 
 export interface NoAdminContract {}
-
-export type SimpleAdminStorage = {
-  admin: address;
-  pending_admin: address | undefined;
-};
 
 /**
  * Only a single address can be an admin of the contract.
@@ -30,10 +21,6 @@ export interface SimpleAdminContract {
   confirmAdmin(): ContractMethod<ContractProvider>;
 }
 
-export type PausableSimpleAdminStorage = SimpleAdminStorage & {
-  paused: boolean;
-};
-
 export interface PausableContract {
   /**
    * Pause/unpause the contract. Only callable by the current admin address.
@@ -48,12 +35,6 @@ export interface PausableContract {
  */
 export type PausableSimpleAdminContract = SimpleAdminContract &
   PausableContract;
-
-export type MultiAdminStorage = {
-  admins: Set<address>;
-  pending_admins: MichelsonMap<address, unit>;
-  paused: boolean;
-};
 
 /**
  * Multiple addresses can be contract admins.

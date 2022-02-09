@@ -1,5 +1,5 @@
 import { MichelsonMap } from '@taquito/taquito';
-import { storageBuilder } from './storage-builder';
+import { storageBuilder, StorageBuilder } from './storage-builder';
 import { address, unit } from '../type-aliases';
 
 const simple = ({ owner }: { owner: address }) => ({
@@ -19,11 +19,18 @@ const pausable = () => ({
 const addAdminKey = <S>(s: S) => ({ admin: s });
 
 export const simpleAdminStorage = storageBuilder(simple).transform(addAdminKey);
+export type SimpleAdminStorage = ReturnType<typeof simpleAdminStorage.build>;
 
 export const pausableSimpleAdminStorage = storageBuilder(simple)
   .withF(pausable)
   .transform(addAdminKey);
 
+export type PausableSimpleAdminStorage = ReturnType<
+  typeof pausableSimpleAdminStorage.build
+>;
+
 export const multiAdminStorage = storageBuilder(multi)
   .withF(pausable)
   .transform(addAdminKey);
+
+export type MultiAdminStorage = ReturnType<typeof multiAdminStorage.build>;
