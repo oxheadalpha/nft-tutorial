@@ -8,6 +8,10 @@ const common = storageBuilder(() => ({
   token_metadata: new MichelsonMap<nat, TokenMetadataInternal>()
 }));
 
+const totalSupply = (p: { totalSupply?: nat }) => ({
+  totalSupply: p || 0
+});
+
 const addAssetsKey = <S>(s: S) => ({ assets: s });
 
 export const nftStorage = common
@@ -20,9 +24,9 @@ export type NftStorage = ReturnType<typeof nftStorage.build>;
 
 export const fungibleTokenStorage = common
   .withF(() => ({
-    ledger: new MichelsonMap<address, nat>(),
-    totalSupply: 0
+    ledger: new MichelsonMap<address, nat>()
   }))
+  .withF(totalSupply)
   .transform(addAssetsKey);
 
 export type FungibleTokenStorage = ReturnType<
@@ -31,19 +35,17 @@ export type FungibleTokenStorage = ReturnType<
 
 export const multiFungibleTokenStorage = common
   .withF(() => ({
-    ledger: new MichelsonMap<[address, nat], nat>(),
-    totalSupply: 0
+    ledger: new MichelsonMap<[address, nat], nat>()
   }))
+  .withF(totalSupply)
   .transform(addAssetsKey);
 
 export type MultiFungibleTokenStorage = ReturnType<
   typeof multiFungibleTokenStorage.build
 >;
 
-export const mintFreeze = storageBuilder(() => ({
+export const mintFreezeStorage = storageBuilder(() => ({
   mint_freeze: false
 }));
 
-export type MintFreeze = ReturnType<
-  typeof mintFreeze.build
->;
+export type MintFreeze = ReturnType<typeof mintFreezeStorage.build>;
