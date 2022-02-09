@@ -1,13 +1,11 @@
 import { MichelsonMap } from '@taquito/taquito';
-import { address, unit, nat } from '../type-aliases';
-import { TokenMetadataInternal } from './fa2';
+import { char2Bytes } from '@taquito/utils';
+import { bytes } from '../type-aliases';
 
 export interface StorageBuilder<I, S> {
   build: (params: I) => S;
   withF: <I1, S1>(f: (p: I1) => S1) => StorageBuilder<I & I1, S & S1>;
-  with: <I1, S1>(
-    sb: StorageBuilder<I1, S1>
-  ) => StorageBuilder<I & I1, S & S1>;
+  with: <I1, S1>(sb: StorageBuilder<I1, S1>) => StorageBuilder<I & I1, S & S1>;
   transform: <S1>(f: (s: S) => S1) => StorageBuilder<I, S1>;
 }
 
@@ -33,3 +31,15 @@ export const storageBuilder = <I, S>(
 
   return self;
 };
+
+export const contractStorage = storageBuilder(
+  ({ metadata }: { metadata: string }) => {
+    const metaMap = new MichelsonMap<string, bytes>();
+    metaMap.set('', char2Bytes('tezos-storage:content'));
+    metaMap.set('content', char2Bytes(metadata));
+
+    return {
+      metadata
+    };
+  }
+);
