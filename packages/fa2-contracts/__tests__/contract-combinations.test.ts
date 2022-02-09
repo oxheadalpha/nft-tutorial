@@ -78,6 +78,7 @@ describe('test compilation for contract module combinations', () => {
 
       fs.unlinkSync(contractFile);
       fs.unlinkSync(outputFile);
-    }
+    },
+    240000 // increase default timeout
   );
 });
