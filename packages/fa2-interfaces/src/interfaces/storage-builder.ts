@@ -39,7 +39,7 @@ export const contractStorage = storageBuilder(
     metaMap.set('content', char2Bytes(metadata));
 
     return {
-      metadata
+      metadata: metaMap
     };
   }
 );
