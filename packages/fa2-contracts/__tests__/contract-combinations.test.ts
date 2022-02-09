@@ -44,20 +44,24 @@ function* combinations(): Generator<
   for (let impl of implementations)
     for (let admin of admins)
       for (let minterAdmin of minterAdmins)
-        for (let minter of minters) {
-          yield [impl, admin, minterAdmin, minter];
-          return;
-        }
+        for (let minter of minters) yield [impl, admin, minterAdmin, minter];
 }
 
+const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
+  'USE_MULTI_FUNGIBLE_TOKEN',
+  'USE_MULTI_ADMIN',
+  'USE_MULTI_MINTER_ADMIN',
+  new Set()
+];
+
 describe('test compilation for contract module combinations', () => {
-  const testDir = './__tests__/'
-  const ligoEnv = ligo(testDir);
-  const contractFile = path.join(testDir,'fa2_contract.mligo');
+  const testDir = './__tests__/';
+  const ligoEnv = ligo();
+  const contractFile = path.join(testDir, 'fa2_contract.mligo');
 
   test.each([...combinations()])(
-    
-    'a combination should compile',
+    // test.each([singleCombination])(
+    'a combination should compile %s %s %s %o',
     async (implementation, admin, minterAdmin, minter) => {
       //console.log(implementation, admin, minterAdmin, minter);
       const contractCode = generateFileContent({
@@ -67,11 +71,13 @@ describe('test compilation for contract module combinations', () => {
         minter
       });
       fs.writeFileSync(contractFile, contractCode);
-      
-      throw new Error('TEST')
+
+      const outputFile = path.join(testDir, 'fa2_contract.tz');
+
+      await ligoEnv.compileContract(contractFile, 'asset_main', outputFile);
 
       fs.unlinkSync(contractFile);
+      fs.unlinkSync(outputFile);
     }
   );
-
 });

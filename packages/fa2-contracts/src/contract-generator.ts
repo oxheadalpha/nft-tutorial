@@ -81,6 +81,6 @@ ${content.minterDef}
 ${content.codeImplementation}
 
 (** Contract entry point is "asset_main" function *)
-#include "../fa2_asset.mligo"
+#include "ligo/fa2_asset.mligo"
 
 `;

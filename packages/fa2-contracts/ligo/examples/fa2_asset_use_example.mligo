@@ -12,7 +12,7 @@
 (* Choose one of the minter admin modules implementation *)
 
 (* #define USE_NULL_MINTER_ADMIN *)
-(* #define USE_MULI_MINTER_ADMIN *)
+(* #define USE_MULTI_MINTER_ADMIN *)
 #define USE_ADMIN_AS_MINTER
 
 

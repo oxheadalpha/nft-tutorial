@@ -29,7 +29,7 @@ A generic implemenation of the asset contract.
 #include "./minter_admin/null_minter_admin.mligo"
 #endif
 
-#if USE_MULI_MINTER_ADMIN
+#if USE_MULTI_MINTER_ADMIN
 #include "./minter_admin/multi_minter_admin.mligo"
 #endif
 
