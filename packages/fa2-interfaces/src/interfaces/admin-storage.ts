@@ -2,22 +2,28 @@ import { MichelsonMap } from '@taquito/taquito';
 import { storageBuilder } from './storage-builder';
 import { address, unit } from '../type-aliases';
 
-const Simple = storageBuilder(({ owner }: { owner: string }) => ({
+const simple = ({ owner }: { owner: address }) => ({
   admin: owner,
   pending_admin: undefined
-}));
+});
 
-const Multi = storageBuilder(({ owner }: { owner: string }) => ({
+const multi = ({ owner }: { owner: address }) => ({
   admins: new Set(owner),
   pending_admins: new MichelsonMap<address, unit>()
-}));
+});
 
-const Pausable = storageBuilder(() => ({
+const pausable = () => ({
   paused: false
-}));
+});
 
 const addAdminKey = <S>(s: S) => ({ admin: s });
 
-export const SimpleAmdin = Simple.transform(addAdminKey);
-export const PausableSimpleAdmin = Simple.with(Pausable).transform(addAdminKey);
-export const MultiAdminStorage = Multi.with(Pausable).transform(addAdminKey);
+export const simpleAdminStorage = storageBuilder(simple).transform(addAdminKey);
+
+export const pausableSimpleAdminStorage = storageBuilder(simple)
+  .with(pausable)
+  .transform(addAdminKey);
+
+export const multiAdminStorage = storageBuilder(multi)
+  .with(pausable)
+  .transform(addAdminKey);
