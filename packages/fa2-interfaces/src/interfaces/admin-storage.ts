@@ -21,9 +21,9 @@ const addAdminKey = <S>(s: S) => ({ admin: s });
 export const simpleAdminStorage = storageBuilder(simple).transform(addAdminKey);
 
 export const pausableSimpleAdminStorage = storageBuilder(simple)
-  .with(pausable)
+  .withF(pausable)
   .transform(addAdminKey);
 
 export const multiAdminStorage = storageBuilder(multi)
-  .with(pausable)
+  .withF(pausable)
   .transform(addAdminKey);
