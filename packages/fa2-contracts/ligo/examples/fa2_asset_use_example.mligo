@@ -4,10 +4,10 @@
 
 (* Choose one of the admin modules implementation *)
 
+(* #define USE_NO_ADMIN *)
 (* #define USE_SIMPLE_ADMIN *)
 #define USE_PAUSABLE_SIMPLE_ADMIN
 (* #define USE_MULTI_ADMIN *)
-(* USE_NULL_MINTER_ADMIN *)
 
 (* Choose one of the minter admin modules implementation *)
 

@@ -1,27 +1,32 @@
-type UseAdmin =
+export type Admin =
   | 'USE_SIMPLE_ADMIN'
   | 'USE_PAUSABLE_SIMPLE_ADMIN'
   | 'USE_MULTI_ADMIN'
-  | 'USE_NULL_MINTER_ADMIN';
+  | 'USE_NO_ADMIN';
 
-type UseMinterAdmin =
+export type MinterAdmin =
   | 'USE_NULL_MINTER_ADMIN'
   | 'USE_ADMIN_AS_MINTER'
-  | 'USE_MULI_MINTER_ADMIN';
+  | 'USE_MULTI_MINTER_ADMIN';
 
-type UseImplementation =
+export type Implementation =
   | 'USE_NFT_TOKEN'
   | 'USE_FUNGIBLE_TOKEN'
   | 'USE_MULTI_FUNGIBLE_TOKEN';
 
-type UseMinter = 'CAN_MINT' | 'CAN_BURN' | 'CAN_FREEZE';
+export type Minter = 'CAN_MINT' | 'CAN_BURN' | 'CAN_FREEZE';
 
-type ContractParam = {
-  implementation: UseImplementation;
-  admin: UseAdmin;
-  minterAdmin: UseMinterAdmin;
-  minter: Set<UseMinter>;
+export type ContractParam = {
+  implementation: Implementation;
+  admin: Admin;
+  minterAdmin: MinterAdmin;
+  minter: Set<Minter>;
 };
+
+export const generateFileContent = (param: ContractParam): string => {
+  const content = contractParam2Content(param);
+  return assetFileContent(content);
+}
 
 type ContractContent = {
   adminDef: string;
@@ -38,15 +43,15 @@ const contractParam2Content = (param: ContractParam): ContractContent => {
   return { adminDef, minterAdminDef, minterDef, codeImplementation };
 };
 
-const generateAdminDef = (admin: UseAdmin): string => `#define ${admin}`;
+const generateAdminDef = (admin: Admin): string => `#define ${admin}`;
 
-const generateMinterAdminDef = (minterAdmin: UseMinterAdmin): string =>
+const generateMinterAdminDef = (minterAdmin: MinterAdmin): string =>
   `#define ${minterAdmin}`;
 
-const generateMinterDef = (minter: Set<UseMinter>): string[] =>
+const generateMinterDef = (minter: Set<Minter>): string[] =>
   [...minter].map(flag => `#define ${flag}`);
 
-const generateImplementationDef = (implementation: UseImplementation): string =>
+const generateImplementationDef = (implementation: Implementation): string =>
   `#define ${implementation}`;
 
 const assetFileContent = (content: ContractContent) => `
