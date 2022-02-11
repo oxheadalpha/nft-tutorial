@@ -8,6 +8,9 @@ import {
   Minter,
   MinterAdmin
 } from '../src/contract-generator';
+import { TezosToolkit } from '@taquito/taquito';
+import { bootstrap } from './test-bootstrap';
+import { generateStorage } from './generate-storage';
 
 const implementations: Implementation[] = [
   'USE_NFT_TOKEN',
@@ -58,27 +61,41 @@ describe('test compilation for contract module combinations', () => {
   const testDir = './__tests__/';
   const ligoEnv = ligo();
   const contractFile = path.join(testDir, 'fa2_contract.mligo');
+  let toolkit: TezosToolkit;
+
+  beforeAll(async () => {
+    toolkit = await bootstrap();
+  });
 
   test.each([...combinations()])(
     // test.each([singleCombination])(
     'a combination should compile %s %s %s %o',
     async (implementation, admin, minterAdmin, minter) => {
       //console.log(implementation, admin, minterAdmin, minter);
-      const contractCode = generateFileContent({
+      const param = {
         implementation,
         admin,
         minterAdmin,
         minter
-      });
+      };
+      const contractCode = generateFileContent(param);
       fs.writeFileSync(contractFile, contractCode);
 
       const outputFile = path.join(testDir, 'fa2_contract.tz');
 
-      await ligoEnv.compileContract(contractFile, 'asset_main', outputFile);
+      const code = await ligoEnv.compileAndLoadContract(
+        contractFile,
+        'asset_main',
+        outputFile
+      );
+      const storage = generateStorage(param);
+
+      const op = await toolkit.contract.originate({code, storage});
+      await op.confirmation();
 
       fs.unlinkSync(contractFile);
       fs.unlinkSync(outputFile);
     },
-    240000 // increase default timeout
+    500000 // increase default timeout
   );
 });
