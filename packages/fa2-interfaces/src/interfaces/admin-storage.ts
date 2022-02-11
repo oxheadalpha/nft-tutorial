@@ -36,6 +36,8 @@ export const multiAdminStorage = storageBuilder(multi)
 
 export type MultiAdminStorage = ReturnType<typeof multiAdminStorage.build>;
 
-export const noAdmin = storageBuilder(() => null).transformResult(addAdminKey);
+export const noAdminStorage = storageBuilder(() => null).transformResult(
+  addAdminKey
+);
 
-export type NoAdminStorage = ReturnType<typeof noAdmin.build>;
+export type NoAdminStorage = ReturnType<typeof noAdminStorage.build>;

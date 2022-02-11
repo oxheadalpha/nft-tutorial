@@ -4,6 +4,7 @@ export * from './interfaces/minter-admin';
 export * from './interfaces/minter';
 export * from './interfaces/storage-builder';
 export * from './interfaces/admin-storage';
+export * from './interfaces/minter-admin-storage';
 export * from './interfaces/token-storage';
 export * from './tezos-api';
 export * from './taquito-run';
