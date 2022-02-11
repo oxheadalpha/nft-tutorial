@@ -7,8 +7,6 @@ import {
   multiFungibleTokenStorage,
   multiMinterAdminStorage,
   nftStorage,
-  noAdminStorage,
-  noMinterAdminStorage,
   pausableSimpleAdminStorage,
   simpleAdminStorage,
   StorageBuilder
@@ -40,7 +38,7 @@ export function generateStorage(param: ContractParam) {
   let adminS: StorageBuilder<unknown, unknown>;
   switch (param.admin) {
     case 'USE_NO_ADMIN':
-      adminS = freezableS.with(noAdminStorage).withParams({});
+      adminS = freezableS;
       break;
     case 'USE_SIMPLE_ADMIN':
       adminS = freezableS
@@ -63,7 +61,7 @@ export function generateStorage(param: ContractParam) {
   switch (param.minterAdmin) {
     case 'USE_ADMIN_AS_MINTER':
     case 'USE_NULL_MINTER_ADMIN':
-      minterAdminS = adminS.with(noMinterAdminStorage).withParams({});
+      minterAdminS = adminS;
       break;
     case 'USE_MULTI_MINTER_ADMIN':
       minterAdminS = adminS
