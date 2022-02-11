@@ -1,13 +1,5 @@
-import {
-  ContractMethod,
-  ContractProvider,
-  MichelsonMap
-} from '@taquito/taquito';
-import { address, unit } from '../type-aliases';
-
-export type NullMinterAdminStorage = unit;
-export type AdminAsMinterStorage = unit;
-export type MultiMinterAdminStorage = MichelsonMap<address, unit>;
+import { ContractMethod, ContractProvider } from '@taquito/taquito';
+import { address } from '../type-aliases';
 
 export interface NullMinterAdminContract {}
 export interface AdminAsMinterContract {}
@@ -32,4 +24,3 @@ export interface MultiMinterAdminContract {
 // export const AdminAsMinter = (contract: Contract): AdminAsMinterContract => {
 //   return {};
 // };
-

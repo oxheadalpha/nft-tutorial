@@ -2,7 +2,8 @@ import {
   contractStorage,
   mintFreezeStorage,
   nftStorage,
-  pausableSimpleAdminStorage
+  pausableSimpleAdminStorage,
+  noMinterAdminStorage
 } from '@oxheadalpha/fa2-interfaces';
 
 export const createNftStorage = (owner: string, metadata: string) =>
@@ -10,4 +11,5 @@ export const createNftStorage = (owner: string, metadata: string) =>
     .with(pausableSimpleAdminStorage)
     .with(nftStorage)
     .with(mintFreezeStorage)
+    .with(noMinterAdminStorage)
     .build({ owner, metadata });
