@@ -1,7 +1,6 @@
 import { ContractMethod, ContractProvider } from '@taquito/taquito';
-import { address, unit } from '../type-aliases';
+import { address } from '../type-aliases';
 
-export type NoAdminStorage = unit;
 
 export interface NoAdminContract {}
 
