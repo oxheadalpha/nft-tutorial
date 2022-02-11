@@ -18,12 +18,12 @@ const pausable = ({ paused }: { paused?: boolean }) => ({
 
 const addAdminKey = <S>(s: S) => ({ admin: s });
 
-export const simpleAdminStorage = storageBuilder(simple).transform(addAdminKey);
+export const simpleAdminStorage = storageBuilder(simple).transformResult(addAdminKey);
 export type SimpleAdminStorage = ReturnType<typeof simpleAdminStorage.build>;
 
 export const pausableSimpleAdminStorage = storageBuilder(simple)
   .withF(pausable)
-  .transform(addAdminKey);
+  .transformResult(addAdminKey);
 
 export type PausableSimpleAdminStorage = ReturnType<
   typeof pausableSimpleAdminStorage.build
@@ -31,6 +31,6 @@ export type PausableSimpleAdminStorage = ReturnType<
 
 export const multiAdminStorage = storageBuilder(multi)
   .withF(pausable)
-  .transform(addAdminKey);
+  .transformResult(addAdminKey);
 
 export type MultiAdminStorage = ReturnType<typeof multiAdminStorage.build>;
