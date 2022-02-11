@@ -1,5 +1,5 @@
 import { MichelsonMap } from '@taquito/taquito';
-import { storageBuilder, StorageBuilder } from './storage-builder';
+import { storageBuilder } from './storage-builder';
 import { address, unit } from '../type-aliases';
 
 const simple = ({ owner }: { owner: address }) => ({
@@ -12,8 +12,8 @@ const multi = ({ owner }: { owner: address }) => ({
   pending_admins: new MichelsonMap<address, unit>()
 });
 
-const pausable = () => ({
-  paused: false
+const pausable = ({ paused }: { paused?: boolean }) => ({
+  paused: paused || false
 });
 
 const addAdminKey = <S>(s: S) => ({ admin: s });
