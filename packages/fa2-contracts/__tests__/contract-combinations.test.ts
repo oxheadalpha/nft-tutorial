@@ -51,14 +51,14 @@ function* combinations(): Generator<
 }
 
 const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
-  'USE_MULTI_FUNGIBLE_TOKEN',
+  'USE_FUNGIBLE_TOKEN',
   'USE_MULTI_ADMIN',
   'USE_MULTI_MINTER_ADMIN',
-  new Set(['CAN_FREEZE'])
+  new Set(['CAN_BURN', 'CAN_FREEZE'])
 ];
 
 const all = [...combinations()];
-//const all = [singleCombination];
+// const all = [singleCombination];
 
 jest.setTimeout(500000);
 
@@ -97,12 +97,14 @@ describe('test compilation for contract module combinations', () => {
       );
       const storage = generateStorage(param);
 
-      const op = await toolkit.contract.originate({code, storage}).catch(error => {
-        console.error(error);
-        console.log('STORAGE', storage);
-        throw error;
-      });
-      if(op) await op.confirmation();
+      const op = await toolkit.contract
+        .originate({ code, storage })
+        .catch(error => {
+          console.error(error);
+          console.log('STORAGE', storage);
+          throw error;
+        });
+      if (op) await op.confirmation();
 
       fs.unlinkSync(contractFile);
       fs.unlinkSync(outputFile);
