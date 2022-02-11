@@ -33,6 +33,7 @@ const fungibleTotalSupply = (p: { totalSupply?: nat }) => ({
   totalSupply: p || 0
 });
 
+//need to assert that provided token medata has token_id = 0
 export const fungibleTokenStorage = common
   .transformInput(({ token }: { token: TokenMetadataInternal }) => ({
     tokens: [token]
@@ -47,11 +48,22 @@ export type FungibleTokenStorage = ReturnType<
   typeof fungibleTokenStorage.build
 >;
 
+const multiFungibleLedger = () => ({
+  ledger: new MichelsonMap<[address, nat], nat>()
+});
+const addMultiFungibleTotalSupply = (
+  s: ReturnType<typeof common.build> &
+    ReturnType<typeof multiFungibleLedger>
+) => {
+  const total_supply = new MichelsonMap<nat, nat>();
+  for(let token_id of s.token_metadata.keys())
+    total_supply.set(token_id, 0);
+  return { ...s, total_supply };
+};
+
 export const multiFungibleTokenStorage = common
-  .withF(() => ({
-    ledger: new MichelsonMap<[address, nat], nat>()
-  }))
-  .withF(fungibleTotalSupply)
+  .withF(multiFungibleLedger)
+  .transformResult(addMultiFungibleTotalSupply)
   .transformResult(addAssetsKey);
 
 export type MultiFungibleTokenStorage = ReturnType<
