@@ -3,11 +3,6 @@ import { address, unit, nat } from '../type-aliases';
 import { TokenMetadataInternal } from './fa2';
 import { storageBuilder } from './storage-builder';
 
-// const common = storageBuilder(() => ({
-//   operators: new MichelsonMap<[address, [address, nat]], unit>(),
-//   token_metadata: new MichelsonMap<nat, TokenMetadataInternal>()
-// }));
-
 const common = storageBuilder(
   ({ tokens }: { tokens?: TokenMetadataInternal[] }) => {
     const storage = {
@@ -19,7 +14,7 @@ const common = storageBuilder(
   }
 );
 
-const addAssetsKey = <S>(s: S) => ({ assets: s });
+const addAssetsKey = <S>(s: S) => ({ asset: s });
 
 export const nftStorage = common
   .withF(() => ({

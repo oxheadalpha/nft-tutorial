@@ -54,8 +54,11 @@ const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
   'USE_MULTI_FUNGIBLE_TOKEN',
   'USE_MULTI_ADMIN',
   'USE_MULTI_MINTER_ADMIN',
-  new Set()
+  new Set(['CAN_FREEZE'])
 ];
+
+const all = [...combinations()];
+//const all = [singleCombination];
 
 jest.setTimeout(500000);
 
@@ -70,11 +73,12 @@ describe('test compilation for contract module combinations', () => {
     toolkit = await bootstrap();
   });
 
-  test.each([...combinations()])(
+  test.each(all)(
     // test.each([singleCombination])(
     'a combination should compile %s %s %s %o',
     async (implementation, admin, minterAdmin, minter) => {
       //console.log(implementation, admin, minterAdmin, minter);
+      console.log('TEST', ++counter);
       const param = {
         implementation,
         admin,
@@ -93,12 +97,15 @@ describe('test compilation for contract module combinations', () => {
       );
       const storage = generateStorage(param);
 
-      const op = await toolkit.contract.originate({code, storage});
-      await op.confirmation();
+      const op = await toolkit.contract.originate({code, storage}).catch(error => {
+        console.error(error);
+        console.log('STORAGE', storage);
+        throw error;
+      });
+      if(op) await op.confirmation();
 
       fs.unlinkSync(contractFile);
       fs.unlinkSync(outputFile);
-      console.log('TEST', ++counter)
     }
   );
 });

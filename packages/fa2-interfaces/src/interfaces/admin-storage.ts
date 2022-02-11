@@ -8,7 +8,7 @@ const simple = ({ owner }: { owner: address }) => ({
 });
 
 const multi = ({ owner }: { owner: address }) => ({
-  admins: new Set(owner),
+  admins: [owner],
   pending_admins: new MichelsonMap<address, unit>()
 });
 
