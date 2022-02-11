@@ -63,7 +63,7 @@ const all = [...combinations()];
 jest.setTimeout(500000);
 
 describe('test compilation for contract module combinations', () => {
-  const testDir = './__tests__/';
+  const testDir = './';
   const ligoEnv = ligo();
   const contractFile = path.join(testDir, 'fa2_contract.mligo');
   let toolkit: TezosToolkit;
