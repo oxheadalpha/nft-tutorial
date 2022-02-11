@@ -57,11 +57,14 @@ const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
   new Set()
 ];
 
+jest.setTimeout(500000);
+
 describe('test compilation for contract module combinations', () => {
   const testDir = './__tests__/';
   const ligoEnv = ligo();
   const contractFile = path.join(testDir, 'fa2_contract.mligo');
   let toolkit: TezosToolkit;
+  let counter = 0;
 
   beforeAll(async () => {
     toolkit = await bootstrap();
@@ -95,7 +98,7 @@ describe('test compilation for contract module combinations', () => {
 
       fs.unlinkSync(contractFile);
       fs.unlinkSync(outputFile);
-    },
-    500000 // increase default timeout
+      console.log('TEST', ++counter)
+    }
   );
 });
