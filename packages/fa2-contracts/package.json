@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@jest/types": "^27.4.2",
+    "@oxheadalpha/fa2-interfaces": "^3.1.0",
     "@oxheadalpha/tezos-tools": "^3.1.0",
     "@types/jest": "^27.0.3",
     "jest": "^27.4.5",
