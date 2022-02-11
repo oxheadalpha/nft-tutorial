@@ -27,14 +27,14 @@
     "clear": "yarn rimraf dist",
     "build": "tsc -p . && chmod +x ./dist/export-ligo.js",
     "prepare": "yarn clear && yarn build",
-    "test": "jest"
+    "test": "(yarn export-ligo ./__tests__/ligo && jest --runInBand) ; yarn rimraf ./__tests__/ligo"
   },
   "bin": {
     "export-ligo": "./dist/export-ligo.js"
   },
   "devDependencies": {
-    "@oxheadalpha/tezos-tools": "^3.1.0",
     "@jest/types": "^27.4.2",
+    "@oxheadalpha/tezos-tools": "^3.1.0",
     "@types/jest": "^27.0.3",
     "jest": "^27.4.5",
     "prettier": "^2.5.1",

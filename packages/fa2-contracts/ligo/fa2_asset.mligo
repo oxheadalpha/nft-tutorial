@@ -8,6 +8,10 @@ A generic implemenation of the asset contract.
 #include "./fa2/fa2_interface.mligo"
 
 (* Definition of the contract admin module *)
+#if USE_NO_ADMIN
+#include "./admin/no_admin.mligo"
+#endif
+
 #if USE_SIMPLE_ADMIN
 #include "./admin/simple_admin.mligo"
 #endif
@@ -25,7 +29,7 @@ A generic implemenation of the asset contract.
 #include "./minter_admin/null_minter_admin.mligo"
 #endif
 
-#if USE_MULI_MINTER_ADMIN
+#if USE_MULTI_MINTER_ADMIN
 #include "./minter_admin/multi_minter_admin.mligo"
 #endif
 
