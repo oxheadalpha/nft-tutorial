@@ -16,13 +16,15 @@ if (!destPath) {
 //   process.exit(-1);
 // }
 
-const fullDestPath = path.isAbsolute(destPath)
+const resolvedDestPath = path.isAbsolute(destPath)
   ? destPath
   : path.join(process.cwd(), destPath);
+
+const fullDestPath = path.join(resolvedDestPath, 'ligo');
 
 // __dirname is ./dist
 const fullSrcPath = path.resolve(__dirname, '../ligo');
 
 console.log(`Exporting Ligo library from ${fullSrcPath} to ${fullDestPath}`);
-fs.cpSync(fullSrcPath, destPath, { recursive: true, errorOnExist: true });
+fs.cpSync(fullSrcPath, fullDestPath, { recursive: true, errorOnExist: true });
 console.log(kleur.green(`Ligo library exported to ${fullDestPath}`));
