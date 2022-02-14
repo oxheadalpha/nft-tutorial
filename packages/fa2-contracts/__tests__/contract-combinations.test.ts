@@ -57,20 +57,25 @@ const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
   new Set(['CAN_BURN', 'CAN_FREEZE'])
 ];
 
-const all = [...combinations()];
-// const all = [singleCombination];
+// const all = [...combinations()];
+const all = [singleCombination];
 
 jest.setTimeout(500000);
 
 describe('test compilation for contract module combinations', () => {
-  const testDir = './';
+  const testSrcDir = './ligo/src';
   const ligoEnv = ligo();
-  const contractFile = path.join(testDir, 'fa2_contract.mligo');
+  const contractFile = path.join(testSrcDir, 'fa2_contract.mligo');
+  const outputFile = path.join(testSrcDir, 'fa2_contract.tz');
   let toolkit: TezosToolkit;
   let counter = 0;
 
   beforeAll(async () => {
     toolkit = await bootstrap();
+  });
+
+  beforeEach(() => {
+    if (!fs.existsSync(testSrcDir)) fs.mkdirSync(testSrcDir);
   });
 
   test.each(all)(
@@ -88,8 +93,6 @@ describe('test compilation for contract module combinations', () => {
       const contractCode = generateFileContent(param);
       fs.writeFileSync(contractFile, contractCode);
 
-      const outputFile = path.join(testDir, 'fa2_contract.tz');
-
       const code = await ligoEnv.compileAndLoadContract(
         contractFile,
         'asset_main',
@@ -106,8 +109,7 @@ describe('test compilation for contract module combinations', () => {
         });
       if (op) await op.confirmation();
 
-      fs.unlinkSync(contractFile);
-      fs.unlinkSync(outputFile);
+      fs.unlinkSync(testSrcDir);
     }
   );
 });
