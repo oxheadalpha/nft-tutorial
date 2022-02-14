@@ -32,7 +32,7 @@ export const createOnChainTokenMetadata = (
     token_info: new MichelsonMap()
   };
   Object.entries(metadata)
-    .filter(([k, v]) => k !== 'token_id')
+    .filter(([k, v]) => k !== 'token_id' && v !== undefined && v !== null)
     .forEach(([k, v]) => {
       const stringValue = JSON.stringify(v, null, 2);
       m.token_info.set(k, char2Bytes(stringValue));

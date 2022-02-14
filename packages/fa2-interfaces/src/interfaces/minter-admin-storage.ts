@@ -10,14 +10,6 @@ const multiMinterAdmin = ({ minter }: { minter?: address }) => {
   return minters;
 };
 
-export const noMinterAdminStorage = storageBuilder(() => null).transformResult(
-  addMinterAdminKey
-);
-
-export type NoMinterAdminStorage = ReturnType<
-  typeof noMinterAdminStorage.build
->;
-
 export const multiMinterAdminStorage =
   storageBuilder(multiMinterAdmin).transformResult(addMinterAdminKey);
 

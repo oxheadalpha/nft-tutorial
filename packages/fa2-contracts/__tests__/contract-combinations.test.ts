@@ -8,6 +8,9 @@ import {
   Minter,
   MinterAdmin
 } from '../src/contract-generator';
+import { TezosToolkit } from '@taquito/taquito';
+import { bootstrap } from './test-bootstrap';
+import { generateStorage } from './generate-storage';
 
 const implementations: Implementation[] = [
   'USE_NFT_TOKEN',
@@ -48,37 +51,63 @@ function* combinations(): Generator<
 }
 
 const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
-  'USE_MULTI_FUNGIBLE_TOKEN',
+  'USE_FUNGIBLE_TOKEN',
   'USE_MULTI_ADMIN',
   'USE_MULTI_MINTER_ADMIN',
-  new Set()
+  new Set(['CAN_BURN', 'CAN_FREEZE'])
 ];
 
+const all = [...combinations()];
+// const all = [singleCombination];
+
+jest.setTimeout(500000);
+
 describe('test compilation for contract module combinations', () => {
-  const testDir = './__tests__/';
+  const testDir = './';
   const ligoEnv = ligo();
   const contractFile = path.join(testDir, 'fa2_contract.mligo');
+  let toolkit: TezosToolkit;
+  let counter = 0;
 
-  test.each([...combinations()])(
+  beforeAll(async () => {
+    toolkit = await bootstrap();
+  });
+
+  test.each(all)(
     // test.each([singleCombination])(
     'a combination should compile %s %s %s %o',
     async (implementation, admin, minterAdmin, minter) => {
       //console.log(implementation, admin, minterAdmin, minter);
-      const contractCode = generateFileContent({
+      console.log('TEST', ++counter);
+      const param = {
         implementation,
         admin,
         minterAdmin,
         minter
-      });
+      };
+      const contractCode = generateFileContent(param);
       fs.writeFileSync(contractFile, contractCode);
 
       const outputFile = path.join(testDir, 'fa2_contract.tz');
 
-      await ligoEnv.compileContract(contractFile, 'asset_main', outputFile);
+      const code = await ligoEnv.compileAndLoadContract(
+        contractFile,
+        'asset_main',
+        outputFile
+      );
+      const storage = generateStorage(param);
+
+      const op = await toolkit.contract
+        .originate({ code, storage })
+        .catch(error => {
+          console.error(error);
+          console.log('STORAGE', storage);
+          throw error;
+        });
+      if (op) await op.confirmation();
 
       fs.unlinkSync(contractFile);
       fs.unlinkSync(outputFile);
-    },
-    240000 // increase default timeout
+    }
   );
 });

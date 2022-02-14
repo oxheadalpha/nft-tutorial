@@ -8,6 +8,7 @@ export interface StorageBuilder<I, S> {
   with: <I1, S1>(sb: StorageBuilder<I1, S1>) => StorageBuilder<I & I1, S & S1>;
   transformResult: <S1>(f: (s: S) => S1) => StorageBuilder<I, S1>;
   transformInput: <I1>(f: (p: I1) => I) => StorageBuilder<I1, S>;
+  withParams: (params: I) => StorageBuilder<unknown, S>;
 }
 
 export const storageBuilder = <I, S>(
@@ -30,6 +31,10 @@ export const storageBuilder = <I, S>(
     },
     transformInput: <I1>(f: (p: I1) => I) => {
       const newBuild = (params: I1) => self.build(f(params));
+      return storageBuilder(newBuild);
+    },
+    withParams: (params: I) => {
+      const newBuild = () => self.build(params);
       return storageBuilder(newBuild);
     }
   };

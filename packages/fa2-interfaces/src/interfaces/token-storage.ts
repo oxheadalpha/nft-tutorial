@@ -3,11 +3,6 @@ import { address, unit, nat } from '../type-aliases';
 import { TokenMetadataInternal } from './fa2';
 import { storageBuilder } from './storage-builder';
 
-// const common = storageBuilder(() => ({
-//   operators: new MichelsonMap<[address, [address, nat]], unit>(),
-//   token_metadata: new MichelsonMap<nat, TokenMetadataInternal>()
-// }));
-
 const common = storageBuilder(
   ({ tokens }: { tokens?: TokenMetadataInternal[] }) => {
     const storage = {
@@ -19,7 +14,7 @@ const common = storageBuilder(
   }
 );
 
-const addAssetsKey = <S>(s: S) => ({ assets: s });
+const addAssetsKey = <S>(s: S) => ({ asset: s });
 
 export const nftStorage = common
   .withF(() => ({
@@ -30,10 +25,10 @@ export const nftStorage = common
 export type NftStorage = ReturnType<typeof nftStorage.build>;
 
 const fungibleTotalSupply = (p: { totalSupply?: nat }) => ({
-  totalSupply: p || 0
+  total_supply: p.totalSupply || 0
 });
 
-//need to assert that provided token medata has token_id = 0
+//need to assert that provided token metadata has token_id = 0
 export const fungibleTokenStorage = common
   .transformInput(({ token }: { token: TokenMetadataInternal }) => ({
     tokens: [token]
@@ -52,12 +47,10 @@ const multiFungibleLedger = () => ({
   ledger: new MichelsonMap<[address, nat], nat>()
 });
 const addMultiFungibleTotalSupply = (
-  s: ReturnType<typeof common.build> &
-    ReturnType<typeof multiFungibleLedger>
+  s: ReturnType<typeof common.build> & ReturnType<typeof multiFungibleLedger>
 ) => {
   const total_supply = new MichelsonMap<nat, nat>();
-  for(let token_id of s.token_metadata.keys())
-    total_supply.set(token_id, 0);
+  for (let token_id of s.token_metadata.keys()) total_supply.set(token_id, 0);
   return { ...s, total_supply };
 };
 

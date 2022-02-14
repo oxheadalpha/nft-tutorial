@@ -8,7 +8,7 @@ const simple = ({ owner }: { owner: address }) => ({
 });
 
 const multi = ({ owner }: { owner: address }) => ({
-  admins: new Set(owner),
+  admins: [owner],
   pending_admins: new MichelsonMap<address, unit>()
 });
 
@@ -35,9 +35,3 @@ export const multiAdminStorage = storageBuilder(multi)
   .transformResult(addAdminKey);
 
 export type MultiAdminStorage = ReturnType<typeof multiAdminStorage.build>;
-
-export const noAdminStorage = storageBuilder(() => null).transformResult(
-  addAdminKey
-);
-
-export type NoAdminStorage = ReturnType<typeof noAdminStorage.build>;
