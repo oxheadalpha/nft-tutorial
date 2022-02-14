@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import {sync as rimraf} from 'rimraf';
 import { ligo } from '@oxheadalpha/tezos-tools';
 import {
   Admin,
@@ -57,8 +58,8 @@ const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
   new Set(['CAN_BURN', 'CAN_FREEZE'])
 ];
 
-// const all = [...combinations()];
-const all = [singleCombination];
+const all = [...combinations()];
+// const all = [singleCombination];
 
 jest.setTimeout(500000);
 
@@ -109,7 +110,7 @@ describe('test compilation for contract module combinations', () => {
         });
       if (op) await op.confirmation();
 
-      fs.unlinkSync(testSrcDir);
+      rimraf(testSrcDir);
     }
   );
 });
