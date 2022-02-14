@@ -1,20 +1,31 @@
-export type Admin =
-  | 'USE_SIMPLE_ADMIN'
-  | 'USE_PAUSABLE_SIMPLE_ADMIN'
-  | 'USE_MULTI_ADMIN'
-  | 'USE_NO_ADMIN';
+const adminValues = [
+  'USE_SIMPLE_ADMIN',
+  'USE_PAUSABLE_SIMPLE_ADMIN',
+  'USE_MULTI_ADMIN',
+  'USE_NO_ADMIN'
+] as const;
 
-export type MinterAdmin =
-  | 'USE_NULL_MINTER_ADMIN'
-  | 'USE_ADMIN_AS_MINTER'
-  | 'USE_MULTI_MINTER_ADMIN';
+export type Admin = typeof adminValues[number];
 
-export type Implementation =
-  | 'USE_NFT_TOKEN'
-  | 'USE_FUNGIBLE_TOKEN'
-  | 'USE_MULTI_FUNGIBLE_TOKEN';
+const minterAdminValues = [
+  'USE_NULL_MINTER_ADMIN',
+  'USE_ADMIN_AS_MINTER',
+  'USE_MULTI_MINTER_ADMIN'
+] as const;
 
-export type Minter = 'CAN_MINT' | 'CAN_BURN' | 'CAN_FREEZE';
+export type MinterAdmin = typeof minterAdminValues[number];
+
+const implementationValues = [
+  'USE_NFT_TOKEN',
+  'USE_FUNGIBLE_TOKEN',
+  'USE_MULTI_FUNGIBLE_TOKEN'
+] as const;
+
+export type Implementation = typeof implementationValues[number];
+
+const minterValues = ['CAN_MINT', 'CAN_BURN', 'CAN_FREEZE'] as const;
+
+export type Minter = typeof minterValues[number];
 
 export type ContractParam = {
   implementation: Implementation;
@@ -26,7 +37,7 @@ export type ContractParam = {
 export const generateFileContent = (param: ContractParam): string => {
   const content = contractParam2Content(param);
   return assetFileContent(content);
-}
+};
 
 type ContractContent = {
   adminDef: string;
@@ -43,16 +54,22 @@ const contractParam2Content = (param: ContractParam): ContractContent => {
   return { adminDef, minterAdminDef, minterDef, codeImplementation };
 };
 
-const generateAdminDef = (admin: Admin): string => `#define ${admin}`;
+const defFlag = (currentFlag: string, defined: boolean): string => {
+  const def = `#define ${currentFlag}`;
+  return defined ? def : `(* ${def} *)`;
+};
+
+const generateAdminDef = (admin: Admin): string =>
+  adminValues.map(a => defFlag(a, a === admin)).join('\n');
 
 const generateMinterAdminDef = (minterAdmin: MinterAdmin): string =>
-  `#define ${minterAdmin}`;
+  minterAdminValues.map(ma => defFlag(ma, ma === minterAdmin)).join('\n');
 
 const generateMinterDef = (minter: Set<Minter>): string[] =>
-  [...minter].map(flag => `#define ${flag}`);
+  minterValues.map(m => defFlag(m, minter.has(m)));
 
 const generateImplementationDef = (implementation: Implementation): string =>
-  `#define ${implementation}`;
+  implementationValues.map(i => defFlag(i, i === implementation)).join('\n');
 
 const assetFileContent = (content: ContractContent) => `
 (** Assemble different modules into a single FA2 contract implementation *)
