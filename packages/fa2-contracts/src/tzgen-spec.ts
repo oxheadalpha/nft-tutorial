@@ -1,3 +1,6 @@
+import * as path from 'path';
+import * as fs from 'fs';
+import * as kleur from 'kleur';
 import {
   Admin,
   ContractParam,
@@ -5,6 +8,27 @@ import {
   Minter,
   MinterAdmin
 } from './contract-generator';
+
+export const specProvider = (fileName: string) => {
+  const filePath = path.isAbsolute(fileName)
+    ? fileName
+    : path.join(process.cwd(), fileName);
+
+  return {
+    filePath,
+    exists: (): boolean => fs.existsSync(filePath),
+    load: (): ContractParam => {
+      const text = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+      const spec = JSON.parse(text) as ContractParam;
+      return { ...spec, minter: new Set<Minter>(spec.minter) };
+    },
+    save: (param: ContractParam) => {
+      const spec = { ...param, minter: [...param.minter] };
+      const text = JSON.stringify(spec, null, 2);
+      fs.writeFileSync(filePath, text, { encoding: 'utf8' });
+    }
+  };
+};
 
 export const createGenSpec = (
   specFile: string,
@@ -14,6 +38,13 @@ export const createGenSpec = (
   minterAdmin?: string
 ) => {
   const params = parseGeneratorParams(kind, admin, minter, minterAdmin);
+  const spec = specProvider(specFile);
+  if (spec.exists()) {
+    console.log(kleur.yellow(`${spec.filePath} spec file already exists`));
+  } else {
+    spec.save(params);
+    console.log(`${kleur.green(spec.filePath)} spec file created`);
+  }
 };
 
 const parseGeneratorParams = (
