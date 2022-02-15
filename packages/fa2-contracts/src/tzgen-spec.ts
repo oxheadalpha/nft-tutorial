@@ -19,7 +19,7 @@ export const specProvider = (fileName: string) => {
     exists: (): boolean => fs.existsSync(filePath),
     load: (): ContractParam => {
       const text = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
-      const spec = JSON.parse(text) as ContractParam;
+      const spec = JSON.parse(text);
       return { ...spec, minter: new Set<Minter>(spec.minter) };
     },
     save: (param: ContractParam) => {
