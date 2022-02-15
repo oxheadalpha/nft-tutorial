@@ -20,7 +20,7 @@ program.version(packageJson.version);
 program
   .command('init')
   .alias('i')
-  .description('Create tznft.config file')
+  .description('create tznft.config file')
   .action(initConfig);
 
 // selecting network
