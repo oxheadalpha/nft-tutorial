@@ -45,7 +45,8 @@ program
   .addOption(new Option('-ma --minter_admin <minter_admin>', 'minter admin implementation' )
     .choices(['NO_MINTER', 'CONTRACT_ADMIN', 'MULTI']))
   .action((file, options) => createGenSpec(
-    file, options.kind, options.admin, options.minter, options.minter_admin));
+    file, options.kind, options.admin, options.minter, options.minter_admin
+  ));
 
 //prettier-ignore
 program
@@ -63,7 +64,10 @@ program
     .description('compile LIGO contract code to Michelson')
     .argument('<contract_file>', 'name of the LIGO contract source file')
     .argument('<michelson_file>', 'name of the Michelson code file to be compiled')
-    .action(compileContract);
+    .option('-m --main', 'name of the contract main entry point function. Default is "asset_main"')
+    .action((contractFile, michelsonFile, options) => compileContract(
+      contractFile, michelsonFile, options.main
+    ));
 
 program.parseAsync().catch(error => {
   if (typeof error === 'string') console.log(kleur.red(error));
