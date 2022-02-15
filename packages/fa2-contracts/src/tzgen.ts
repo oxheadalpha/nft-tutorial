@@ -40,10 +40,12 @@ program
   .addOption(new Option('-a --admin <admin>', 'type of contract admin')
     .makeOptionMandatory()
     .choices(['NO_ADMIN', 'SIMPLE', 'PAUSABLE', 'MULTI']))
-  .addOption(new Option('-m --minter <minter...>', 'optional minter functionality')
+  .addOption(new Option('-m --minter [minter...]', 'optional minter functionality')
     .choices(['MINT', 'BURN', 'FREEZE']))
   .addOption(new Option('-ma --minter_admin <minter_admin>', 'minter admin implementation' )
-    .choices(['NO_MINTER', 'CONTRACT_ADMIN', 'MULTI']))
+    .choices(['NO_MINTER', 'CONTRACT_ADMIN', 'MULTI'])
+    .default('NO_MINTER', 'NO_MINTER useful if not mint/burn functionality is specified')
+  )
   .action((file, options) => createGenSpec(
     file, options.kind, options.admin, options.minter, options.minter_admin
   ));
