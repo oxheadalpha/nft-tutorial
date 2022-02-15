@@ -33,7 +33,7 @@ program
   .addOption(new Option('-m --minter <minter...>', 'optional minter functionality')
     .choices(['MINT', 'BURN', 'FREEZE']))
   .addOption(new Option('-ma --minter_admin <minter_admin>', 'minter admin implementation' )
-    .choices(['NO_ADMIN', 'CONTRACT_ADMIN', 'MULTI']))
+    .choices(['NO_MINTER', 'CONTRACT_ADMIN', 'MULTI']))
   .action((file, options) => createGenSpec(
     file, options.kind, options.admin, options.minter, options.minter_admin));
 
