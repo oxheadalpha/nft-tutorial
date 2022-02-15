@@ -4,6 +4,7 @@ import * as kleur from 'kleur';
 import { ContractParam, generateFileContent } from './contract-generator';
 import { specProvider } from './tzgen-spec';
 import { configProvider } from './tzgen-config';
+import { ensureDirectory } from './util';
 
 export const generateContract = (specFile: string, ligoName: string) => {
   const params = loadSpec(specFile);
@@ -30,10 +31,4 @@ const resolveLigoFilePath = (ligoName: string): string => {
   return path.isAbsolute(filePath)
     ? filePath
     : path.resolve(process.cwd(), filePath);
-};
-
-const ensureDirectory = (filePath: string) => {
-  const dir = path.dirname(filePath);
-  if (fs.existsSync(dir)) return;
-  fs.mkdirSync(dir, { recursive: true });
 };

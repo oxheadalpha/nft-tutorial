@@ -25,14 +25,13 @@
   },
   "scripts": {
     "clear": "yarn rimraf dist",
-    "build": "tsc -p . && chmod +x ./dist/export-ligo.js && chmod +x ./dist/tzgen.js",
+    "build": "tsc -p . && chmod +x ./dist/tzgen.js",
     "prepare": "yarn clear && yarn build",
     "test-contracts": "jest --runInBand",
     "test": "(yarn start-sandbox && yarn test-contracts) ; yarn kill-sandbox",
     "tzgen": "./dist/tzgen.js"
   },
   "bin": {
-    "export-ligo": "./dist/export-ligo.js",
     "tzgen": "./dist/tzgen.js"
   },
   "devDependencies": {

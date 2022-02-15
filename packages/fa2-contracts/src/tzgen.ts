@@ -5,6 +5,7 @@ import { TezosOperationError } from '@taquito/taquito';
 import { initConfig } from './tzgen-config';
 import { createGenSpec } from './tzgen-spec';
 import { generateContract } from './tzgen-contracts';
+import { importLigo } from './import-ligo';
 const packageJson = require('../package.json');
 
 program.version(packageJson.version);
@@ -18,6 +19,14 @@ program
   .option('-o --compile-out', 'contract compilation output directory. Default is ./ligo/out')
   .option('-t --ts', 'TypeScript source directory. Default is ./src')
   .action(async options => initConfig(options.ligo, options.out, options.ts));
+
+//prettier-ignore
+program
+  .command('import-ligo')
+  .alias('il')
+  .description('import LIGO modules source code')
+  .argument('[dir]', 'destination directory. Default is taken from tzgen.json file')
+  .action(importLigo);
 
 //prettier-ignore
 program
