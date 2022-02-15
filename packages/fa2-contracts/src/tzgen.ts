@@ -4,6 +4,7 @@ import * as kleur from 'kleur';
 import { TezosOperationError } from '@taquito/taquito';
 import { initConfig } from './tzgen-config';
 import { createGenSpec } from './tzgen-spec';
+import { generateContract } from './tzgen-contracts';
 const packageJson = require('../package.json');
 
 program.version(packageJson.version);
@@ -22,7 +23,7 @@ program
 program
   .command('spec')
   .alias('s')
-  .description('create specification file for contract generation')
+  .description('generate specification file for contract generation')
   .argument('<file>', 'resulting specification file')
   .addOption(new Option('-k --kind <kind>', 'core FA2 implementation kind')
     .makeOptionMandatory()
@@ -36,6 +37,15 @@ program
     .choices(['NO_MINTER', 'CONTRACT_ADMIN', 'MULTI']))
   .action((file, options) => createGenSpec(
     file, options.kind, options.admin, options.minter, options.minter_admin));
+
+//prettier-ignore
+program
+  .command('contract')
+  .alias('c')
+  .description('generate LIGO contract source code from the specification file')
+  .argument('<spec_file>', 'specification file')
+  .argument('<name>', 'name of the LIGO source file to be generated')
+  .action(generateContract)
 
 program.parseAsync().catch(error => {
   if (typeof error === 'string') console.log(kleur.red(error));
