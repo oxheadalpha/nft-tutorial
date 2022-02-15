@@ -37,6 +37,21 @@ export const configProvider = (fileName?: string) => {
   };
 };
 
+export const loadConfig = (): Config => {
+  const config = configProvider();
+
+  if (config.exists()) {
+    return config.load();
+  } else {
+    throw new Error(
+      `Config file ${config.filePath} does not exist. Try to run ${kleur.green(
+        'tzgen init'
+      )} command first`
+    );
+  }
+};
+
+
 export const initConfig = (ligo?: string, out?: string, ts?: string) => {
   const ligoDir = ligo || './ligo';
   const compileOutDir = out || './ligo/out';

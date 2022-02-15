@@ -9,7 +9,7 @@ import {
   MinterAdmin
 } from './contract-generator';
 
-export const specProvider = (fileName: string) => {
+const specProvider = (fileName: string) => {
   const filePath = path.isAbsolute(fileName)
     ? fileName
     : path.join(process.cwd(), fileName);
@@ -28,6 +28,17 @@ export const specProvider = (fileName: string) => {
       fs.writeFileSync(filePath, text, { encoding: 'utf8' });
     }
   };
+};
+
+export const loadSpec = (specFile: string): ContractParam => {
+  const spec = specProvider(specFile);
+  if (!spec.exists())
+    throw new Error(
+      `${specFile} spec file does not exist. Try to run ${kleur.green(
+        'tzgen spec'
+      )} command first.`
+    );
+  return spec.load();
 };
 
 export const createGenSpec = (

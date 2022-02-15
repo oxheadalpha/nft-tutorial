@@ -4,7 +4,7 @@ import * as kleur from 'kleur';
 import { TezosOperationError } from '@taquito/taquito';
 import { initConfig } from './tzgen-config';
 import { createGenSpec } from './tzgen-spec';
-import { generateContract } from './tzgen-contracts';
+import { compileContract, generateContract } from './tzgen-contracts';
 import { importLigo } from './import-ligo';
 const packageJson = require('../package.json');
 
@@ -53,8 +53,17 @@ program
   .alias('c')
   .description('generate LIGO contract source code from the specification file')
   .argument('<spec_file>', 'specification file')
-  .argument('<name>', 'name of the LIGO source file to be generated')
-  .action(generateContract)
+  .argument('<contract_file>', 'name of the LIGO source file to be generated')
+  .action(generateContract);
+
+//prettier-ignore
+program
+    .command('michelson')
+    .alias('m')
+    .description('compile LIGO contract code to Michelson')
+    .argument('<contract_file>', 'name of the LIGO contract source file')
+    .argument('<michelson_file>', 'name of the Michelson code file to be compiled')
+    .action(compileContract);
 
 program.parseAsync().catch(error => {
   if (typeof error === 'string') console.log(kleur.red(error));
