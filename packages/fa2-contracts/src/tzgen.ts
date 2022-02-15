@@ -17,17 +17,16 @@ program
   .option('-t --ts', 'TypeScript source directory')
   .action(async options => initConfig(options.ligo, options.out, options.ts));
 
-
-  program.parseAsync().catch(error => {
-    if (typeof error === 'string') console.log(kleur.red(error));
-    else if (error instanceof Error) {
-      console.log(kleur.red(error.message));
-    } else if (error instanceof TezosOperationError) {
-      console.log(
-        kleur.red(`Tezos operation error: ${kleur.bold(error.message)}`)
-      );
-    } else {
-      console.log(kleur.red('unknown error:'));
-      console.log(error);
-    }
-  });
+program.parseAsync().catch(error => {
+  if (typeof error === 'string') console.log(kleur.red(error));
+  else if (error instanceof Error) {
+    console.log(kleur.red(error.message));
+  } else if (error instanceof TezosOperationError) {
+    console.log(
+      kleur.red(`Tezos operation error: ${kleur.bold(error.message)}`)
+    );
+  } else {
+    console.log(kleur.red('unknown error:'));
+    console.log(error);
+  }
+});

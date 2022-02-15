@@ -34,14 +34,10 @@ export const configProvider = (fileName?: string) => {
       const text = JSON.stringify(config, null, 2);
       fs.writeFileSync(filePath, text, { encoding: 'utf8' });
     }
-  }
-}
+  };
+};
 
-export const initConfig = async (
-  ligo?: string,
-  out?: string,
-  ts?: string
-): Promise<void> => {
+export const initConfig = (ligo?: string, out?: string, ts?: string) => {
   const ligoDir = ligo || './ligo';
   const compileOutDir = out || './ligo/out';
   const tsSourceDir = ts || './src';
@@ -50,8 +46,7 @@ export const initConfig = async (
   if (config.exists()) {
     console.log(kleur.yellow(`${config.filePath} config file already exists`));
   } else {
-    config.save({ligoDir, compileOutDir, tsSourceDir});
+    config.save({ ligoDir, compileOutDir, tsSourceDir });
     console.log(`${kleur.green(config.filePath)} config file created`);
   }
-  console.log(ligoDir, compileOutDir, tsSourceDir);
 };
