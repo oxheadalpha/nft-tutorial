@@ -252,7 +252,9 @@ export interface TezosApi {
    */
   at: (
     contractAddress: address
-  ) => Promise<ContractApi & UseAdmin & UseFa2 & UseImplementation>;
+  ) => Promise<
+    ContractApi & UseAdmin & UseFa2 & UseImplementation & UseMinterAdmin
+  >;
 
   /**
    * Specify Taquito lambda view contract address to access contract CPS style
