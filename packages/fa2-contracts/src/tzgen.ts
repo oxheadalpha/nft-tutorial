@@ -6,6 +6,7 @@ import { initConfig } from './tzgen-config';
 import { createGenSpec } from './tzgen-spec';
 import { compileContract, generateContract } from './tzgen-contracts';
 import { importLigo } from './import-ligo';
+import { generateTypeScript } from './ts-interface-generator';
 const packageJson = require('../package.json');
 
 program.version(packageJson.version);
@@ -61,15 +62,24 @@ program
 
 //prettier-ignore
 program
-    .command('michelson')
-    .alias('m')
-    .description('compile LIGO contract code to Michelson')
-    .argument('<contract_file>', 'name of the LIGO contract source file')
-    .argument('<michelson_file>', 'name of the Michelson code file to be compiled')
-    .option('-m --main', 'name of the contract main entry point function. Default is "asset_main"')
-    .action((contractFile, michelsonFile, options) => compileContract(
-      contractFile, michelsonFile, options.main
-    ));
+  .command('michelson')
+  .alias('m')
+  .description('compile LIGO contract code to Michelson')
+  .argument('<contract_file>', 'name of the LIGO contract source file')
+  .argument('<michelson_file>', 'name of the Michelson code file to be compiled')
+  .option('-m --main', 'name of the contract main entry point function. Default is "asset_main"')
+  .action((contractFile, michelsonFile, options) => compileContract(
+    contractFile, michelsonFile, options.main
+  ));
+
+//prettier-ignore
+program
+  .command('type-script')
+  .alias('ts')
+  .description('generate typescript interface')
+  .argument('<spec_file>', 'specification file')
+  .argument('<interface_file>', 'name of the TypeScript source file to be generated')
+  .action(generateTypeScript);
 
 program.parseAsync().catch(error => {
   if (typeof error === 'string') console.log(kleur.red(error));
