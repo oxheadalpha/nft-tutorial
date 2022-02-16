@@ -6,7 +6,7 @@ import { initConfig } from './tzgen-config';
 import { createGenSpec } from './tzgen-spec';
 import { compileContract, generateContract } from './tzgen-contracts';
 import { importLigo } from './import-ligo';
-import { generateTypeScript } from './ts-interface-generator';
+import { generateTypeScript } from './tzgen-ts';
 const packageJson = require('../package.json');
 
 program.version(packageJson.version);
