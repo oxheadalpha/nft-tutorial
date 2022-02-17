@@ -53,7 +53,7 @@ const addInterfaceFunction = (
   params: ContractParam
 ) => {
   writer
-    .writeLine('export const contractInterface = async (')
+    .writeLine('export const createContractInterface = async (')
     .indent(() => {
       writer.writeLine('toolkit: TezosToolkit,');
       writer.writeLine('address: address');
@@ -64,9 +64,11 @@ const addInterfaceFunction = (
       writer.indent(() => {
         writer.writeLine('.withFa2()');
         withAdminInterfaceStatement(writer, params.admin);
-        withImplementationInterfaceStatement(writer, params.implementation);
-        withMinterStatement(writer, params.minter);
-        withMinterAdminInterfaceStatement(writer, params.minterAdmin);
+        if (params.minter.size > 0) {
+          withImplementationInterfaceStatement(writer, params.implementation);
+          withMinterStatement(writer, params.minter);
+          withMinterAdminInterfaceStatement(writer, params.minterAdmin);
+        }
         writer.writeLine(';');
       });
     });
@@ -103,7 +105,7 @@ const withMinterStatement = (writer: CodeBlockWriter, minter: Set<Minter>) => {
   writer.conditionalWriteLine(minter.has('CAN_MINT'), '.withMint()');
   writer.conditionalWriteLine(minter.has('CAN_BURN'), '.withBurn()');
   writer.conditionalWriteLine(minter.has('CAN_FREEZE'), '.withFreeze()');
-}
+};
 
 const withMinterAdminStorageStatement = (
   writer: CodeBlockWriter,
@@ -118,7 +120,6 @@ const withMinterAdminStorageStatement = (
       return writer.writeLine('.with(fa2.multiMinterAdminStorage)');
   }
 };
-
 
 const withAdminInterfaceStatement = (writer: CodeBlockWriter, admin: Admin) => {
   switch (admin) {
