@@ -50,5 +50,5 @@ const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
   new Set(['CAN_BURN', 'CAN_FREEZE'])
 ];
 
-// export const allCombinations = [...combinations()];
-export  const allCombinations = [singleCombination];
+export const allCombinations = [...combinations()];
+// export  const allCombinations = [singleCombination];

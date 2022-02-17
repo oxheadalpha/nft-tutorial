@@ -143,7 +143,7 @@ const withImplementationInterfaceStatement = (
     case 'USE_FUNGIBLE_TOKEN':
       return writer.writeLine('.asFungible()');
     case 'USE_MULTI_FUNGIBLE_TOKEN':
-      return writer.writeLine('.asMultiFungible())');
+      return writer.writeLine('.asMultiFungible()');
   }
 };
 
