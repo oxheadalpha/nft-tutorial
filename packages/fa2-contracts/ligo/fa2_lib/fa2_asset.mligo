@@ -57,7 +57,7 @@ A generic implemenation of the asset contract.
 
 type asset_storage = {
   metadata : contract_metadata;
-  asset : token_storage;
+  assets : token_storage;
   admin : admin_storage;
   minter_admin : minter_admin_storage;
   minter : minter_storage;
@@ -90,8 +90,8 @@ let asset_main (param, storage : asset_entrypoints * asset_storage)
   match param with
   | Assets a ->
     let _ = fail_if_paused storage.admin in
-    let ops, new_asset = fa2_main (a, storage.asset) in
-    let new_s = { storage with asset = new_asset; } in
+    let ops, new_assets = fa2_main (a, storage.assets) in
+    let new_s = { storage with assets = new_assets; } in
     (ops, new_s)
 
   | Admin a ->
@@ -108,8 +108,8 @@ let asset_main (param, storage : asset_entrypoints * asset_storage)
   | Minter m ->
     let _ = fail_if_paused storage.admin in
     let _ = fail_if_not_minter storage in
-    let new_asset, new_minter = minter_main (m, storage.asset, storage.minter) in
-    let new_s = { storage with asset = new_asset; minter = new_minter; } in
+    let new_assets, new_minter = minter_main (m, storage.assets, storage.minter) in
+    let new_s = { storage with assets = new_assets; minter = new_minter; } in
     ([] : operation list), new_s
 
 #endif
