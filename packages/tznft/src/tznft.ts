@@ -20,7 +20,7 @@ program.version(packageJson.version);
 program
   .command('init')
   .alias('i')
-  .description('Create tznft.config file')
+  .description('create tznft.config file')
   .action(initConfig);
 
 // selecting network
@@ -34,7 +34,7 @@ program
     {'a': 'also shows all available networks'}
   )
   .option('-a --all', 'shows all available configured networks', false)
-  .action(async options => networkConf.showActiveNetwork(options.all)).passCommandToAction(false);
+  .action(async options => networkConf.showActiveNetwork(options.all));
 
 //prettier-ignore
 program
@@ -49,7 +49,7 @@ program
   .command('bootstrap')
   .alias('b')
   .description('bootstraps and initialize network provider')
-  .action(bootstrap.bootstrap).passCommandToAction(false);
+  .action(bootstrap.bootstrap);
 
 //prettier-ignore
 program
@@ -66,7 +66,7 @@ program
     .alias('sha')
     .description('show details about configured address alias')
     .arguments('[alias]')
-    .action(aliasConf.showAlias).passCommandToAction(false);
+    .action(aliasConf.showAlias);
 
 //prettier-ignore
 program
@@ -74,7 +74,7 @@ program
   .alias('adda')
   .description('add new address alias to the configuration')
   .arguments('<alias> <key_or_address>')
-  .action(aliasConf.addAlias).passCommandToAction(false);
+  .action(aliasConf.addAlias);
 
 //prettier-ignore
 program
@@ -82,7 +82,7 @@ program
   .alias('addaf')
   .description('add new address alias to the configuration from the faucet json file')
   .arguments('<alias> <faucet_file>')
-  .action(aliasConf.addAliasFromFaucet).passCommandToAction(false);
+  .action(aliasConf.addAliasFromFaucet);
 
 //prettier-ignore
 program
@@ -90,7 +90,7 @@ program
   .alias('rma')
   .description('remove address alias from the configuration')
   .arguments('<alias>')
-  .action(aliasConf.removeAlias).passCommandToAction(false);
+  .action(aliasConf.removeAlias);
 
 // nft
 
@@ -100,8 +100,7 @@ program
   .alias('ccm')
   .description('create a new NFT collection (contract) metadata file')
   .arguments('<collection_name>')
-  .action(metadata.createCollectionMeta)
-  .passCommandToAction(false);
+  .action(metadata.createCollectionMeta);
 
 //prettier-ignore
 program
@@ -113,8 +112,7 @@ program
     '-e, --errors_only', 
     'show only validation error and suppres warnings')
   .action(async (metaFile, options) =>
-    metadata.validateCollectionMeta(metaFile, options.errors_only))
-  .passCommandToAction(false);
+    metadata.validateCollectionMeta(metaFile, options.errors_only));
 
 //prettier-ignore
 program
@@ -131,8 +129,7 @@ program
     '-a, --alias <alias>', 
     'optional alias for a new collection contract address')
   .action(async (owner, options) => 
-    contracts.createCollection(owner, options.meta_file, options.alias))
-  .passCommandToAction(false);
+    contracts.createCollection(owner, options.meta_file, options.alias));
 
 //prettier-ignore
 program
@@ -140,8 +137,7 @@ program
   .alias('cnm')
   .description('create a new NFT token metadata template file')
   .arguments('<nft_name> <creator> <uri>')
-  .action(metadata.createNftMeta)
-  .passCommandToAction(false);
+  .action(metadata.createNftMeta);
 
 //prettier-ignore
 program
@@ -151,10 +147,9 @@ program
   .arguments('<metadata_file>')
   .option(
     '-e, --errors_only', 
-    'show only validation error and suppres warnings')
+    'show only validation error and suppress warnings')
   .action(async (metaFile, options) =>
-    metadata.validateNftMeta(metaFile, options.errors_only))
-  .passCommandToAction(false);
+    metadata.validateNftMeta(metaFile, options.errors_only));
 
 //prettier-ignore
 program
@@ -167,8 +162,7 @@ program
     'definitions of new tokens, a list of pairs "id, tokenMetadataUri"',
     contracts.parseTokens, [])
   .action(async (owner, collection, options) => 
-    contracts.mintNfts(owner, collection, options.tokens))
-  .passCommandToAction(false);
+    contracts.mintNfts(owner, collection, options.tokens));
 
 //prettier-ignore
 program
@@ -180,8 +174,7 @@ program
     '-tf, --token_file <file>',
     'path to a file with definitions of new tokens, each line is comma-separated pair of token_id, tokenMetadataUri')
   .action(async (owner, collection, options) => 
-    contracts.mintNftsFromFile(owner, collection, options.token_file))
-  .passCommandToAction(false);
+    contracts.mintNftsFromFile(owner, collection, options.token_file));
 
 //prettier-ignore
 program
@@ -189,7 +182,7 @@ program
     .alias('mf')
     .description('freeze minting for nft collection (contract)')
     .arguments('<owner> <collection>')
-    .action(contracts.mintFreeze).passCommandToAction(false);
+    .action(contracts.mintFreeze);
 
 //prettier-ignore
 program
@@ -201,7 +194,7 @@ program
   .requiredOption('-o, --owner <owner>', 'token owner to check balances')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
   .action(async options=>contracts.showBalances(
-    options.signer, options.nft, options.owner, options.tokens)).passCommandToAction(false);
+    options.signer, options.nft, options.owner, options.tokens));
 
 //prettier-ignore
 program
@@ -210,8 +203,7 @@ program
   .description('show metadata for all tokens in the NFT contract')
   .requiredOption('-n, --nft <nft_address>', 'address of the NFT contract')
   .requiredOption('-t, --tokens <tokens...>', 'list of token IDs to check')
-  .action(async options=>contracts.showMetadata( options.nft, options.tokens))
-  .passCommandToAction(false);
+  .action(async options=>contracts.showMetadata( options.nft, options.tokens));
 
 //prettier-ignore
 program
@@ -225,7 +217,7 @@ program
     'definition of individual transfers, a list of "from, to, token_id"',
     contracts.addTransfer, fa2.transferBatch())
   .action(async options=>contracts.transfer(
-    options.signer, options.nft, options.batch)).passCommandToAction(false);
+    options.signer, options.nft, options.batch));
 
 //prettier-ignore
 program
@@ -241,7 +233,7 @@ program
     '-r, --remove [remove_operators...]',
     'list of the "operator, token_id" pairs to be removed by the token owner')
   .action(async (owner, options) => contracts.updateOperators(
-    owner, options.nft, options.add || [], options.remove || [])).passCommandToAction(false);
+    owner, options.nft, options.add || [], options.remove || []));
 
 // pinning to IPFS
 

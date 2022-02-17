@@ -6,7 +6,7 @@
 #include "../admin/simple_admin.mligo"
 
 type asset_storage = {
-  assets : nft_token_storage;
+  asset : nft_token_storage;
   admin : admin_storage;
   metadata : contract_metadata;
   (** 
@@ -32,8 +32,8 @@ let nft_asset_main(param, storage : asset_entrypoints * asset_storage)
 
   | Assets fa2 ->
     let _ = fail_if_paused storage.admin in
-    let ops, new_assets = nft_token_main (fa2, storage.assets) in
-    let new_s = { storage with assets = new_assets; } in
+    let ops, new_asset = nft_token_main (fa2, storage.asset) in
+    let new_s = { storage with asset = new_asset; } in
     (ops, new_s)
 
   | Mint_freeze ->
@@ -44,18 +44,18 @@ let nft_asset_main(param, storage : asset_entrypoints * asset_storage)
     let _ = fail_if_not_admin storage.admin in
     let _ = if storage.mint_freeze then failwith "FROZEN" else () in
     let mint_in = {
-      ledger = storage.assets.ledger;
-      token_metadata = storage.assets.token_metadata;
+      ledger = storage.asset.ledger;
+      token_metadata = storage.asset.token_metadata;
     } in
     let minted = mint_tokens (mint_in, m) in
     let new_s = { storage with 
-      assets.ledger = minted.ledger;
-      assets.token_metadata = minted.token_metadata;
+      asset.ledger = minted.ledger;
+      asset.token_metadata = minted.token_metadata;
     } in
     ([] : operation list), new_s
 
 let sample_storage : asset_storage = {
-  assets = {
+  asset = {
     token_metadata = (Big_map.empty : token_metadata_storage);
     ledger = (Big_map.empty : ledger);
     operators = (Big_map.empty : operator_storage);
