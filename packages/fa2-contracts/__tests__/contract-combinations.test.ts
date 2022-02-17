@@ -1,65 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import {sync as rimraf} from 'rimraf';
+import { sync as rimraf } from 'rimraf';
 import { ligo } from '@oxheadalpha/tezos-tools';
-import {
-  Admin,
-  generateFileContent,
-  Implementation,
-  Minter,
-  MinterAdmin
-} from '../src/contract-generator';
+import { generateFileContent } from '../src/contract-generator';
 import { TezosToolkit } from '@taquito/taquito';
 import { bootstrap } from './test-bootstrap';
 import { generateStorage } from './generate-storage';
-
-const implementations: Implementation[] = [
-  'USE_NFT_TOKEN',
-  'USE_FUNGIBLE_TOKEN',
-  'USE_MULTI_FUNGIBLE_TOKEN'
-];
-
-const admins: Admin[] = [
-  'USE_NO_ADMIN',
-  'USE_SIMPLE_ADMIN',
-  'USE_PAUSABLE_SIMPLE_ADMIN',
-  'USE_MULTI_ADMIN'
-];
-
-const minterAdmins: MinterAdmin[] = [
-  'USE_NULL_MINTER_ADMIN',
-  'USE_ADMIN_AS_MINTER',
-  'USE_MULTI_MINTER_ADMIN'
-];
-
-const minters: Set<Minter>[] = [
-  new Set(),
-  new Set(['CAN_MINT']),
-  new Set(['CAN_BURN']),
-  new Set(['CAN_MINT', 'CAN_BURN']),
-  new Set(['CAN_MINT', 'CAN_FREEZE']),
-  new Set(['CAN_BURN', 'CAN_FREEZE']),
-  new Set(['CAN_MINT', 'CAN_BURN', 'CAN_FREEZE'])
-];
-
-function* combinations(): Generator<
-  [Implementation, Admin, MinterAdmin, Set<Minter>]
-> {
-  for (let impl of implementations)
-    for (let admin of admins)
-      for (let minterAdmin of minterAdmins)
-        for (let minter of minters) yield [impl, admin, minterAdmin, minter];
-}
-
-const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
-  'USE_FUNGIBLE_TOKEN',
-  'USE_MULTI_ADMIN',
-  'USE_MULTI_MINTER_ADMIN',
-  new Set(['CAN_BURN', 'CAN_FREEZE'])
-];
-
-const all = [...combinations()];
-// const all = [singleCombination];
+import { allCombinations } from './contract-modules-combination';
 
 jest.setTimeout(500000);
 
@@ -79,12 +26,11 @@ describe('test compilation for contract module combinations', () => {
     if (!fs.existsSync(testSrcDir)) fs.mkdirSync(testSrcDir);
   });
 
-  test.each(all)(
-    // test.each([singleCombination])(
+  test.each(allCombinations)(
     'a combination should compile %s %s %s %o',
     async (implementation, admin, minterAdmin, minter) => {
       //console.log(implementation, admin, minterAdmin, minter);
-      console.log('TEST', ++counter);
+      console.log('CONTRACT TEST', ++counter);
       const param = {
         implementation,
         admin,

@@ -1,0 +1,40 @@
+import * as fs from 'fs';
+import * as child from 'child_process';
+
+import { allCombinations } from './contract-modules-combination';
+import { generateTsInterfaceFileContent } from '../src/ts-interface-generator';
+
+describe('generate TypeScript interface', () => {
+  let counter = 0;
+
+  test.each(allCombinations)(
+    'generated ts file compiles',
+    async (implementation, admin, minterAdmin, minter) => {
+      console.log('CONTRACT TEST', ++counter);
+
+      const params = {
+        implementation,
+        admin,
+        minterAdmin,
+        minter
+      };
+      const code = generateTsInterfaceFileContent(params);
+      const fileName = './src/test.ts';
+      fs.writeFileSync(fileName, code);
+
+      await compileFile(fileName);
+      fs.unlinkSync(fileName);
+    }
+  );
+});
+
+const compileFile = async (fileName: string): Promise<string> =>
+  new Promise<string>((resolve, reject) =>
+    child.exec(`tsc ${fileName} --noEmit`, {}, (err, stdout, errout) => {
+      if (errout || err) {
+        reject(err?.message + '\n' + stdout);
+      } else {
+        resolve(stdout);
+      }
+    })
+  );
