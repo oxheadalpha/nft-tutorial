@@ -10,7 +10,7 @@ export const generateTypeScript = (specFile: string, tsFile: string) => {
   const params = loadSpec(specFile);
   const tsFilePath = resolveTsFilePath(tsFile);
   ensureDirectory(tsFilePath);
-  const code = generateTsInterfaceFileContent(params, tsFilePath);
+  const code = generateTsInterfaceFileContent(params);
   fs.writeFileSync(tsFilePath, code);
   console.log(
     kleur.green(

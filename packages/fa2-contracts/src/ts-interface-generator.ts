@@ -8,8 +8,7 @@ import {
 import CodeBlockWriter from 'code-block-writer';
 
 export const generateTsInterfaceFileContent = (
-  params: ContractParam,
-  filePath: string
+  params: ContractParam
 ): string => {
   const writer = new CodeBlockWriter({
     indentNumberOfSpaces: 2,
