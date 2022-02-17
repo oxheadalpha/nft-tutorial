@@ -129,7 +129,7 @@ const withAdminInterfaceStatement = (writer: CodeBlockWriter, admin: Admin) => {
     case 'USE_PAUSABLE_SIMPLE_ADMIN':
       return writer.writeLine('.withPausableSimpleAdmin()');
     case 'USE_MULTI_ADMIN':
-      return writer.writeLine('.withMultiAdminStorage())');
+      return writer.writeLine('.withMultiAdmin()');
   }
 };
 
@@ -141,9 +141,9 @@ const withImplementationInterfaceStatement = (
     case 'USE_NFT_TOKEN':
       return writer.writeLine('.asNft()');
     case 'USE_FUNGIBLE_TOKEN':
-      return writer.writeLine('.asFungibleToken()');
+      return writer.writeLine('.asFungible()');
     case 'USE_MULTI_FUNGIBLE_TOKEN':
-      return writer.writeLine('.asMultiFungibleToken())');
+      return writer.writeLine('.asMultiFungible())');
   }
 };
 
