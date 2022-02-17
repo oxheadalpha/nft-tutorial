@@ -3,5 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist" /* Redirect output structure to the directory. */
   },
-  "exclude": ["./__tests__", "./jest.config.ts", "./dist"]
+  "exclude": [
+    "./__tests__", "./jest.config.ts",
+    "./tzgen.json", "./contract_spec.json",
+    "./dist"]
 }
