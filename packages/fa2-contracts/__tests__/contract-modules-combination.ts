@@ -25,13 +25,13 @@ const minterAdmins: MinterAdmin[] = [
 ];
 
 const minters: Set<Minter>[] = [
-  new Set(),
-  new Set(['CAN_MINT']),
-  new Set(['CAN_BURN']),
-  new Set(['CAN_MINT', 'CAN_BURN']),
-  new Set(['CAN_MINT', 'CAN_FREEZE']),
-  new Set(['CAN_BURN', 'CAN_FREEZE']),
-  new Set(['CAN_MINT', 'CAN_BURN', 'CAN_FREEZE'])
+  new Set<Minter>(),
+  new Set<Minter>(['CAN_MINT']),
+  new Set<Minter>(['CAN_BURN']),
+  new Set<Minter>(['CAN_MINT', 'CAN_BURN']),
+  new Set<Minter>(['CAN_MINT', 'CAN_FREEZE']),
+  new Set<Minter>(['CAN_BURN', 'CAN_FREEZE']),
+  new Set<Minter>(['CAN_MINT', 'CAN_BURN', 'CAN_FREEZE'])
 ];
 
 function* combinations(): Generator<
@@ -47,7 +47,7 @@ const singleCombination: [Implementation, Admin, MinterAdmin, Set<Minter>] = [
   'USE_FUNGIBLE_TOKEN',
   'USE_MULTI_ADMIN',
   'USE_MULTI_MINTER_ADMIN',
-  new Set(['CAN_BURN', 'CAN_FREEZE'])
+  new Set<Minter>(['CAN_BURN', 'CAN_FREEZE'])
 ];
 
 export const allCombinations = [...combinations()];
