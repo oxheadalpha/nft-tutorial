@@ -24,7 +24,9 @@
   },
   "scripts": {
     "clear": "yarn rimraf dist",
-    "build": "tsc -p .",
+    "build-source": "tsc -p .",
+    "compile-tests": "tsc ./__tests__/*.ts --noEmit --downlevelIteration --resolveJsonModule --esModuleInterop",
+    "build": "yarn build-source && yarn compile-tests",
     "prepare": "yarn clear && yarn build",
     "test": "jest"
   },
