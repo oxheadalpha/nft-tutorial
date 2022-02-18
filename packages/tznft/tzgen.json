@@ -1,0 +1,5 @@
+{
+  "ligoDir": "./ligo",
+  "compileOutDir": "./dist",
+  "tsSourceDir": "./src"
+}

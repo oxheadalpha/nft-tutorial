@@ -11,19 +11,19 @@ type admin_entrypoints = never
 
 (* Fails if sender is not admin*)
 [@inline]
-let fail_if_not_admin (storage : admin_storage) : unit = unit
+let fail_if_not_admin (_storage : admin_storage) : unit = unit
 
 [@inline]
-let fail_if_not_admin_ext (storage, extra_msg : admin_storage * string) : unit = unit
+let fail_if_not_admin_ext (_storage, _extra_msg : admin_storage * string) : unit = unit
 
 (* Returns true if sender is admin *)
 [@inline]
-let is_admin (storage : admin_storage) : bool = true
+let is_admin (_storage : admin_storage) : bool = true
 
 [@inline]
-let fail_if_paused (storage : admin_storage) : unit = unit
+let fail_if_paused (_storage : admin_storage) : unit = unit
 
-let admin_main(param, storage : admin_entrypoints * admin_storage)
+let admin_main(_param, storage : admin_entrypoints * admin_storage)
     : (operation list) * admin_storage = ([] : operation list), storage
 
 #endif

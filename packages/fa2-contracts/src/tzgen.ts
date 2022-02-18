@@ -16,10 +16,10 @@ program
   .command('init')
   .alias('i')
   .description('create tzgen.json file with the generator environment settings')
-  .option('-l --ligo', 'ligo code directory. Default is ./ligo')
-  .option('-o --compile-out', 'contract compilation output directory. Default is ./ligo/out')
-  .option('-t --ts', 'TypeScript source directory. Default is ./src')
-  .action(async options => initConfig(options.ligo, options.out, options.ts));
+  .option('-l --ligo <ligo>', 'ligo code directory. Default is ./ligo')
+  .option('-o --compile-out <out>', 'contract compilation output directory. Default is ./ligo/out')
+  .option('-t --ts <ts>', 'TypeScript source directory. Default is ./src')
+  .action(async options => initConfig(options.ligo, options.compileOut, options.ts));
 
 //prettier-ignore
 program

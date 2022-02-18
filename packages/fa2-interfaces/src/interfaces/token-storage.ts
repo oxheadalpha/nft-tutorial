@@ -14,7 +14,7 @@ const common = storageBuilder(
   }
 );
 
-const addAssetsKey = <S>(s: S) => ({ asset: s });
+const addAssetsKey = <S>(s: S) => ({ assets: s });
 
 export const nftStorage = common
   .withF(() => ({

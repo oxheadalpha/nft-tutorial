@@ -4,12 +4,10 @@
 type admin_storage = {
   admin : address;
   pending_admin : address option;
-  paused : bool;
 }
 type admin_entrypoints =
   | Set_admin of address
   | Confirm_admin of unit
-  | Pause of bool
 
 let confirm_new_admin (storage : admin_storage) : admin_storage =
   match storage.pending_admin with
@@ -21,7 +19,7 @@ let confirm_new_admin (storage : admin_storage) : admin_storage =
       admin = Tezos.sender;
     }
     else (failwith "NOT_A_PENDING_ADMIN" : admin_storage)
-  
+
 (* Fails if sender is not admin *)
 let fail_if_not_admin_ext (storage, extra_msg : admin_storage * string) : unit =
   if Tezos.sender <> storage.admin
@@ -37,20 +35,13 @@ let fail_if_not_admin (storage : admin_storage) : unit =
 (* Returns true if sender is admin *)
 let is_admin (storage : admin_storage) : bool = Tezos.sender = storage.admin
 
-let fail_if_paused (storage : admin_storage) : unit =
-  if(storage.paused)
-  then failwith "PAUSED"
-  else unit
+[@inline]
+let fail_if_paused (_storage : admin_storage) : unit = unit
 
 (*Only callable by admin*)
 let set_admin (new_admin, storage : address * admin_storage) : admin_storage =
   let _ = fail_if_not_admin storage in
   { storage with pending_admin = Some new_admin; }
-    
-(*Only callable by admin*)
-let pause (paused, storage: bool * admin_storage) : admin_storage =
-  let _ = fail_if_not_admin storage in
-  { storage with paused = paused; }
 
 let admin_main(param, storage : admin_entrypoints * admin_storage)
     : (operation list) * admin_storage =
@@ -61,10 +52,6 @@ let admin_main(param, storage : admin_entrypoints * admin_storage)
 
   | Confirm_admin _ ->
       let new_s = confirm_new_admin storage in
-      (([]: operation list), new_s)
-
-  | Pause paused ->
-      let new_s = pause (paused, storage) in
       (([]: operation list), new_s)
 
 #endif

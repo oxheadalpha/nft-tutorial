@@ -10,7 +10,7 @@ describe('generate TypeScript interface', () => {
   test.each(allCombinations)(
     'generated ts file compiles',
     async (implementation, admin, minterAdmin, minter) => {
-      console.log('CONTRACT TEST', ++counter);
+      console.log('TS INTERFACE TEST', ++counter);
 
       const params = {
         implementation,

@@ -13,7 +13,7 @@ export const importLigo = (dir?: string) => {
 
   console.log(`exporting LIGO sources from ${srcPath} to ${destPath}`);
   fs.cpSync(srcPath, destPath, { recursive: true, errorOnExist: true });
-  console.log(kleur.green(`LIGO sources exported to ${destPath}`));
+  console.log(kleur.green(`LIGO sources imported to ${destPath}`));
 };
 
 const resolveDestination = (dir?: string): string => {
