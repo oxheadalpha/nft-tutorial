@@ -12,11 +12,12 @@ Contact origination (collection creation) is out of scope fo this tutorial.
 
 ## Table of Contents
 
-* [Creating Token Metadata](a)
-* [Type-Safe Contract Abstraction](a)
-* [Minting](a)
-* [Transferring Tokens](a)
-* [Update Operators](a)
+* [Creating Token Metadata](#creating-token-metadata)
+* [Type-Safe Contract Abstraction](#type-safe-contract-abstraction)
+* [Minting](#minting)
+* [Transferring Token Ownership](#transferring-token-ownership)
+* [Update Operators](#update-operators)
+* [Custom Contracts](#custom-contracts)
 
 ### Creating Token Metadata
 
@@ -122,13 +123,13 @@ contract.
 
 ### Minting
 
-Minting (creating a new token) can be done by calling method `mint` like this:
+Minting (creating new tokens) can be done by calling method `mint` like this:
 
 ```typescript
 const op: TransactionOperation = await fa2.runMethod(
   nftContract.mint([
     { 
-      owner: 'tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU', 
+      owner: 'tz1PSCGWXwBdTncK2aCctSZAXWvGsGwVJqU', 
       tokens: [tokenMetadata1, tokenMetadata2] }
   ])
 );
@@ -173,4 +174,41 @@ For NFT tokens the amount should always be 1.
 
 ### Update Operators
 
+Multiple operators can act as owners. In order to achieve that
+`updateOperators` can be used. Updates can be built manually or
+, like transfers, can be built using batch API like this:
 
+```typescript
+const batch = operatorUpdateBatch().
+   .addOperator('tzOwner1', 'tzOperator1', 1)
+   .removeOperator('tzOwner2, 'tzOperator2', 2)
+   .addOperators([
+     { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 },
+     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+   ])
+   .updates;
+ 
+ contract.updateOperators(batch);
+ ```
+
+### Custom Contracts
+
+If a custom contract and API to it is necessary, it can be accessed in
+a type-safe way using very little boilerplate.  The new API can be
+implemented just by providing one constructor function with the following
+signature:
+
+```typescript
+<T>(contract: Tzip12Contract, lambdaView?: address) => T
+```
+
+The `T` type here is just an object(a record of functions) and can be
+implemented anyway possible, including using TypeScript class. In this case it
+has to be wrapped in a function like this:
+
+```typescript
+export const MyContractApi = (
+  contract: Tzip12Contract,
+  lambdaView?: address
+): Fa2Contract => new MyClass(contract, lambdaView)
+```
