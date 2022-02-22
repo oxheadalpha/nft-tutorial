@@ -11,7 +11,7 @@ Implementation of the FA2 (TZIP-12) interface for NFT assets
 (** token_id -> owner_address *)
 type ledger = (nat, address) big_map
 
-type nft_token_storage = {
+type token_storage = {
   token_metadata : token_metadata_storage;
   ledger : ledger;
   operators : operator_storage;
@@ -54,8 +54,8 @@ let transfer (txs, validate_op, ops_storage, ledger
     
   List.fold make_transfer txs ledger
 
-let nft_token_main (param, storage : fa2_entry_points * nft_token_storage)
-    : (operation  list) * nft_token_storage =
+let fa2_main (param, storage : fa2_entry_points * token_storage)
+    : (operation  list) * token_storage =
   match param with
   | Transfer txs -> 
     let new_ledger = transfer 

@@ -11,10 +11,10 @@ type minter_admin_entrypoints = never
 
 (* True if sender is a minter *)
 [@inline]
-let is_minter (storage : minter_admin_storage) : bool = true
+let is_minter (_storage : minter_admin_storage) : bool = true
 
 
-let minter_admin_main(param, storage : minter_admin_entrypoints * minter_admin_storage)
+let minter_admin_main(_param, storage : minter_admin_entrypoints * minter_admin_storage)
     : (operation list) * minter_admin_storage =
   ([] : operation list), storage
 
