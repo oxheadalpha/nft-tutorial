@@ -24,6 +24,7 @@
   },
   "scripts": {
     "clear": "yarn rimraf dist",
+    "build:tests": "tsc -p tsconfig.test.json",
     "build": "tsc -p .",
     "prepare": "yarn clear && yarn build",
     "test": "jest"
