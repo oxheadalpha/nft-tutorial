@@ -16,10 +16,12 @@ The repo has three following yarn workspaces (packages):
 * [fa2-interfaces](./packages/fa2-interfaces/) - TypeScript interfaces to
   interact with FA2 contracts on blockchain.
 
-* [fa2-contracts](./packages/fa2-interfaces/) - modular [LIGO](https://ligolang.org/)
-  implementation of FA2 smart contracts
+* [fa2-contracts](./packages/fa2-contracts/) - modular [LIGO](https://ligolang.org/)
+  implementation of FA2 smart contracts. Contract generator CLI tool `tzgen` and
+  [tutorial](./packages/fa2-contracts/README.md).
 
-* [tznft](./packages/tznft/) - CLI `tznft` tool and tutorial.
+* [tznft](./packages/tznft/) - NFT minting CLI tool `tznft` and
+  [tutorial](./packages/tznft/README.md).
 
 ## How to Install And Use CLI Tool
 
