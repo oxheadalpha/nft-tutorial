@@ -28,7 +28,7 @@ Token metadata has to confirm to
 There are two ways to create a metadata for your token: **on-chain** and
 **off-chain**. Artifact itself is always kept off-chain, usually in
 [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/). However, the attributes
-off the token can be kept either **on-chain** or **off-chin**.
+off the token can be kept either **on-chain** or **off-chian**.
 
 The simplest way to create **on-chain** metadata is using
 `createSimpleNftMetadata` function:
@@ -82,8 +82,8 @@ const validationResults = validateTzip21(meta);
 const errorsOnly = validationResults.filter(r => r.startsWith('Error:'));
 ```
 
-Before creating **off-chain** metadata it should be create in JSON format
-and uploaded to IPFS. Then, **off-chain** metadata can be created using a
+Before creating **off-chain** metadata first we should create it in JSON format
+and upload to IPFS. Then, **off-chain** metadata can be created using a
 helper function:
 
 ```typescript
@@ -123,7 +123,7 @@ contract.
 
 ### Minting
 
-Minting (creating new tokens) can be done by calling method `mint` like this:
+Minting (creating new tokens) can be done by calling method `mint`:
 
 ```typescript
 const op: TransactionOperation = await fa2.runMethod(
@@ -135,17 +135,28 @@ const op: TransactionOperation = await fa2.runMethod(
 );
 ```
 
-In order to save gas `mint` accepts lists to be able to bundle multiple token
-creation into one request. In FA2 API methods that call/invoke contract entry
+In order to save gas `mint` accepts a batch to be able to bundle multiple token
+creation into one request. Methods that call/invoke contract entry
 points return `Taquito` type `<ContractMethod<ContractProvider>>`.These methods
 can be sent and confirmed individually, or in a batch, directly using Taquito
 API. However, as it is a frequently used operations we have two helpers:
 `runMethod` & `runBatch`
 
-To make sure that the token was create method `hasNftTokens` can be used.
+At this point it would be nice to inspect created tokens. According to 
+[TZIP12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
+standard contract that handle tokens, weather it be non-fungible or fungible
+tokens has methods: `balance_of`, `transfer`, `update_operator`. For NFT we
+have `hasNftTokens` wrapper that returns boolean values. However, to use it we
+have to extends our contract abstraction with `.withFa2` methods:
 
 ```typescript
-const results = fa2.hasNftTokens([
+const fa2Contract = nftContract.withFa2()
+```
+
+Now, we can use `hasNftTopkens` methods to inspect created tokens:
+
+```typescript
+const results = fa2Contract.hasNftTokens([
   { owner: 'tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU', token_id: 1 },
   { owner: 'tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU', token_id: 2 }
 ]);
@@ -212,3 +223,12 @@ export const MyContractApi = (
   lambdaView?: address
 ): Fa2Contract => new MyClass(contract, lambdaView)
 ```
+
+Now, you can extends your contract abstraction with generic `.with` combinator:
+
+```typescript
+const myContractApi = contract.with(MyContractApi)
+```
+
+This way you can create a contract object that supports calling your contract
+end point in a type-safe way.
