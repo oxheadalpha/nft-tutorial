@@ -17,6 +17,7 @@ Contact origination (collection creation) is out of scope fo this tutorial.
 * [Minting](#minting)
 * [Transferring Token Ownership](#transferring-token-ownership)
 * [Update Operators](#update-operators)
+* [Beyond NFT Contracts](#beyond-nft-contracts)
 * [Custom Contracts](#custom-contracts)
 
 ### Creating Token Metadata
@@ -201,6 +202,82 @@ const batch = operatorUpdateBatch().
  
  contract.updateOperators(batch);
  ```
+
+### Beyond NFT Contracts
+
+Besides interacting with the contracts representing **NFT**, it is possible
+to create contracts representing **fungible tokens**, **multi-fungible tokens**
+have ability to freeze created tokens, give rights to other people to
+administer contracts etc. Many combinations of those traits of the contract
+can be expressed by using composable methods (combinators) on
+[contract abstraction](#type-safe-contract-abstraction).
+
+The combinators can be divided into groups, only one combinator from each
+of the groups can be used at a time on one contract.
+
+Below is the list of contract administration methods:
+
+* `.withSimpleAdmin` - adds the ability to set just one address to be
+an admin of a contract. It allows you to call just 2 additional methods
+`setAdmin` and `confirmAdmin`. For more information look
+[here](src/interfaces/admin.ts#l10)
+
+* `.withPausableSimpleAdmin` - adds the ability to pause/unpause
+the  contract. For more information look [here](src/interfaces/admin.ts#l35)
+
+* `.withMultiAdmin` - adds the ability to have multiple administrators for
+the same contract, add and remove. For more information look
+[here](src/interfaces/admin.ts#l42)
+
+Below is the list of combinators that specify what kind of tokens the contract
+holds. They do not add methods that can be used by the client but influence
+how the subsequent methods like `withMint`, `withBurn` will work and what
+parameters they take.
+
+* `.asNft` - specify that the contract represent **NFT**.
+* `.asFungible` - specify that the contract represents **fungible tokens**
+* `asMultiFungible` - specify that the contract represents **fungible tokens**
+and it can have more that one type of tokens, specified by token ID.
+
+Below is the group of combinators that should be used after on of
+the combinators from the previous group was used. You can find more
+details about each method that they add to the contract 
+[here](src/interfaces/minter-combinators.ts#L17)
+
+* `withMint` - specify that the contract can mint new tokens.
+
+* `withBurn` - specify that the contract can burn (remove) previously
+created tokens.
+
+* `withFreeze` - specify that the contract can 'freeze' the collation,
+after certain number of tokens is created.
+
+There is also `withMultiMinterAdmin` that allows to add and remove addresses
+that can mint and burn token. [Here](src/interfaces/minter-admin.ts)
+are the details.
+
+Also, `withFa2` adds the methods specified by 
+[TZIP12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md) 
+that every FA2 contract supposed to have. You can find the details
+[here](src/interfaces/fa2.ts#L135)
+
+Here is an examples a complete examples:
+
+```typescript
+const tzt = new TezosToolkit(...);
+const myContract = await tezosApi(tz).at(contractAddress)
+
+const nftContract = myContract
+    .withPausableSimpleAdmin()
+    .withFa2()
+    .asNft()
+    .withMint()
+    .withBurn()
+    .withFreeze()
+```
+
+In the above example we create an NFT contract that can mint, burn, freeze,
+that is pausable, and allows to use methods specified by FA2.
 
 ### Custom Contracts
 
