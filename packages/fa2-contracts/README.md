@@ -5,14 +5,101 @@ contracts.
 
 ## Table of Contents
 
+* [Modular Contracts](#modular-contracts)
+  * [Token Kind](#token-kind)
+  * [Minter Functionality](#minter-functionality)
+  * [Contract Admin](#contract-admin)
+  * [Minter Admin](#minter-admin)
+  * [Contract Specification Example](#contract-specification-example)
 * [tzGen CLI Tool](#tzgen-cli-tool)
 * [Cameligo Modules](#cameligo-modules)
   * [Common LIGO Admin Module Signature](#common-ligo-admin-module-signature)
   * [Common LIGO Minter Admin Module Signature](#common-ligo-minter-admin-module-signature)
 
+## Modular Contracts
+
+The FA2 interface is designed to support a wide range of token types and
+implementations. The developer has to choose from multiple options when implementing
+a specific FA2 contract. Besides choosing between fungible and non-fungible tokens,
+a developer needs to decide weather new tokens can be minted and burned, how the
+contract administrators can be set and what entry points should have admin access
+only.
+
+This package provides reusable contract modules implemented in
+[CameLIGO](https://ligolang.org/) language that can be composed into a single FA2
+contract. The developer can use either `tzGen` CLI tool or a programmatic API to
+generate a final contract code. A generated FA2 contract is composed from several
+orthogonal features. Each feature defines a set of possible options that can be
+selected independently. A combination of selected options for all supported features
+defines a specification describing a resulting FA2 contract behavior. Available
+features and their options are described below.
+
+### Token Kind
+
+This feature defines kind of tokens supported by the FA2 contract. Available options
+are listed below:
+
+* `USE_NFT_TOKEN` - a contract implementation will support multiple non-fungible
+  tokens
+* `USE_FUNGIBLE_TOKEN` - a contract implementation will support a single fungible
+  token
+* `USE_MULTI_FUNGIBLE_TOKEN` - a contract implementation will support multiple
+  fungible tokens
+
+### Minter Functionality
+
+This feature define optional support for token minting and burning. Multiple options
+from the list can be selected at the same time. If none of the options are selected,
+the resulting FA2 contract will not provide mint/burn functionality.
+
+* `CAN_MINT` - a contract can mint new tokens
+* `CAN_BURN` - a contract can burn tokens
+* `CAN_FREEZE` - a contract can be frozen. Once an FA2 contract is frozen, no
+  new tokens can be minted or burned (however, existing tokens still can be transferred).
+  This option can be selected only if either `CAN_MINT` or `CAN_BURN` (or both)
+  are selected.
+
+### Contract Admin
+
+A contract can define some privileged entry points that can be accessed by the
+current contract admin address. There are several available options defining a
+particular admin feature implementation:
+
+* `USE_NO_ADMIN` - a contract will not have an admin. Every entry point can be
+  invoked by any address.
+* `USE_SIMPLE_ADMIN` - a contract will have a single admin.
+* `USE_PAUSABLE_SIMPLE_ADMIN` - a contract will have a single admin. An admin can
+  pause and unpause the contract (a paused contract cannot transfer its tokens).
+* `USE_MULTI_ADMIN` - a contract can have multiple admins. An admin can pause and
+  unpause the contract
+
+### Minter Admin
+
+This feature defines access to mint and burn functionality defined by the
+[minter](#minter-functionality) feature.
+
+* `USE_NULL_MINTER_ADMIN` - a contract will have no minter admin. If either
+  `CAN_MINT` or `CAN_BURN` feature is selected, anyone can mint or burn tokens.
+  This is also the default option if no mint or burn feature is selected.
+* `USE_ADMIN_AS_MINTER` - a contract admin can also mint and burn tokens.
+* `USE_MULTI_MINTER_ADMIN` - a contract can have multiple minter admins that can
+  mint and burn tokens. Minter admin list is separate from the contract admin(s).
+
+### Contract Specification Example
+
+```
+Token Kind (implementation): USE_NFT_TOKEN,
+Minter: [CAN_MINT, CAN_FREEZE],
+Admin: USE_PAUSABLE_SIMPLE_ADMIN
+Minter Admin: USE_ADMIN_AS_MINTER
+```
+
+The resulting FA2 contract will support NFTs, be able to mint new tokens and freeze
+the token collection after minting. The contract will have a simple (single) admin
+that can pause and unpause it. Only the admin address will be able to mint tokens
+and freeze the NFT collection.
+
 ## tzGen CLI Tool
-
-
 
 ## Cameligo Modules
 
