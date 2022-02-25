@@ -18,7 +18,7 @@ contracts.
   * [Create FA2 Contract Specification](#create-fa2-contract-specification)
   * [Generate LIGO Code](#generate-ligo-code)
   * [Generate Michelson Code](#generate-michelson-code)
-  * [Generate Type Script Code](#generate-type-script-code)
+  * [Generate TypeScript Code](#generate-typescript-code)
 * [Programmatic API](#programmatic-api)
 * [Cameligo Modules](#cameligo-modules)
   * [Common LIGO Admin Module Signature](#common-ligo-admin-module-signature)
@@ -110,7 +110,7 @@ and freeze the NFT collection.
 ## tzGen CLI Tool
 
 `fa2-contracts` package includes `tzGen` CLI tool that generates CameLIGO contract
-code and Type Script interface to initialize contract storage for the contract
+code and TypeScript interface to initialize contract storage for the contract
 origination and to interact with the originated contract.
 
 ### Initial Setup
@@ -144,7 +144,7 @@ LIGO sources imported to ~/your_project/ligo
 
 ### Initialize tzGen Environment
 
-`tzGen` needs to know where is your LIGO source code, Type Script source code and
+`tzGen` needs to know where is your LIGO source code, TypeScript source code and
 compiled Michelson contracts are located. `init` command creates a `tzGen` environment
 configuration file `tzgen.json` and has the following options:
 
@@ -152,7 +152,7 @@ configuration file `tzgen.json` and has the following options:
   `import-ligo` command). The default is `./ligo`.
 * `--compile-out <out_dir>` LIGO compilation output directory to put compiled
   Michelson files. The default is `./ligo/out`.
-* `--ts <ts_dir>` Type Script source directory. Used to put generated Type Script
+* `--ts <ts_dir>` TypeScript source directory. Used to put generated TypeScript
   files. The default is `./src`.
 
 Example:
@@ -252,9 +252,9 @@ ligo version 0.34.0
 compiled contract to ~/my_project/dist/my_contract.tz file
 ```
 
-### Generate Type Script Code
+### Generate TypeScript Code
 
-`type-script` command generates a Type Script interface for the contract from the
+`type-script` command generates a TypeScript interface for the contract from the
 specification file. The command takes two arguments: name of the specification
 file and name of the resulting TypeScript file. The resulting file will be created
 in project source code location (`./src` in our case).
@@ -272,7 +272,7 @@ typed interface to interact with the contract on block chain. To use and compile
 a generated file, you package must include dependencies on `@taquito/taquito` and
 `@oxheadalpha/fa2-interfaces` packages.
 
-Below is  the generated Type Script code for our example contract specification:
+Below is the generated TypeScript code for our example contract specification:
 
 ```ts
 import { TezosToolkit } from '@taquito/taquito';
