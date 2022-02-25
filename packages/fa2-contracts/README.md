@@ -25,7 +25,7 @@ contracts.
   * [Token Minter Combinator](#token-minter-combinator)
   * [Minter Admin Combinator](#minter-admin-combinator)
   * [Generate Contract Code](#generate-contract-code)
-* [Cameligo Modules](#cameligo-modules)
+* [CameLigo Modules](#cameligo-modules)
   * [Common LIGO Admin Module Signature](#common-ligo-admin-module-signature)
   * [Common LIGO Minter Admin Module Signature](#common-ligo-minter-admin-module-signature)
 
@@ -389,7 +389,7 @@ const generateContractCode = () =>
     .generate();
 ```
 
-## Cameligo Modules
+## CameLigo Modules
 
 * [fa2](./ligo/fa2_lib/fa2) FA2 interface and standard errors definition
 * [fa2/lib](./ligo/fa2_lib/fa2/lib) helpers, various LIGO modules used for the
