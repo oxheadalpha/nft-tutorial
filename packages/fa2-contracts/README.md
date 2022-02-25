@@ -20,6 +20,11 @@ contracts.
   * [Generate Michelson Code](#generate-michelson-code)
   * [Generate TypeScript Code](#generate-typescript-code)
 * [Programmatic API](#programmatic-api)
+  * [Implementation Combinator](#implementation-combinator)
+  * [Contract Admin Combinator](#contract-admin-combinator)
+  * [Token Minter Combinator](#token-minter-combinator)
+  * [Minter Admin Combinator](#minter-admin-combinator)
+  * [Generate Contract Code](#generate-contract-code)
 * [Cameligo Modules](#cameligo-modules)
   * [Common LIGO Admin Module Signature](#common-ligo-admin-module-signature)
   * [Common LIGO Minter Admin Module Signature](#common-ligo-minter-admin-module-signature)
@@ -298,7 +303,6 @@ export const createContractInterface = async (
     ;
 ```
 
-
 Those functions may be used for the contract origination:
 
 ```ts
@@ -322,11 +326,68 @@ await runMethod(fa2.mintFreeze());
 ```
 
 For more details about how to use and customize contract interface combinators
-please refere to
+please refer to
 [@oxheadalpha/fa2-interfaces](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_interfaces/README.md)
 package documentation.
 
 ## Programmatic API
+
+Besides `tzGen` CLI tool it is also possible to provide contract specification and
+generate contract LIGO code using programmatic API. The combinators API
+let you define the contract specification and then call `generate()` method to
+generate contract code.
+
+### Implementation Combinator
+
+First you need to start with choosing token kind starting with `Implementation`
+combinator that has the following selectors:
+
+* `nft()` implement NFT FA2 contract
+* `fungible()` implement a single fungible token FA2 contract
+* `multiFungible()` implement multiple fungible tokens FA2 contract
+
+### Contract Admin Combinator
+
+* `withNoAdmin()` contract does not have an admin
+* `withSimpleAdmin()` contract has a single admin
+* `withPausableSimpleAdmin()` contract has a single admin that can pause and
+  unpause the contract
+* `withMultiAdmin()` contract has multiple admins that can pause and unpause the
+  contract
+
+### Token Minter Combinator
+
+Minter combinator is optional and let you specify if the FA2 contract will be
+able mint and burn new tokens.
+
+* `withNoMinter()` contract cannot mint or burn tokens
+* `withMint()` contract can mint new tokens
+* `withBurn()` contract can burn tokens
+* `withFreeze()` mint/burn functionality can be frozen
+
+### Minter Admin Combinator
+
+If a contract has mint/burn functionality, you haver to select
+[minter admin](#minter-admin) implementation as well.
+
+* `withNoMinterAdmin()` no minter admin. Anyone can mint/burn tokens
+* `withAdminAsMinter()` contract admin is also a minter admin
+* `withMultiMinterAdmin()` contract has multiple minter admins
+
+### Generate Contract Code
+
+Once you selected a contract specification using the combinators API you can invoke
+`generate()` method to generate contract code as in the example below:
+
+```typescript
+const generateContractCode = () =>
+  Implement.nft()
+    .withPausableSimpleAdmin()
+    .withMint()
+    .withFreeze()
+    .withAdminAsMinter()
+    .generate();
+```
 
 ## Cameligo Modules
 
