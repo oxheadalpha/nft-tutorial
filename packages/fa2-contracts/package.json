@@ -3,6 +3,7 @@
   "version": "3.1.0",
   "description": "Modular implementation of FA2 Tezos smart contracts in LIGO language",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
+  "homepage": "https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md",
   "keywords": [
     "tezos",
     "smart contracts",

@@ -12,6 +12,7 @@ contracts.
   * [Minter Admin](#minter-admin)
   * [Contract Specification Example](#contract-specification-example)
 * [tzGen CLI Tool](#tzgen-cli-tool)
+* [Programmatic API](#programmatic-api)
 * [Cameligo Modules](#cameligo-modules)
   * [Common LIGO Admin Module Signature](#common-ligo-admin-module-signature)
   * [Common LIGO Minter Admin Module Signature](#common-ligo-minter-admin-module-signature)
@@ -96,10 +97,229 @@ Minter Admin: USE_ADMIN_AS_MINTER
 
 The resulting FA2 contract will support NFTs, be able to mint new tokens and freeze
 the token collection after minting. The contract will have a simple (single) admin
-that can pause and unpause it. Only the admin address will be able to mint tokens
+that can pause and unpause it. Only the admin will be able to mint tokens
 and freeze the NFT collection.
 
 ## tzGen CLI Tool
+
+`fa2-contracts` package includes `tzGen` CLI tool that generates CameLIGO contract
+code and Type Script interface to initialize contract storage for the contract
+origination and to interact with the originated contract.
+
+### Initial Setup
+
+First, you will need to add development dependency on `@oxheadalpha/fa2-contracts`
+by running the following command:
+
+```sh
+$ yarn add -D @oxheadalpha/fa2-contracts
+```
+
+It is also possible to install the package globally.
+
+### Import LIGO Code
+
+Import reusable LIGO modules code into your project directory:
+
+```sh
+$ yarn tzgen import-ligo [dir]
+```
+
+You may specify a project subdirectory name as the command argument. The default
+option is `./ligo`.
+
+Example:
+
+```sh
+$ yarn tzgen import-ligo
+LIGO sources imported to ~/your_project/ligo
+```
+
+### Initialize tzGen Environment
+
+`tzGen` needs to know where is your LIGO source code, Type Script source code and
+compiled Michelson contracts are located. `init` command creates a `tzGen` environment
+configuration file `tzgen.json` and has the following options:
+
+* `--ligo <ligo_dir>` LIGO source code directory (same as directory used for
+  `import-ligo` command). The default is `./ligo`.
+* `--compile-out <out_dir>` LIGO compilation output directory to put compiled
+  Michelson files. The default is `./ligo/out`.
+* `--ts <ts_dir>` Type Script source directory. Used to put generated Type Script
+  files. The default is `./src`.
+
+Example:
+
+```sh
+$ yarn tzgen init --compile-out ./dist
+~/your_project/tzgen.json config file created
+```
+
+Generated `tzgen.json` file:
+
+```json
+{
+  "ligoDir": "./ligo",
+  "compileOutDir": "./dist",
+  "tsSourceDir": "./src"
+}
+```
+
+### Create FA2 Contract Specification
+
+Before generating contract code or TypeScript API, we need to create a contract
+specification by selecting a combination of features described in
+[modular contracts](#modular-contracts) section. `spec` command accepts a name
+of the resulting specification file and the following required options:
+
+* `--kind <kind>` FA2 token kind. Available options are:
+  * `NFT` non-fungible tokens
+  * `FT` single fungible token
+  * `MFT` multi-fungible-tokens
+* `-admin <admin>` type of the contract admin. Available options are:
+  * `NO_ADMIN` contract has no admin
+  * `SIMPLE` contract has simple admin
+  * `PAUSABLE` contract has simple admin and can be paused
+  * `MULTI` contract has multiple admins and can be paused
+* `--minter [minter...]` a list of the minting features. Available options are:
+  * `MINT` contract can mint tokens
+  * `BURN` contract can burn tokens
+  * `FREEZE` mint/burn operations can be frozen
+* `--minter_admin <minter_admin>` type of the minter admin implementation. Available
+  options are:
+  * `NO_ADMIN` contract does not have minter admin role. Everyone can mint/burn
+    tokens
+  * `CONTRACT_ADMIN` minter admin is the same as contract admin
+  * `MULTI` contract can have multiple minter admins
+
+Example:
+
+```sh
+$ yarn tzgen spec my_contract.json --kind NFT --admin PAUSABLE --minter MINT FREEZE --minter_admin CONTRACT_ADMIN
+~/my_project/my_contract.json spec file created
+```
+
+Generated `my_contract.json` file:
+
+```json
+{
+  "implementation": "USE_NFT_TOKEN",
+  "admin": "USE_PAUSABLE_SIMPLE_ADMIN",
+  "minter": [
+    "CAN_MINT",
+    "CAN_FREEZE"
+  ],
+  "minterAdmin": "USE_ADMIN_AS_MINTER"
+}
+```
+
+### Generate LIGO Code
+
+Now we can use a contract specification file to generate contract code and compile
+it. `contract` command takes two arguments: name of the specification file and name
+of the resulting CameLIGO file. The resulting file will be created in `src` subdirectory
+of the LIGO sources location (`./ligo/src/` in our case).
+
+```sh
+$ yarn tzgen contract my_contract.json my_contract.mligo
+contract source code file ~/my_project/ligo/src/my_contract.mligo is generated
+```
+
+### Generate Michelson Code
+
+`michelson` command generates Michelson code from contract CameLIGO source code
+(in other words compiles the contract). The command takes two arguments: contract
+source file name and output file name and one option `--main` specifying main
+entry point function name. Generated contract source code has main entry point
+function named `asset_main`. The default value for `--main` option of `michelson`
+command is the same, thus the option can be omitted. The resulting file will be
+created in LIGO output directory from `tzGen` configuration (`./dist` in our
+case).
+
+Example:
+
+```sh
+$ yarn tzgen michelson my_contract.mligo my_contract.tz
+ligo version 0.34.0
+
+compiled contract to ~/my_project/dist/my_contract.tz file
+```
+
+### Generate Type Script Code
+
+`type-script` command generates a Type Script interface for the contract from the
+specification file. The command takes two arguments: name of the specification
+file and name of the resulting TypeScript file. The resulting file will be created
+in project source code location (`./src` in our case).
+
+Example:
+
+```sh
+$ yarn tzgen type-script my_contract.json my_contract.ts
+contract interface source code file ~/my_project/src/my_contract.ts is generated
+```
+
+The resulting file will contain two functions: `createStorage` to create a storage
+object for the contract origination and `createContractInterface` to get a strongly
+typed interface to interact with the contract on block chain. To use and compile
+a generated file, you package must include dependencies on `@taquito/taquito` and
+`@oxheadalpha/fa2-interfaces` packages.
+
+Below is  the generated Type Script code for our example contract specification:
+
+```ts
+import { TezosToolkit } from '@taquito/taquito';
+import * as fa2 from '@oxheadalpha/fa2-interfaces';
+import { address, tezosApi } from '@oxheadalpha/fa2-interfaces';
+
+export const createStorage = fa2.contractStorage
+  .with(fa2.pausableSimpleAdminStorage)
+  .with(fa2.nftStorage)
+  .with(fa2.mintFreezeStorage)
+  .build;
+
+export const createContractInterface = async (
+  toolkit: TezosToolkit,
+  address: address
+) =>
+  (await tezosApi(toolkit).at(address))
+    .withFa2()
+    .withPausableSimpleAdmin()
+    .asNft()
+    .withMint()
+    .withFreeze()
+    ;
+```
+
+
+Those functions may be used for the contract origination:
+
+```ts
+const storage = createStorage({
+    metadata: jsonMetadata,
+    owner: ownerAddress
+  });
+  const code = fs.readFileSync('../dist/my_contract.tz', {
+    encoding: 'utf8',
+    flag: 'r'
+  });
+  const originationOp = await tz.contract.originate({ code, storage });
+  const contract = await originationOp.contract();
+```
+
+and interaction with the originated one:
+
+```ts
+const fa2 = await createContractInterface(tz, contractAddress);
+await runMethod(fa2.mintFreeze());
+```
+
+For more details about how to use and customize contract interface combinators
+please refere to
+[@oxheadalpha/fa2-interfaces](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_interfaces/README.md)
+package documentation.
+
+## Programmatic API
 
 ## Cameligo Modules
 
