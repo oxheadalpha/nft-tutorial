@@ -55,9 +55,9 @@ The metadata can have more attributes and look like this:
     "nft"
   ],
   "minter": "tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU",
-  "artifactUri": "/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-  "displayUri": "/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-  "thumbnailUri": "/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+  "artifactUri": "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+  "displayUri": "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+  "thumbnailUri": "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
   "creators": [],
   "rights": "",
   "attributes": [
@@ -98,9 +98,10 @@ Now we are ready to interact with our contract.
 
 ### Type-Safe Contract Abstraction
 
-Before anything else can be done, an object that represents your contract (Collection)
-has to be created. As it is a wrapper around [Taquito](https://tezostaquito.io/), first
-we will need to create Taquito `TezosToolkit`.
+To interact with a contract on blockchain we need to create an API object
+that represents your contract (collection). As it is a wrapper around
+[Taquito](https://tezostaquito.io/), first we will need to create Taquito
+`TezosToolkit`.
 
 ```typescript
 const tzt = new TezosToolkit(...);
@@ -117,7 +118,7 @@ const nftContract = myContract.asNft().withMint()
 As depending on the type of a token, contract methods can have different
 implementations and require different parameters,
 you have to specify type of the token by using `asNft()` (as we are going
-to mint NFTs) and then methods you would like to use by using `withMint()`.
+to mint NFTs) and then the required methods, by using `withMint()`.
 TypeScript will infer the right type of `nftContract` and validated method
 and parameters at compile time. Now you are ready to interact with your
 contract.
@@ -136,8 +137,8 @@ const op: TransactionOperation = await fa2.runMethod(
 );
 ```
 
-In order to save gas `mint` accepts a batch to be able to bundle multiple token
-creation into one request. Methods that call/invoke contract entry
+In order to save gas `mint` accepts a batch to be able to bundle multiple
+tokens creation into one request. Methods that call/invoke contract entry
 points return `Taquito` type `<ContractMethod<ContractProvider>>`.These methods
 can be sent and confirmed individually, or in a batch, directly using Taquito
 API. However, as it is a frequently used operations we have two helpers:
@@ -171,7 +172,7 @@ Token ownership can be transferred using method `transferTokens`. This methods
 takes a list of transfers and executes them. Transfers can be constructed
 manually but it is easier to use "Transfers Batch API" to do that. It will
 merge automatically subsequent transaction from the same source in order
-to optimise gas. Here is how it can be done:
+to optimise gas usage. Here is how it can be done:
 
 ```typescript
 const transfers = transferBatch()
@@ -186,9 +187,10 @@ For NFT tokens the amount should always be 1.
 
 ### Update Operators
 
-Multiple operators can act as owners. In order to achieve that
-`updateOperators` can be used. Updates can be built manually or
-, like transfers, can be built using batch API like this:
+Multiple operators can transfer tokens on behalf of the owner. Token owner can
+use `updateOperators` method to add or remove other addresses that can transfer
+owner's tokens. Updates can be built manually or, like transfers, can be built
+using batch API like this:
 
 ```typescript
 const batch = operatorUpdateBatch().
@@ -200,17 +202,17 @@ const batch = operatorUpdateBatch().
    ])
    .updates;
  
- contract.updateOperators(batch);
+ await runMethod(contract.updateOperators(batch));
  ```
 
 ### Beyond NFT Contracts
 
 Besides interacting with the contracts representing **NFT**, it is possible
-to create contracts representing **fungible tokens**, **multi-fungible tokens**
-have ability to freeze created tokens, give rights to other people to
-administer contracts etc. Many combinations of those traits of the contract
-can be expressed by using composable methods (combinators) on
-[contract abstraction](#type-safe-contract-abstraction).
+to interact with any FA2 contract representing **fungible tokens**,
+**multi-fungible tokens**, have the ability to freeze created tokens, give
+rights to other addresses to administer contracts etc. Many combinations of
+those traits of the contract can be expressed by using composable methods
+(combinators) on [contract abstraction](#type-safe-contract-abstraction).
 
 The combinators can be divided into groups, only one combinator from each
 of the groups can be used at a time on one contract.
@@ -235,13 +237,15 @@ how the subsequent methods like `withMint`, `withBurn` will work and what
 parameters they take.
 
 * `.asNft` - specify that the contract represent **NFT**.
-* `.asFungible` - specify that the contract represents **fungible tokens**
-* `asMultiFungible` - specify that the contract represents **fungible tokens**
-and it can have more that one type of tokens, specified by token ID.
+* `.asFungible` - specify that the contract represents  a single
+**fungible tokens**
+* `asMultiFungible` - specify that the contract represents multiple
+**fungible tokens** and it can have more that one type of tokens, specified
+by token ID.
 
-Below is the group of combinators that should be used after on of
-the combinators from the previous group was used. You can find more
-details about each method that they add to the contract 
+Below is the group of combinators that should be used on top of one of
+the combinators from the previous group. You can find more
+details about each method that they add to the contract
 [here](src/interfaces/minter-combinators.ts#L17)
 
 * `withMint` - specify that the contract can mint new tokens.
@@ -249,7 +253,7 @@ details about each method that they add to the contract
 * `withBurn` - specify that the contract can burn (remove) previously
 created tokens.
 
-* `withFreeze` - specify that the contract can 'freeze' the collation,
+* `withFreeze` - specify that the contract can freeze the collation,
 after certain number of tokens is created.
 
 There is also `withMultiMinterAdmin` that allows to add and remove addresses
@@ -291,8 +295,8 @@ signature:
 ```
 
 The `T` type here is just an object(a record of functions) and can be
-implemented anyway possible, including using TypeScript class. In this case it
-has to be wrapped in a function like this:
+implemented anyway possible, including using a TypeScript class. In this case
+it has to be wrapped in a function like this:
 
 ```typescript
 export const MyContractApi = (
@@ -307,5 +311,4 @@ Now, you can extends your contract abstraction with generic `.with` combinator:
 const myContractApi = contract.with(MyContractApi)
 ```
 
-This way you can create a contract object that supports calling your contract
-end point in a type-safe way.
+myContractApi object will have all the API methods defined by MyClass.
