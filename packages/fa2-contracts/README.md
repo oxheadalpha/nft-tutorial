@@ -54,11 +54,11 @@ This feature defines kind of tokens supported by the FA2 contract. Available opt
 are listed below:
 
 * `USE_NFT_TOKEN` - contract implementation will support multiple non-fungible
-  tokens (similar to Ethereum ERC-721)
+  tokens (similar to Ethereum ERC-721).
 * `USE_FUNGIBLE_TOKEN` - contract implementation will support a single fungible
-  token (similar to Ethereum ERC-20)
+  token (similar to Ethereum ERC-20).
 * `USE_MULTI_FUNGIBLE_TOKEN` - contract implementation will support multiple
-  fungible tokens (similar to Ethereum ERC-1155)
+  fungible tokens (similar to Ethereum ERC-1155).
 
 ### Minter Functionality
 
@@ -66,8 +66,8 @@ This feature define optional support for token minting and burning. Multiple opt
 from the list can be selected at the same time. If none of the options are selected,
 the resulting FA2 contract will not provide mint/burn functionality.
 
-* `CAN_MINT` - contract can mint new tokens
-* `CAN_BURN` - contract can burn tokens
+* `CAN_MINT` - contract can mint new tokens.
+* `CAN_BURN` - contract can burn tokens.
 * `CAN_FREEZE` - contract can be frozen. Once an FA2 contract is frozen, no
   new tokens can be minted or burned (however, existing tokens still can be transferred).
   This option can be selected only if either `CAN_MINT` or `CAN_BURN` (or both)
@@ -80,12 +80,12 @@ current contract admin address. There are several available options defining the
 admin feature implementation:
 
 * `USE_NO_ADMIN` - contract does not have an admin. Every entry point can be
-  invoked by any address
+  invoked by any address.
 * `USE_SIMPLE_ADMIN` - contract has a single admin.
 * `USE_PAUSABLE_SIMPLE_ADMIN` - contract has a single admin. The admin can
   pause and unpause the contract (a paused contract cannot transfer its tokens)
 * `USE_MULTI_ADMIN` - contract can have multiple admins. An admin can pause and
-  unpause the contract
+  unpause the contract.
 
 ### Minter Admin
 
@@ -94,10 +94,10 @@ This feature defines access to mint and burn functionality defined by the
 
 * `USE_NULL_MINTER_ADMIN` - contract does not have a minter admin. If either
   `CAN_MINT` or `CAN_BURN` feature is selected, anyone can mint or burn tokens.
-  This is also the default option if no mint or burn feature are selected
-* `USE_ADMIN_AS_MINTER` - contract admin can also mint and burn tokens
+  This is also the default option if no mint or burn feature are selected.
+* `USE_ADMIN_AS_MINTER` - contract admin can also mint and burn tokens.
 * `USE_MULTI_MINTER_ADMIN` - contract can have multiple minter admins that can
-  mint and burn tokens. Minter admin list is separate from the contract admin(s)
+  mint and burn tokens. Minter admin list is separate from the contract admin(s).
 
 ### Contract Specification Example
 
@@ -155,11 +155,11 @@ compiled Michelson contracts are located. `init` command creates a `tzGen` envir
 configuration file `tzgen.json` and has the following options:
 
 * `--ligo <ligo_dir>` LIGO source code directory (same as directory used for
-  `import-ligo` command). The default is `./ligo`
+  `import-ligo` command). The default is `./ligo`.
 * `--compile-out <out_dir>` LIGO compilation output directory to put compiled
-  Michelson files. The default is `./ligo/out`
+  Michelson files. The default is `./ligo/out`.
 * `--ts <ts_dir>` TypeScript source directory. Used to put generated TypeScript
-  files. The default is `./src`
+  files. The default is `./src`.
 
 Example:
 
@@ -343,37 +343,37 @@ generate contract code.
 First, you need to start with choosing token kind starting with `Implementation`
 combinator that has the following selectors:
 
-* `nft()` implement NFT FA2 contract
-* `fungible()` implement a single fungible token FA2 contract
-* `multiFungible()` implement multiple fungible tokens FA2 contract
+* `nft()` implement NFT FA2 contract.
+* `fungible()` implement a single fungible token FA2 contract.
+* `multiFungible()` implement multiple fungible tokens FA2 contract.
 
 ### Contract Admin Combinator
 
-* `withNoAdmin()` contract does not have an admin
-* `withSimpleAdmin()` contract has a single admin
+* `withNoAdmin()` contract does not have an admin.
+* `withSimpleAdmin()` contract has a single admin.
 * `withPausableSimpleAdmin()` contract has a single admin that can pause and
-  unpause the contract
+  unpause the contract.
 * `withMultiAdmin()` contract has multiple admins that can pause and unpause the
-  contract
+  contract.
 
 ### Token Minter Combinator
 
 Minter combinator is optional and let you specify if the FA2 contract will be
 able mint and burn new tokens.
 
-* `withNoMinter()` contract cannot mint or burn tokens
-* `withMint()` contract can mint new tokens
-* `withBurn()` contract can burn tokens
-* `withFreeze()` mint/burn functionality can be frozen
+* `withNoMinter()` contract cannot mint or burn tokens.
+* `withMint()` contract can mint new tokens.
+* `withBurn()` contract can burn tokens.
+* `withFreeze()` mint/burn functionality can be frozen.
 
 ### Minter Admin Combinator
 
 If a contract has mint/burn functionality, you haver to select
 [minter admin](#minter-admin) implementation as well.
 
-* `withNoMinterAdmin()` no minter admin. Anyone can mint/burn tokens
-* `withAdminAsMinter()` contract admin is also a minter admin
-* `withMultiMinterAdmin()` contract has multiple minter admins
+* `withNoMinterAdmin()` no minter admin. Anyone can mint/burn tokens.
+* `withAdminAsMinter()` contract admin is also a minter admin.
+* `withMultiMinterAdmin()` contract has multiple minter admins.
 
 ### Generate Contract Code
 
@@ -392,28 +392,28 @@ const contractCode =
 
 ## CameLigo Modules
 
-* [fa2](./ligo/fa2_lib/fa2) FA2 interface and standard errors definition
+* [fa2](./ligo/fa2_lib/fa2) FA2 interface and standard errors definition.
 * [fa2/lib](./ligo/fa2_lib/fa2/lib) helpers, various LIGO modules used for the
-  FA2 implementation
+  FA2 implementation.
   * [fa2/lib/fa2_operator_lib.mligo](./ligo/fa2_lib/fa2/lib/fa2_operator_lib.mligo)
-    helper functions and storage to manage and validate FA2 operators
+    helper functions and storage to manage and validate FA2 operators.
   * [fa2/lib/fa2_owner_hooks_lib.mligo](./ligo/fa2_lib/fa2/lib/fa2_owner_hooks_lib.mligo)
-    helper functions to support sender/receiver hooks
+    helper functions to support sender/receiver hooks.
 * [token](./ligofa2_lib/fa2_lib/token) core implementation of the FA2 functionality
-  and entry points for various token types
+  and entry points for various token types.
   * [token/fa2_nft_token.mligo](./ligo/fa2_lib/token/fa2_nft_token.mligo) core FA2
-    implementation for NFT tokens (similar to Ethereum ERC-721)
+    implementation for NFT tokens (similar to Ethereum ERC-721).
   * [token/fa2_fungible_token.mligo](./ligo/fa2_lib/token/fa2_fungible_token.mligo)
-    core FA2 implementation for a single fungible token (similar to Ethereum ERC-20)
+    core FA2 implementation for a single fungible token (similar to Ethereum ERC-20).
   * [token/fa2_multi_fungible_token.mligo](./ligo/fa2_lib/token/fa2_multi_fungible_token.mligo)
-    core FA2 implementation for multiple fungible tokens (similar to Ethereum ERC-1155)
+    core FA2 implementation for multiple fungible tokens (similar to Ethereum ERC-1155).
 * [minter](./ligo/fa2_lib/minter) implementation of mint and burn functionality.
   Each minter module corresponds to one of the `token` core implementation modules.
 * [admin](./ligo/fa2_lib/admin) various implementations of the contract admin module.
   The admin may pause/unpause the contract and have access to other privileged
   contract entry points. Each admin implementation has a common LIGO module signature.
   * [admin/no_admin.mligo](./ligo/fa2_lib/admin/no_admin.mligo) implementation of
-    the admin module where everyone is admin of the contract
+    the admin module where everyone is admin of the contract.
   * [admin/simple_admin.mligo](./ligo/fa2_lib/admin/simple_admin.mligo)
     implementation of the admin module that has a single admin address; admin
     address can be changed.
@@ -421,13 +421,13 @@ const contractCode =
     same as `simple_admin`, but lets pause/unpause the contract.
   * [admin/multi_admin.mligo](./ligo/fa2_lib/admin/multi_admin.mligo) implementation
     of the admin module that may have multiple admins; lets pause/unpause the
-    contract and add/remove the admins
+    contract and add/remove the admins.
 * [minter_admin](./ligo/fa2_lib/minter_admin) various implementations of the
   contract minter admin (minter is an address that has rights to mint new tokens).
   Each minter admin implementation has a common LIGO module signature.
   * [minter_admin/null_minter_admin.mligo](./ligo/fa2_lib/minter_admin/null_minter_admin.mligo)
     implementation of the minter admin module that allows everyone to mint new
-    tokens
+    tokens.
   * [minter_admin/multi_minter_admin.mligo](./ligo/fa2_lib/minter_admin/multi_minter_admin.mligo)
     implementation of the minter admin module that can have multiple addresses
     allowing to mint new tokens and add/remove new minters.
@@ -435,19 +435,19 @@ const contractCode =
 ### Common LIGO Admin Module Signature
 
 * `admin_storage` type of the admin storage (used as a part of the whole
-  contract storage)
+  contract storage).
 * `admin_entrypoints` type of the admin entry points
 * `admin_main` implementation of the admin entry points (used by the contract
-  main entry point)
+  main entry point).
 * `is_admin`, `fail_if_not_admin`, `fail_if_not_admin_ext` functions to guard
-  privileged operations in the contract implementation
-* `is_paused` function to guard a paused contract
+  privileged operations in the contract implementation.
+* `is_paused` function to guard a paused contract.
 
 ### Common LIGO Minter Admin Module Signature
 
 * `minter_admin_storage` type of the minter admin storage (used as a part of the
-  whole contract storage)
-* `minter_admin_entrypoints` type of the minter admin entry points
+  whole contract storage).
+* `minter_admin_entrypoints` type of the minter admin entry points.
 * `minter_admin_main` implementation of the minter admin entry points (used by the
-  contract main entry point)
-* `is_minter` function to guard access to mint tokens operation(s)
+  contract main entry point).
+* `is_minter` function to guard access to mint tokens operation(s).
