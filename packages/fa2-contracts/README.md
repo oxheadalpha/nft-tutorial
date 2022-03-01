@@ -243,7 +243,7 @@ contract source code file ~/my_project/ligo/src/my_contract.mligo is generated
 `michelson` command generates Michelson code from the contract CameLIGO source code
 (in other words compiles the contract). The command takes two arguments: contract
 source file name and output file name and one option `--main`, specifying main
-entry point function name. The Generated contract source code will have main entry
+entry point function name. The generated contract source code will have main entry
 point function named `asset_main`. The default value for `--main` option of `michelson`
 command is the same, thus the option can be omitted. The resulting file will be
 created in LIGO output directory from `tzGen` configuration (`./dist` in our
