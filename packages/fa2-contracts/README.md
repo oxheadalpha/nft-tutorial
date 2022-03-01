@@ -92,12 +92,12 @@ admin feature implementation:
 This feature defines access to mint and burn functionality defined by the
 [minter](#minter-functionality) feature.
 
-* `USE_NULL_MINTER_ADMIN` - contract does not have a minter admin. If either
-  `CAN_MINT` or `CAN_BURN` feature is selected, anyone can mint or burn tokens.
+* `USE_NULL_MINTER_ADMIN` - contract does not have a minter admin. When neither
+  `CAN_MINT` nor `CAN_BURN` feature is selected, anyone can mint or burn tokens.
   This is also the default option if no mint or burn feature are selected.
 * `USE_ADMIN_AS_MINTER` - contract admin can also mint and burn tokens.
 * `USE_MULTI_MINTER_ADMIN` - contract can have multiple minter admins that can
-  mint and burn tokens. Minter admin list is separate from the contract admin(s).
+  mint and burn tokens. The minter admin list is separate from the contract admin(s).
 
 ### Contract Specification Example
 
@@ -154,7 +154,7 @@ LIGO sources imported to ~/your_project/ligo
 compiled Michelson contracts are located. `init` command creates a `tzGen` environment
 configuration file `tzgen.json` and has the following options:
 
-* `--ligo <ligo_dir>` LIGO source code directory (same as directory used for
+* `--ligo <ligo_dir>` LIGO source code directory (same as the directory used for
   `import-ligo` command). The default is `./ligo`.
 * `--compile-out <out_dir>` LIGO compilation output directory to put compiled
   Michelson files. The default is `./ligo/out`.
@@ -180,7 +180,7 @@ Generated `tzgen.json` file:
 
 ### Create FA2 Contract Specification
 
-Before generating contract code or TypeScript API, we need to create a contract
+Before generating a contract code or TypeScript API, we need to create a contract
 specification by selecting a combination of features described in the
 [modular contracts](#modular-contracts) section. `spec` command accepts a name
 of the resulting specification file and the following required options:
@@ -228,10 +228,10 @@ Generated `my_contract.json` file:
 
 ### Generate LIGO Code
 
-Now we can use a contract specification file to generate contract code and compile
-it. `contract` command takes two arguments: name of the specification file and name
-of the resulting CameLIGO file. The resulting file will be created in `src` subdirectory
-of the LIGO sources location (`./ligo/src/` in our case).
+Now we can use a contract specification file to a generate contract code and compile
+it. `contract` command takes two arguments: the name of the specification file
+and the name of the resulting CameLIGO file. The resulting file will be created
+in `src` subdirectory of the LIGO sources location (`./ligo/src/` in our case).
 
 ```sh
 $ yarn tzgen contract my_contract.json my_contract.mligo
@@ -242,9 +242,9 @@ contract source code file ~/my_project/ligo/src/my_contract.mligo is generated
 
 `michelson` command generates Michelson code from the contract CameLIGO source code
 (in other words compiles the contract). The command takes two arguments: contract
-source file name and output file name and one option `--main` specifying main
-entry point function name. Generated contract source code has main entry point
-function named `asset_main`. The default value for `--main` option of `michelson`
+source file name and output file name and one option `--main`, specifying main
+entry point function name. The Generated contract source code will have main entry
+point function named `asset_main`. The default value for `--main` option of `michelson`
 command is the same, thus the option can be omitted. The resulting file will be
 created in LIGO output directory from `tzGen` configuration (`./dist` in our
 case).
@@ -261,9 +261,9 @@ compiled contract to ~/my_project/dist/my_contract.tz file
 ### Generate TypeScript Code
 
 `type-script` command generates a TypeScript interface for the contract from the
-specification file. The command takes two arguments: name of the specification
-file and name of the resulting TypeScript file. The resulting file will be created
-in TypeScript source code location (`./src` in our case).
+specification file. The command takes two arguments: the name of the specification
+file and the name of the resulting TypeScript file. The resulting file will be
+created in TypeScript source code location (`./src` in our case).
 
 Example:
 
@@ -334,7 +334,7 @@ package documentation.
 ## Programmatic API
 
 Besides `tzGen` CLI tool it is also possible to provide contract specification and
-generate contract LIGO code using programmatic API. The combinators API
+generate LIGO contract code using programmatic API. The combinators API
 let you define the contract specification and then call `generate()` method to
 generate contract code.
 
@@ -368,7 +368,7 @@ able mint and burn new tokens.
 
 ### Minter Admin Combinator
 
-If a contract has mint/burn functionality, you haver to select
+If a contract has mint/burn functionality, you have to select
 [minter admin](#minter-admin) implementation as well.
 
 * `withNoMinterAdmin()` no minter admin. Anyone can mint/burn tokens.
