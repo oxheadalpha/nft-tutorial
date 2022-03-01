@@ -228,7 +228,7 @@ Generated `my_contract.json` file:
 
 ### Generate LIGO Code
 
-Now we can use a contract specification file to a generate contract code and compile
+Now we can use a contract specification file to generate a contract code and compile
 it. `contract` command takes two arguments: the name of the specification file
 and the name of the resulting CameLIGO file. The resulting file will be created
 in `src` subdirectory of the LIGO sources location (`./ligo/src/` in our case).
