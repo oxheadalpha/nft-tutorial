@@ -5,36 +5,97 @@ import {
   Minter
 } from './contract-generator';
 
+/**
+ * Select core FA2 contract implementation
+ */
 export interface UseImplementation {
+  /**
+   * Implement FA2 NFT contract
+   */
   nft(): UseAdmin;
+  /**
+   * Implement single fungible token FA2 contract
+   */
   fungible(): UseAdmin;
+  /**
+   * Implement multiple fungible tokens FA2 contract
+   */
   multiFungible(): UseAdmin;
 }
 
+/**
+ * Select contract admin implementation
+ */
 export interface UseAdmin {
+  /**
+   * Contract does not have an admin
+   */
   withNoAdmin(): UseMinter;
+
+  /**
+   * Contract has a single admin
+   */
   withSimpleAdmin(): UseMinter;
+  /**
+   * Contract has a single admin that can pause and unpause the contract
+   */
   withPausableSimpleAdmin(): UseMinter;
+  /**
+   * Contract has multiple admins that can pause and unpause the contract
+   */
   withMultiAdmin(): UseMinter;
 }
 
+/**
+ * Select FA2 contract minting functionality
+ */
 export interface UseMinter {
+  /**
+   * Contract cannot mint or burn tokens
+   */
   withNoMinter(): Generate;
+  /**
+   * Contract can mint new tokens
+   */
   withMint(): UseMinter & UseMinterAdmin & UseFreeze;
+  /**
+   * Contract can burn tokens
+   */
   withBurn(): UseMinter & UseMinterAdmin & UseFreeze;
 }
 
+/**
+ * Select if the FA2 contract can freeze mint/burn functionality
+ */
 export interface UseFreeze {
+  /**
+   * Mint/burn functionality can be frozen
+   */
   withFreeze(): UseMinter & UseMinterAdmin;
 }
 
+/**
+ * Select minter admin implementation
+ */
 export interface UseMinterAdmin {
+  /**
+   * No minter admin. Anyone can mint/burn tokens
+   */
   withNoMinterAdmin(): Generate;
+  /**
+   * Contract admin is also a minter admin
+   */
   withAdminAsMinter(): Generate;
+  /**
+   * Contract has multiple minter admins
+   */
   withMultiMinterAdmin(): Generate;
 }
 
 export interface Generate {
+  /**
+   * Generate contract LIGO code
+   */
   generate(): string;
 }
 
@@ -121,13 +182,28 @@ const WithAdmin = (implementation: Implementation): UseAdmin => ({
     })
 });
 
+/**
+ * Create API to configure LIGO contract code generator.
+ * 
+ * Usage example:
+ * 
+ * ```typescript
+ * const generateContractCode = () =>
+ *   Implement.nft()
+ *    .withPausableSimpleAdmin()
+ *    .withMint()
+ *    .withFreeze()
+ *    .withAdminAsMinter()
+ *    .generate();
+ * ```
+ */
 export const Implement: UseImplementation = {
   nft: () => WithAdmin('USE_NFT_TOKEN'),
   fungible: () => WithAdmin('USE_FUNGIBLE_TOKEN'),
   multiFungible: () => WithAdmin('USE_MULTI_FUNGIBLE_TOKEN')
 };
 
-const test = () =>
+const generateContractCode = () =>
   Implement.nft()
     .withPausableSimpleAdmin()
     .withMint()

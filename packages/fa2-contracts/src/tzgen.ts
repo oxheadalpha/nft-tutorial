@@ -16,9 +16,9 @@ program
   .command('init')
   .alias('i')
   .description('create tzgen.json file with the generator environment settings')
-  .option('-l --ligo <ligo>', 'ligo code directory. Default is ./ligo')
-  .option('-o --compile-out <out>', 'contract compilation output directory. Default is ./ligo/out')
-  .option('-t --ts <ts>', 'TypeScript source directory. Default is ./src')
+  .option('-l --ligo <ligo_dir>', 'ligo code directory. The default is ./ligo')
+  .option('-o --compile-out <out_dir>', 'contract compilation output directory. The default is ./ligo/out')
+  .option('-t --ts <ts_dir>', 'TypeScript source directory. The default is ./src')
   .action(async options => initConfig(options.ligo, options.compileOut, options.ts));
 
 //prettier-ignore
@@ -38,12 +38,12 @@ program
   .addOption(new Option('-k --kind <kind>', 'core FA2 implementation kind')
     .makeOptionMandatory()
     .choices(['NFT', 'FT', 'MFT']))
-  .addOption(new Option('-a --admin <admin>', 'type of contract admin')
+  .addOption(new Option('-a --admin <admin>', 'type of the contract admin')
     .makeOptionMandatory()
     .choices(['NO_ADMIN', 'SIMPLE', 'PAUSABLE', 'MULTI']))
   .addOption(new Option('-m --minter [minter...]', 'optional minter functionality')
     .choices(['MINT', 'BURN', 'FREEZE']))
-  .addOption(new Option('-ma --minter_admin <minter_admin>', 'minter admin implementation' )
+  .addOption(new Option('-ma --minter_admin <minter_admin>', 'type of the minter admin implementation' )
     .choices(['NO_MINTER', 'CONTRACT_ADMIN', 'MULTI'])
     .default('NO_MINTER', 'NO_MINTER useful if not mint/burn functionality is specified')
   )
@@ -67,7 +67,7 @@ program
   .description('compile LIGO contract code to Michelson')
   .argument('<contract_file>', 'name of the LIGO contract source file')
   .argument('<michelson_file>', 'name of the Michelson code file to be compiled')
-  .option('-m --main', 'name of the contract main entry point function. Default is "asset_main"')
+  .option('-m --main <main_function>', 'name of the contract main entry point function. The default is "asset_main"')
   .action((contractFile, michelsonFile, options) => compileContract(
     contractFile, michelsonFile, options.main
   ));
