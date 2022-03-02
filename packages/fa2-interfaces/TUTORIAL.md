@@ -5,12 +5,6 @@ This document describes how to use TypeScript/JavaScript FA2 API build on top of
 with NFT (Non-Fungible Token), Fungible Tokens and, when TypeScript is used,
 provide a type-safe API to the contracts.
 
-This tutorial assumes that the collection is already created. The collection is
-represented by your smart contract on the Tezos Blockchain and by minting an NFT
-you call your smart contract and ask to add a new token into the storage of the
-contract. Contact origination (collection creation) is out of scope of this
-tutorial.
-
 ## Table of Contents
 
 * [Creating a Collection (Originating a Contract)](#creating-a-collection-originating-a-contract)
@@ -40,7 +34,7 @@ and returns an object representing initial storage `S`. Storage S is a plain old
 JavaScript objects that can be used by
 [Taquito](https://tezostaquito.io/docs/originate) `originate` method. Functions
 are wrapped into `StorageBuilder` type that allow to compose them together
-and receive more complicated functions. Here is an example of a very simple
+and receive more new functions. Here is an example of a very simple
 builder:
 
 ```typescript
@@ -58,8 +52,9 @@ To create storage using this builder, you can call `build` method:
   const storage = simpleAdmin.build({ownerAddress: 'tzAddress'})
 ```
 
-After calling `build` method TypeScript will correctly infer the type of the
-`storage` and catch the errors at compile time when it is used inappropriately.
+TypeScript will infer the type correctly and will not allow to call `build` with
+an inappropriate parameters. After calling `build` method TypeScript will
+also correctly infer the type of the `storage`.
 
 Storage builder has `.with` method that allows to combine two builders:
 
@@ -67,7 +62,7 @@ Storage builder has `.with` method that allows to combine two builders:
 const newBuilder = storageA.with(storageB)
 ```
 
-That will create a builder that requires both input parameters for the
+That above will create a builder that requires both input parameters for the
 `storageA` and `storageB` and will return an initial storage that will have
 fields of `storageA` and `storageB`.
 
@@ -91,7 +86,7 @@ builders. This is for a contract that can pause, store NFT tokens and allow to
 freeze the storage.
 
 You can find out what kind of contract APIs you can create and how to initialize
-a storage for the [here](#beyond-nft-contracts).
+a storage for them [here](#beyond-nft-contracts).
 
 Now you can build the storage:
 
@@ -106,7 +101,7 @@ To originate the contract with this initial storage you can use Taquito like thi
 
 ```typescript
 import { TezosToolkit } from '@taquito/taquito';
-const tz = new TezosToolkit('https://hangzhounet.api.tez.ie');
+const tz = new TezosToolkit('https://...');
 
 const op = await tz.contract.originate({ code: 'code...', storage })
 ```
@@ -298,41 +293,49 @@ const batch = operatorUpdateBatch().
 
 ### Beyond NFT Contracts
 
-Besides interacting with the contracts representing **NFT**, it is possible
-to interact with any FA2 contract representing **fungible tokens**,
+Besides interacting with the contracts representing **NFT**, it is possible to
+interact with any FA2 contract representing **fungible tokens**,
 **multi-fungible tokens**, have the ability to freeze created tokens, give
 rights to other addresses to administer contracts etc. Many combinations of
 those traits of the contract can be expressed by using composable methods
 (combinators) on [contract abstraction](#type-safe-contract-abstraction).
 
-The combinators can be divided into groups, only one combinator from each
-of the groups can be used at a time on one contract.
+The combinators can be divided into groups, only one combinator from each of the
+groups can be used at a time on one contract. For some combinators , to work
+correctly, the storage has to be properly initialized during the origination of
+the contract. In those cases we give the corresponding storage initializers too.
 
 Below is the list of contract administration methods:
 
-* `.withSimpleAdmin` - adds the ability to set just one address to be
-an admin of a contract. It allows you to call just 2 additional methods
-`setAdmin` and `confirmAdmin`. For more information look
-[here](src/interfaces/admin.ts#l10)
+* `.withSimpleAdmin` - adds the ability to set just one address to be an admin
+  of a contract. It allows you to call just 2 additional methods `setAdmin` and
+  `confirmAdmin`. For more information look
+  [here](src/interfaces/admin.ts#l10). To initialize the storage use
+  `.with(simpleAdminStorage)`
 
 * `.withPausableSimpleAdmin` - adds the ability to pause/unpause
 the  contract. For more information look [here](src/interfaces/admin.ts#l35)
+To initialize the storage use `.with(pausableSimpleAdminStorage)`
 
-* `.withMultiAdmin` - adds the ability to have multiple administrators for
-the same contract, add and remove. For more information look
-[here](src/interfaces/admin.ts#l42)
+* `.withMultiAdmin` - adds the ability to have multiple administrators for the
+  same contract, add and remove them. For more information look
+  [here](src/interfaces/admin.ts#l42). To initialize the storage use
+  `.with(multiAdminStorage)`
 
 Below is the list of combinators that specify what kind of tokens the contract
 holds. They do not add methods that can be used by the client but influence
 how the subsequent methods like `withMint`, `withBurn` will work and what
 parameters they take.
 
-* `.asNft` - specify that the contract represent **NFT**.
-* `.asFungible` - specify that the contract represents  a single
-**fungible tokens**
-* `asMultiFungible` - specify that the contract represents multiple
-**fungible tokens** and it can have more that one type of tokens, specified
-by token ID.
+* `.asNft` - specify that the contract represent **NFT**. To initialize the
+  storage use `with(nftStorage)`
+
+* `.asFungible` - specify that the contract represents a single **fungible
+  tokens**. To initialize the storage use `with(fungibleTokenStorage)`
+
+* `asMultiFungible` - specify that the contract represents multiple **fungible
+  tokens** and it can have more that one type of tokens, specified by token ID.
+  To initialize the storage use `with(multiFungibleTokenStorage)`
 
 Below is the group of combinators that should be used on top of one of
 the combinators from the previous group. You can find more
@@ -344,12 +347,13 @@ details about each method that they add to the contract
 * `withBurn` - specify that the contract can burn (remove) previously
 created tokens.
 
-* `withFreeze` - specify that the contract can freeze the collation,
-after certain number of tokens is created.
+* `withFreeze` - specify that the contract can freeze the collation, after
+  certain number of tokens is created. To initialize the storage use
+  `with(mintFreezeStorage)`.
 
 There is also `withMultiMinterAdmin` that allows to add and remove addresses
-that can mint and burn token. [Here](src/interfaces/minter-admin.ts)
-are the details.
+that can mint and burn token. [Here](src/interfaces/minter-admin.ts) are the
+details. To initialize the storage for it use `with(multiMinterAdminStorage)`.
 
 Also, `withFa2` adds the methods specified by
 [TZIP12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
@@ -371,8 +375,20 @@ const nftContract = myContract
     .withFreeze()
 ```
 
-In the above example we create an NFT contract that can mint, burn, freeze,
-that is pausable, and allows to use methods specified by FA2.
+In the above example we create an NFT contract that can mint, burn, freeze, that
+is pausable, and allows to use methods specified by FA2. If you need to
+initialize the storage for it you can do:
+
+```typescript
+  const storage = contractStorage
+    .with(pausableSimpleAdminStorage)
+    .with(nftStorage)
+    .with(mintFreezeStorage)
+    .build({
+      owner: 'tzAddress',
+      metadata: 'meta...'
+    })
+```
 
 ### Custom Contracts
 
