@@ -5,13 +5,15 @@ This document describes how to use TypeScript/JavaScript FA2 API build on top of
 with NFT (Non-Fungible Token), Fungible Tokens and, when TypeScript is used,
 provide a type-safe API to the contracts.
 
-This tutorial assumes that the collection is already created. The collection
-is represented by your smart contract on Tezos blockchain and by minting an NFT you
-call your smart contract and ask to add a new token into the storage of the contract.
-Contact origination (collection creation) is out of scope fo this tutorial.
+This tutorial assumes that the collection is already created. The collection is
+represented by your smart contract on the Tezos Blockchain and by minting an NFT
+you call your smart contract and ask to add a new token into the storage of the
+contract. Contact origination (collection creation) is out of scope of this
+tutorial.
 
 ## Table of Contents
 
+* [Creating a Collection (Originating a Contract)](#creating-a-collection-originating-a-contract)
 * [Creating Token Metadata](#creating-token-metadata)
 * [Type-Safe Contract Abstraction](#type-safe-contract-abstraction)
 * [Minting](#minting)
@@ -19,6 +21,95 @@ Contact origination (collection creation) is out of scope fo this tutorial.
 * [Update Operators](#update-operators)
 * [Beyond NFT Contracts](#beyond-nft-contracts)
 * [Custom Contracts](#custom-contracts)
+
+### Creating a Collection (Originating a Contract)
+
+Your collection of tokens (non-fungible or fungible) is represented on the Tezos
+Blockchain by a smart contract. To create a collection, we need to create
+(originate) a contract on the blockchain. Each contract has a code, representing
+its actions, and a storage, representing its data. This package does not help
+you to create the code of the contract but it can simplify storage
+initialization. To create the contract code you can use
+[fa2-contract](../fa2-contracts/) package. We will show here how to initialize
+the storage using storage combinators and originate the contract using
+[Taquito](https://tezostaquito.io/docs/originate).
+
+The storage initialization combinators can be though of as a function
+`(params: I) => S`, that takes an object representing the input parameters `I`
+and returns an object representing initial storage `S`. Storage S is a plain old
+JavaScript objects that can be used by
+[Taquito](https://tezostaquito.io/docs/originate) `originate` method. Functions
+are wrapped into `StorageBuilder` type that allow to compose them together
+and receive more complicated functions. Here is an example of a very simple
+builder:
+
+```typescript
+const simpleAdmin = storageBuilder(({ ownerAddress }: { owner: address }) => ({
+  admin: ownerAddress,
+  pending_admin: undefined
+}));
+```
+
+The above creates a storage builder that requires one parameter `ownerAddress` and
+returns an initial storage with two fields: `admin` and `pending_admin`.
+To create storage using this builder, you can call `build` method:
+
+```typescript
+  const storage = simpleAdmin.build({ownerAddress: 'tzAddress'})
+```
+
+After calling `build` method TypeScript will correctly infer the type of the
+`storage` and catch the errors at compile time when it is used inappropriately.
+
+Storage builder has `.with` method that allows to combine two builders:
+
+```typescript
+const newBuilder = storageA.with(storageB)
+```
+
+That will create a builder that requires both input parameters for the
+`storageA` and `storageB` and will return an initial storage that will have
+fields of `storageA` and `storageB`.
+
+In practice, you will only need to write builders if you use your own custom
+contracts that require a custom initial storage. For the predefined contracts
+you can create an initial storage just by composing existing storage builders
+together. You usually start by using `contractStorage` predefined builder that
+requires just one parameter `metadata` and use `.with` method multiple times.
+
+Here is an example:
+
+```typescript
+const storageBuilder = contractStorage
+  .with(pausableSimpleAdminStorage)
+  .with(nftStorage) 
+  .with(mintFreezeStorage) 
+```
+
+In the above example we create a contract initial storage by composing 3
+builders. This is for a contract that can pause, store NFT tokens and allow to
+freeze the storage.
+
+You can find out what kind of contract APIs you can create and how to initialize
+a storage for the [here](#beyond-nft-contracts).
+
+Now you can build the storage:
+
+```typescript
+const storage = storageBuilder.build({
+  owner: 'tzAddress',
+  metadata: 'meta...'
+});
+```
+
+To originate the contract with this initial storage you can use Taquito like this:
+
+```typescript
+import { TezosToolkit } from '@taquito/taquito';
+const tz = new TezosToolkit('https://hangzhounet.api.tez.ie');
+
+const op = await tz.contract.originate({ code: 'code...', storage })
+```
 
 ### Creating Token Metadata
 
@@ -144,7 +235,7 @@ can be sent and confirmed individually, or in a batch, directly using Taquito
 API. However, as it is a frequently used operations we have two helpers:
 `runMethod` & `runBatch`
 
-At this point it would be nice to inspect created tokens. According to 
+At this point it would be nice to inspect created tokens. According to
 [TZIP12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
 standard contract that handle tokens, weather it be non-fungible or fungible
 tokens has methods: `balance_of`, `transfer`, `update_operator`. For NFT we
@@ -260,8 +351,8 @@ There is also `withMultiMinterAdmin` that allows to add and remove addresses
 that can mint and burn token. [Here](src/interfaces/minter-admin.ts)
 are the details.
 
-Also, `withFa2` adds the methods specified by 
-[TZIP12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md) 
+Also, `withFa2` adds the methods specified by
+[TZIP12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
 that every FA2 contract supposed to have. You can find the details
 [here](src/interfaces/fa2.ts#L135)
 
