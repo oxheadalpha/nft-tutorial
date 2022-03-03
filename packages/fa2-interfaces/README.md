@@ -231,11 +231,11 @@ API. However, as it is a frequently used operations we have two helpers:
 `runMethod` & `runBatch`
 
 At this point it would be nice to inspect created tokens. According to
-[TZIP12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
+[TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
 standard contract that handle tokens, weather it be non-fungible or fungible
-tokens has methods: `balance_of`, `transfer`, `update_operator`. For NFT we
-have `hasNftTokens` wrapper that returns boolean values. However, to use it we
-have to extends our contract abstraction with `.withFa2` methods:
+tokens has methods: `balance_of`, `transfer`, `update_operator`. For NFT we have
+`hasNftTokens` wrapper that returns boolean values. However, to use it we have
+to extends our contract abstraction with `.withFa2` methods:
 
 ```typescript
 const fa2Contract = nftContract.withFa2()
