@@ -308,10 +308,20 @@ rights to other addresses to administer contracts etc. Many combinations of
 those traits of the contract can be expressed by using composable combinators on
 [the contract abstraction](#type-safe-contract-abstraction).
 
+**Contract Abstraction Combinators** and **Storage Combinators** are different
+and can be used independently. **Contract Abstraction Combinators** are used to
+describe the API to the contract and **Storage Combinators** are used to
+describe the shape of the storage and its initial values. Storage is mostly used
+for contract origination and rarely required for the interaction with the
+contract as **Lambda Views** are used to "read" the state of the contract.
+However, storage and contract actions (API methods) are related - certain
+actions require contract to have certain data. For example, method `freeze`
+requires contract to have a flag in the storage that is described by
+`.with(mintFreezeStorage)`. We give the description of those combinators
+together.
+
 The combinators can be divided into groups, only one combinator from each of the
-groups can be used at a time on one contract. For some combinators , to work
-correctly, the storage has to be properly initialized during the origination of
-the contract. In those cases we give the corresponding storage initializers too.
+groups can be used at a time on one contract.
 
 Below is the list of contract administration methods:
 
