@@ -22,14 +22,13 @@ provide a type-safe API to the contracts.
 Your collection of tokens (non-fungible or fungible) is represented on the Tezos
 Blockchain by a smart contract. To create a collection, we need to create
 (originate) a contract on the blockchain. Each contract has a code, representing
-its actions, and a storage, representing its data. This package does not help
-you to create the code of the contract but it can simplify storage
-initialization. To create the contract code you can use
-[fa2-contract](../fa2-contracts/) package. We will show here how to initialize
-the storage using storage combinators and originate the contract using
-[Taquito](https://tezostaquito.io/docs/originate).
+its actions and storage. This package does not help you to create the code of
+the contract but it can simplify storage initialization. To create the contract
+code you can use [fa2-contract](../fa2-contracts/) package. We will show here
+how to initialize the storage using storage combinators and originate the
+contract using [Taquito](https://tezostaquito.io/docs/originate).
 
-The storage initialization combinators can be though of as a function
+The storage initialization combinators can be thought of as a function
 `(params: I) => S`, that takes an object representing the input parameters `I`
 and returns an object representing initial storage `S`. Storage S is a plain old
 JavaScript objects that can be used by
@@ -125,7 +124,7 @@ The simplest way to create **on-chain** metadata is using
 createSimpleNftMetadata(
   1, // Token ID
   'My Picture', // Token Name
-  '/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco' // IPFS URI
+  'ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco' // IPFS URI
 );
 ```
 
@@ -177,7 +176,7 @@ helper function:
 ```typescript
 const tokenMetadata = createOffChainTokenMetadata(
   1, // Token ID
-  '/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco' // IPFS URI
+  'ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco' // IPFS URI
 )
 ```
 
@@ -303,7 +302,7 @@ interact with any FA2 contract representing **fungible tokens**,
 **multi-fungible tokens**, have the ability to freeze created tokens, give
 rights to other addresses to administer contracts etc. Many combinations of
 those traits of the contract can be expressed by using composable methods
-(combinators) on [contract abstraction](#type-safe-contract-abstraction).
+(combinators) on [the contract abstraction](#type-safe-contract-abstraction).
 
 The combinators can be divided into groups, only one combinator from each of the
 groups can be used at a time on one contract. For some combinators , to work
@@ -361,7 +360,7 @@ that can mint and burn token. [Here](src/interfaces/minter-admin.ts) are the
 details. To initialize the storage for it use `with(multiMinterAdminStorage)`.
 
 Also, `withFa2` adds the methods specified by
-[TZIP12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
+[TZIP-12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
 that every FA2 contract supposed to have. You can find the details
 [here](src/interfaces/fa2.ts#L135)
 
@@ -423,7 +422,7 @@ Now, you can extends your contract abstraction with generic `.with` combinator:
 const myContractApi = contract.with(MyContractApi)
 ```
 
-myContractApi object will have all the API methods defined by MyClass.
+`myContractApi` object will have all the API methods defined by MyClass.
 
 ### Executing Multiple Operations in One Batch
 
