@@ -97,6 +97,10 @@ const storage = storageBuilder.build({
 });
 ```
 
+You can also use [tzgen](../fa2-contracts/src/tzgen.ts), a tool from
+[fa2-contracts](../fa2-contracts), to automatically generate storage builders
+composition from the contract specification.
+
 To originate the contract with this initial storage you can use Taquito like this:
 
 ```typescript
