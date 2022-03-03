@@ -159,11 +159,11 @@ The metadata can have more attributes and look like this:
 }
 ```
 
-There can be separate URIs for display and thumbnail if it is an
-image. To make sure that the format of metadata confirms to
+There can be separate URIs for display and thumbnail images. To make sure that
+the format of metadata confirms to
 [TZIP-21](https://gitlab.com/tezos/tzip/-/tree/master/proposals/tzip-21)
-standard, it is a good idea to validate it before creation. It can be
-done like this:
+standard, it is a good idea to validate it before creation. It can be done with
+`validateTzip21` function as shown bellow:
 
 ```typescript
 import { validateTzip16 } from '@oxheadalpha/fa2-interfaces';
@@ -205,13 +205,13 @@ have in our contract. It is done like this:
 const nftContract = myContract.asNft().withMint()
 ```
 
-As depending on the type of a token, contract methods can have different
-implementations and require different parameters,
-you have to specify type of the token by using `asNft()` (as we are going
-to mint NFTs) and then the required methods, by using `withMint()`.
-TypeScript will infer the right type of `nftContract` and validated method
-and parameters at compile time. Now you are ready to interact with your
-contract.
+Depending on the type of a token, contract methods can have different
+implementations and require different parameters. You have to specify type of
+the token by using `asNft()` (as we are going to mint NFTs) and then the
+required methods, by using `withMint()`, `withBurn()`, `withFreeze()` or their
+combination. TypeScript will infer the right type of `nftContract` and validate
+method with their parameters at compile time. Now you are ready to interact with
+your contract.
 
 ### Minting
 
@@ -231,7 +231,7 @@ In order to save gas `mint` accepts a batch to be able to bundle multiple
 tokens creation into one request. Methods that call/invoke contract entry
 points return `Taquito` type `<ContractMethod<ContractProvider>>`.These methods
 can be sent and confirmed individually, or in a batch, directly using Taquito
-API. However, as it is a frequently used operations we have two helpers:
+API. However, as they are frequently used operations, we have two helpers:
 `runMethod` & `runBatch`
 
 At this point it would be nice to inspect created tokens. According to
@@ -284,7 +284,7 @@ For NFT tokens the amount should always be 1.
 Multiple operators can transfer tokens on behalf of the owner. Token owner can
 use `updateOperators` method to add or remove other addresses that can transfer
 owner's tokens. Updates can be built manually or, like transfers, can be built
-using batch API like this:
+using the batch API like this:
 
 ```typescript
 const batch = operatorUpdateBatch().
@@ -301,12 +301,12 @@ const batch = operatorUpdateBatch().
 
 ### Beyond NFT Contracts
 
-Besides interacting with the contracts representing **NFT**, it is possible to
+Besides interacting with the contracts representing **NFTs**, it is possible to
 interact with any FA2 contract representing **fungible tokens**,
 **multi-fungible tokens**, have the ability to freeze created tokens, give
 rights to other addresses to administer contracts etc. Many combinations of
-those traits of the contract can be expressed by using composable methods
-(combinators) on [the contract abstraction](#type-safe-contract-abstraction).
+those traits of the contract can be expressed by using composable combinators on
+[the contract abstraction](#type-safe-contract-abstraction).
 
 The combinators can be divided into groups, only one combinator from each of the
 groups can be used at a time on one contract. For some combinators , to work
