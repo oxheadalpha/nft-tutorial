@@ -24,9 +24,10 @@ Blockchain by a smart contract. To create a collection, we need to create
 (originate) a contract on the blockchain. Each contract has a code, representing
 its actions and storage. This package does not help you to create the code of
 the contract but it can simplify storage initialization. To create the contract
-code you can use [fa2-contract](../fa2-contracts/) package. We will show here
-how to initialize the storage using storage combinators and originate the
-contract using [Taquito](https://tezostaquito.io/docs/originate).
+code you can use
+[fa2-contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md)
+package. We will show here how to initialize the storage using storage combinators
+and originate the contract using [Taquito](https://tezostaquito.io/docs/originate).
 
 The storage initialization combinators can be thought of as a function
 `(params: I) => S`, that takes an object representing the input parameters `I`
@@ -97,9 +98,12 @@ const storage = storageBuilder.build({
 });
 ```
 
-You can also use [tzgen](../fa2-contracts/src/tzgen.ts), a tool from
-[fa2-contracts](../fa2-contracts), to automatically generate storage builders
-composition from the contract specification.
+You can also use
+[tzGen](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md#tzgen-cli-tool),
+a tool from
+[fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md),
+to automatically generate storage builders composition from the contract
+specification.
 
 To originate the contract with this initial storage you can use Taquito like this:
 
