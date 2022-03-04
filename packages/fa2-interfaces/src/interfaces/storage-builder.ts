@@ -3,7 +3,7 @@ import { char2Bytes } from '@taquito/utils';
 import { bytes } from '../type-aliases';
 
 /**
- * Storage builder is wrapper around function `(params: I) => S`, where
+ * Storage builder is a wrapper around function `(params: I) => S`
  * I - input parameters
  * S - storage that can be used in Taquito.
  *
@@ -16,6 +16,12 @@ export interface StorageBuilder<I, S> {
    */
   build: (params: I) => S;
 
+  /**
+   * Compose `this` Storage builder with other one represented by a function `f`.
+   * @return new builder that requires both input parameters for `this` and
+   * other and will return an initial storage that will have fields of `this`
+   * and other.
+   */
   withF: <I1, S1>(f: (p: I1) => S1) => StorageBuilder<I & I1, S & S1>;
 
   /**
@@ -42,7 +48,8 @@ export interface StorageBuilder<I, S> {
   transformInput: <I1>(f: (p: I1) => I) => StorageBuilder<I1, S>;
   
   /**
-   * @return a new builder that does not require any input parameters
+   * @return a new builder that applies provide input parameter and does not
+   * require any further input
    */
   withParams: (params: I) => StorageBuilder<unknown, S>;
 }
