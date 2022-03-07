@@ -121,7 +121,7 @@ origination and to interact with the originated contract.
 
 ### Initial Setup
 
-First, you will need to add development dependency on `@oxheadalpha/fa2-contracts`
+First, you will need to add a development dependency on the `@oxheadalpha/fa2-contracts`
 package by running the following command:
 
 ```sh
@@ -150,15 +150,15 @@ LIGO sources imported to ~/your_project/ligo
 
 ### Initialize tzGen Environment
 
-`tzGen` needs to know where is your LIGO source code, TypeScript source code and
-compiled Michelson contracts are located. `init` command creates a `tzGen` environment
+`tzGen` needs to know where your LIGO source code, TypeScript source code, and
+compiled Michelson contracts are located. The `init` command creates a `tzGen` environment
 configuration file `tzgen.json` and has the following options:
 
-* `--ligo <ligo_dir>` LIGO source code directory (same as the directory used for
+* `--ligo <ligo_dir>` - LIGO source code directory (same as the directory used for
   `import-ligo` command). The default is `./ligo`.
-* `--compile-out <out_dir>` LIGO compilation output directory to put compiled
+* `--compile-out <out_dir>` - LIGO compilation output directory to put compiled
   Michelson files. The default is `./ligo/out`.
-* `--ts <ts_dir>` TypeScript source directory. Used to put generated TypeScript
+* `--ts <ts_dir>` - TypeScript source directory. Used to put generated TypeScript
   files. The default is `./src`.
 
 Example:
@@ -180,7 +180,7 @@ Generated `tzgen.json` file:
 
 ### Create FA2 Contract Specification
 
-Before generating a contract code or TypeScript API, we need to create a contract
+Before generating a contract code or TypeScript API, you need to create a contract
 specification by selecting a combination of features described in the
 [modular contracts](#modular-contracts) section. `spec` command accepts a name
 of the resulting specification file and the following required options:
@@ -190,20 +190,20 @@ of the resulting specification file and the following required options:
   * `FT` single fungible token
   * `MFT` multi-fungible-tokens
 * `-admin <admin>` type of the contract admin. Available options are:
-  * `NO_ADMIN` contract does not have an admin
-  * `SIMPLE` contract has a simple admin
-  * `PAUSABLE` contract has a simple admin and can be paused
-  * `MULTI` contract has multiple admins and can be paused
+  * `NO_ADMIN` contract does not have an admin.
+  * `SIMPLE` contract has a simple admin.
+  * `PAUSABLE` contract has a simple admin and can be paused.
+  * `MULTI` contract has multiple admins and can be paused.
 * `--minter [minter...]` a list of the minting features. Available options are:
-  * `MINT` contract can mint tokens
-  * `BURN` contract can burn tokens
-  * `FREEZE` mint/burn operations can be frozen
+  * `MINT` contract can mint tokens.
+  * `BURN` contract can burn tokens.
+  * `FREEZE` mint/burn operations can be frozen.
 * `--minter_admin <minter_admin>` type of the minter admin implementation. Available
   options are:
   * `NO_ADMIN` contract does not have a minter admin role. Everyone can mint/burn
-    tokens
-  * `CONTRACT_ADMIN` minter admin is the same as the contract admin
-  * `MULTI` contract can have multiple minter admins
+    tokens.
+  * `CONTRACT_ADMIN` minter admin is the same as the contract admin.
+  * `MULTI` contract can have multiple minter admins.
 
 Example:
 
@@ -228,7 +228,7 @@ Generated `my_contract.json` file:
 
 ### Generate LIGO Code
 
-Now we can use a contract specification file to generate a contract code and compile
+Now you can use a contract specification file to generate a contract code and compile
 it. `contract` command takes two arguments: the name of the specification file
 and the name of the resulting CameLIGO file. The resulting file will be created
 in `src` subdirectory of the LIGO sources location (`./ligo/src/` in our case).
@@ -240,13 +240,13 @@ contract source code file ~/my_project/ligo/src/my_contract.mligo is generated
 
 ### Generate Michelson Code
 
-`michelson` command generates Michelson code from the contract CameLIGO source code
-(in other words compiles the contract). The command takes two arguments: contract
-source file name and output file name and one option `--main`, specifying main
-entry point function name. The generated contract source code will have main entry
-point function named `asset_main`. The default value for `--main` option of `michelson`
+The `michelson` command generates Michelson code from the contract CameLIGO source code
+(in other words, compiles the contract). The command takes two required arguments: contract
+source file name and output file name. It can also take an option `--main`, specifying the 
+main entry point function. The generated contract source code will have the main entry
+point function, named `asset_main`. The default value for the `--main` option of the `michelson`
 command is the same, thus the option can be omitted. The resulting file will be
-created in LIGO output directory from `tzGen` configuration (`./dist` in our
+created in the LIGO output directory from `tzGen` configuration (`./dist` in our
 case).
 
 Example:
@@ -260,10 +260,10 @@ compiled contract to ~/my_project/dist/my_contract.tz file
 
 ### Generate TypeScript Code
 
-`type-script` command generates a TypeScript interface for the contract from the
+The `type-script` command generates a TypeScript interface for the contract from the
 specification file. The command takes two arguments: the name of the specification
 file and the name of the resulting TypeScript file. The resulting file will be
-created in TypeScript source code location (`./src` in our case).
+created in the TypeScript source code location (`./src` in our case).
 
 Example:
 
@@ -333,21 +333,21 @@ package documentation.
 
 ## Programmatic API
 
-Besides `tzGen` CLI tool it is also possible to provide contract specification and
-generate LIGO contract code using programmatic API. The combinators API
-let you define the contract specification and then call `generate()` method to
-generate contract code.
+Besides the `tzGen` CLI tool, it is also possible to provide the contract specification and
+generate the LIGO contract code using programmatic API. The combinator API
+lets you define the contract specification and then call `generate()` method to
+generate the contract code.
 
-### Implementation Combinator
+### Implementation Combinators
 
-First, you need to start with choosing token kind starting with `Implementation`
-combinator that has the following selectors:
+First, you need to choose a token kind by selecting one of three `Implementation` 
+combinators:
 
 * `nft()` implement NFT FA2 contract.
 * `fungible()` implement a single fungible token FA2 contract.
 * `multiFungible()` implement multiple fungible tokens FA2 contract.
 
-### Contract Admin Combinator
+### Contract Admin Combinators
 
 * `withNoAdmin()` contract does not have an admin.
 * `withSimpleAdmin()` contract has a single admin.
@@ -356,10 +356,10 @@ combinator that has the following selectors:
 * `withMultiAdmin()` contract has multiple admins that can pause and unpause the
   contract.
 
-### Token Minter Combinator
+### Token Minter Combinators
 
-Minter combinator is optional and let you specify if the FA2 contract will be
-able mint and burn new tokens.
+Minter combinators are optional and let you specify whether the FA2 contract will be
+able to mint and burn new tokens.
 
 * `withNoMinter()` contract cannot mint or burn tokens.
 * `withMint()` contract can mint new tokens.
