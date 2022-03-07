@@ -149,7 +149,7 @@ export async function mintFreeze(
     .withFreeze();
 
   console.log(kleur.yellow('freezing nft collection...'));
-  fa2.runMethod(await nftContract.mintFreeze());
+  await fa2.runMethod(nftContract.mintFreeze());
   console.log(kleur.green('nft collection frozen'));
 }
 
