@@ -377,7 +377,7 @@ If a contract has mint/burn functionality, you have to select
 
 ### Generate Contract Code
 
-Once you selected a contract specification using the combinators API you can invoke
+Once you selected a contract specification using the combinator API you can invoke
 `generate()` method to generate contract code as in the example below:
 
 ```typescript
