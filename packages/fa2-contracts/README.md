@@ -34,15 +34,15 @@ contracts.
 The FA2 interface is designed to support a wide range of token types and
 implementations. The developer has to choose from multiple options when implementing
 a specific FA2 contract. Besides choosing between fungible and non-fungible tokens,
-a developer needs to decide weather new tokens can be minted and burned, how the
-contract administrators can be set and what entry points should have admin access
+a developer needs to decide whether new tokens can be minted and burned, how the
+contract administrators can be set, and what entry points should have admin access
 only.
 
-This package provides reusable contract modules implemented in
+This package provides reusable contract modules implemented in the
 [CameLIGO](https://ligolang.org/) language that can be composed into a single FA2
-contract. The developer can use either [tzGen](#tzgen-cli-tool) CLI tool or a
-[programmatic API](#programmatic-api) to generate final contract code. A generated
-FA2 contract is composed from several orthogonal features. Each feature defines
+contract. The developer can use either the [tzGen](#tzgen-cli-tool) CLI tool or a
+[programmatic API](#programmatic-api) to generate the final contract code. A generated
+FA2 contract is composed of several orthogonal features. Each feature defines
 a set of possible options that can be selected independently. A combination of
 selected options for all supported features defines a specification describing
 resulting FA2 contract behavior. Available features and their options are
@@ -50,7 +50,7 @@ described below.
 
 ### Token Kind
 
-This feature defines kind of tokens supported by the FA2 contract. Available options
+This feature defines the kinds of tokens supported by the FA2 contract. Available options
 are listed below:
 
 * `USE_NFT_TOKEN` - contract implementation will support multiple non-fungible
@@ -62,14 +62,14 @@ are listed below:
 
 ### Minter Functionality
 
-This feature define optional support for token minting and burning. Multiple options
+This feature defines optional support for token minting and burning. Multiple options
 from the list can be selected at the same time. If none of the options are selected,
 the resulting FA2 contract will not provide mint/burn functionality.
 
 * `CAN_MINT` - contract can mint new tokens.
 * `CAN_BURN` - contract can burn tokens.
 * `CAN_FREEZE` - contract can be frozen. Once an FA2 contract is frozen, no
-  new tokens can be minted or burned (however, existing tokens still can be transferred).
+  new tokens can be minted or burned. (However, existing tokens still can be transferred.)
   This option can be selected only if either `CAN_MINT` or `CAN_BURN` (or both)
   are selected.
 
