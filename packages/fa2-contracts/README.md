@@ -32,26 +32,26 @@ contracts.
 ## Modular Contracts
 
 The FA2 interface is designed to support a wide range of token kinds and
-implementations. The developer has to choose from multiple options when implementing
-a specific FA2 contract. Besides choosing between fungible and non-fungible tokens,
-a developer needs to decide whether new tokens can be minted and burned, how the
-contract administrators can be set, and what entry points should have admin access
-only.
+implementations. The developer has to choose from multiple options when
+implementing a specific FA2 contract. Besides choosing between fungible and
+non-fungible tokens, a developer needs to decide whether new tokens can be
+minted and burned, how the contract administrators can be set, and what entry
+points should have admin access only.
 
 This package provides reusable contract modules implemented in the
-[CameLIGO](https://ligolang.org/) language that can be composed into a single FA2
-contract. The developer can use either the [tzGen](#tzgen-cli-tool) CLI tool or a
-[programmatic API](#programmatic-api) to generate the final contract code. A generated
-FA2 contract is composed of several orthogonal features. Each feature defines
-a set of possible options that can be selected independently. A combination of
-selected options for all supported features defines a specification describing
-resulting FA2 contract behavior. Available features and their options are
-described below.
+[CameLIGO](https://ligolang.org/) language that can be composed into a single
+FA2 contract. The developer can use either the [tzGen](#tzgen-cli-tool) CLI tool
+or a [programmatic API](#programmatic-api) to generate the final contract code.
+A generated FA2 contract is composed of several orthogonal features. Each
+feature defines a set of possible options that can be selected independently. A
+combination of selected options for all supported features defines a
+specification describing resulting FA2 contract behavior. Available features and
+their options are described below.
 
 ### Token Kind
 
-This feature defines the kinds of tokens supported by the FA2 contract. Available options
-are listed below:
+This feature defines the kinds of tokens supported by the FA2 contract.
+Available options are listed below:
 
 * `USE_NFT_TOKEN` - contract implementation will support multiple non-fungible
   tokens (similar to Ethereum ERC-721).
@@ -62,16 +62,17 @@ are listed below:
 
 ### Minter Functionality
 
-This feature defines optional support for token minting and burning. Multiple options
-from the list can be selected at the same time. If none of the options are selected,
-the resulting FA2 contract will not provide mint/burn functionality.
+This feature defines optional support for token minting and burning. Multiple
+options from the list can be selected at the same time. If none of the options
+are selected, the resulting FA2 contract will not provide mint/burn
+functionality.
 
 * `CAN_MINT` - contract can mint new tokens.
 * `CAN_BURN` - contract can burn tokens.
-* `CAN_FREEZE` - contract can be frozen. Once an FA2 contract is frozen, no
-  new tokens can be minted or burned. (However, existing tokens still can be transferred.)
-  This option can be selected only if either `CAN_MINT` or `CAN_BURN` (or both)
-  are selected.
+* `CAN_FREEZE` - contract can be frozen. Once an FA2 contract is frozen, no new
+  tokens can be minted or burned. (However, existing tokens still can be
+  transferred.) This option can be selected only if either `CAN_MINT` or
+  `CAN_BURN` (or both) are selected.
 
 ### Contract Admin
 
@@ -82,8 +83,8 @@ admin feature implementation:
 * `USE_NO_ADMIN` - contract does not have an admin. Every entry point can be
   invoked by any address.
 * `USE_SIMPLE_ADMIN` - contract has a single admin.
-* `USE_PAUSABLE_SIMPLE_ADMIN` - contract has a single admin. The admin can
-  pause and unpause the contract. (A paused contract cannot transfer its tokens.)
+* `USE_PAUSABLE_SIMPLE_ADMIN` - contract has a single admin. The admin can pause
+  and unpause the contract. (A paused contract cannot transfer its tokens.)
 * `USE_MULTI_ADMIN` - contract can have multiple admins. An admin can pause and
   unpause the contract.
 
@@ -97,7 +98,8 @@ This feature defines access to mint and burn functionality defined by the
   This is also the default option if neither mint nor burn feature is selected.
 * `USE_ADMIN_AS_MINTER` - contract admin can also mint and burn tokens.
 * `USE_MULTI_MINTER_ADMIN` - contract can have multiple minter admins that can
-  mint and burn tokens. The minter admin list is separate from the contract admin(s).
+  mint and burn tokens. The minter admin list is separate from the contract
+  admin(s).
 
 ### Contract Specification Example
 
@@ -108,21 +110,21 @@ Admin: USE_PAUSABLE_SIMPLE_ADMIN
 Minter Admin: USE_ADMIN_AS_MINTER
 ```
 
-The resulting FA2 contract will support NFTs, be able to mint new tokens, and freeze
-the token collection after minting. The contract will have a simple (single) admin
-that can pause and unpause it. Only the admin will be able to mint tokens
-and freeze the NFT collection.
+The resulting FA2 contract will support NFTs, be able to mint new tokens, and
+freeze the token collection after minting. The contract will have a simple
+(single) admin that can pause and unpause it. Only the admin will be able to
+mint tokens and freeze the NFT collection.
 
 ## tzGen CLI Tool
 
-`fa2-contracts` package includes `tzGen` CLI tool that generates CameLIGO contract
-code and TypeScript interface to initialize contract storage for the contract
-origination and to interact with the originated contract.
+`fa2-contracts` package includes `tzGen` CLI tool that generates CameLIGO
+contract code and TypeScript interface to initialize contract storage for the
+contract origination and to interact with the originated contract.
 
 ### Initial Setup
 
-First, you will need to add a development dependency on the `@oxheadalpha/fa2-contracts`
-package by running the following command:
+First, you will need to add a development dependency on the
+`@oxheadalpha/fa2-contracts` package by running the following command:
 
 ```sh
 $ yarn add -D @oxheadalpha/fa2-contracts
@@ -151,15 +153,15 @@ LIGO sources imported to ~/your_project/ligo
 ### Initialize tzGen Environment
 
 `tzGen` needs to know where your LIGO source code, TypeScript source code, and
-compiled Michelson contracts are located. The `init` command creates a `tzGen` environment
-configuration file `tzgen.json` and has the following options:
+compiled Michelson contracts are located. The `init` command creates a `tzGen`
+environment configuration file `tzgen.json` and has the following options:
 
-* `--ligo <ligo_dir>` - LIGO source code directory (same as the directory used for
-  `import-ligo` command). The default is `./ligo`.
+* `--ligo <ligo_dir>` - LIGO source code directory (same as the directory used
+  for `import-ligo` command). The default is `./ligo`.
 * `--compile-out <out_dir>` - LIGO compilation output directory to put compiled
   Michelson files. The default is `./ligo/out`.
-* `--ts <ts_dir>` - TypeScript source directory. Used to put generated TypeScript
-  files. The default is `./src`.
+* `--ts <ts_dir>` - TypeScript source directory. Used to put generated
+  TypeScript files. The default is `./src`.
 
 Example:
 
@@ -228,10 +230,11 @@ Generated `my_contract.json` file:
 
 ### Generate LIGO Code
 
-Now you can use a contract specification file to generate a contract code and compile
-it. `contract` command takes two arguments: the name of the specification file
-and the name of the resulting CameLIGO file. The resulting file will be created
-in `src` subdirectory of the LIGO sources location (`./ligo/src/` in our case).
+Now you can use a contract specification file to generate a contract code and
+compile it. `contract` command takes two arguments: the name of the
+specification file and the name of the resulting CameLIGO file. The resulting
+file will be created in `src` subdirectory of the LIGO sources location
+(`./ligo/src/` in our case).
 
 ```sh
 $ yarn tzgen contract my_contract.json my_contract.mligo
@@ -240,11 +243,12 @@ contract source code file ~/my_project/ligo/src/my_contract.mligo is generated
 
 ### Generate Michelson Code
 
-The `michelson` command generates Michelson code from the contract CameLIGO source code
-(in other words, compiles the contract). The command takes two required arguments: contract
-source file name and output file name. It can also take an option `--main`, specifying the 
-main entry point function. The generated contract source code will have the main entry
-point function, named `asset_main`. The default value for the `--main` option of the `michelson`
+The `michelson` command generates Michelson code from the contract CameLIGO
+source code (in other words, compiles the contract). The command takes two
+required arguments: contract source file name and output file name. It can also
+take an option `--main`, specifying the main entry point function. The generated
+contract source code will have the main entry point function, named
+`asset_main`. The default value for the `--main` option of the `michelson`
 command is the same, thus the option can be omitted. The resulting file will be
 created in the LIGO output directory from `tzGen` configuration (`./dist` in our
 case).
@@ -260,10 +264,11 @@ compiled contract to ~/my_project/dist/my_contract.tz file
 
 ### Generate TypeScript Code
 
-The `type-script` command generates a TypeScript interface for the contract from the
-specification file. The command takes two arguments: the name of the specification
-file and the name of the resulting TypeScript file. The resulting file will be
-created in the TypeScript source code location (`./src` in our case).
+The `type-script` command generates a TypeScript interface for the contract from
+the specification file. The command takes two arguments: the name of the
+specification file and the name of the resulting TypeScript file. The resulting
+file will be created in the TypeScript source code location (`./src` in our
+case).
 
 Example:
 
@@ -272,11 +277,11 @@ $ yarn tzgen type-script my_contract.json my_contract.ts
 contract interface source code file ~/my_project/src/my_contract.ts is generated
 ```
 
-The resulting file will contain two functions: `createStorage` to create a storage
-object for the contract origination and `createContractInterface` to get a strongly
-typed interface to interact with the contract on the block chain. To use and compile
-a generated file, your package must include dependencies on `@taquito/taquito` and
-`@oxheadalpha/fa2-interfaces` packages.
+The resulting file will contain two functions: `createStorage` to create a
+storage object for the contract origination and `createContractInterface` to get
+a strongly typed interface to interact with the contract on the block chain. To
+use and compile a generated file, your package must include dependencies on
+`@taquito/taquito` and `@oxheadalpha/fa2-interfaces` packages.
 
 Below is the generated TypeScript code for our example contract specification:
 
@@ -333,10 +338,10 @@ package documentation.
 
 ## Programmatic API
 
-Besides the `tzGen` CLI tool, it is also possible to provide the contract specification and
-generate the LIGO contract code using programmatic API. The combinator API
-lets you define the contract specification and then call `generate()` method to
-generate the contract code.
+Besides the `tzGen` CLI tool, it is also possible to provide the contract
+specification and generate the LIGO contract code using programmatic API. The
+combinator API lets you define the contract specification and then call
+`generate()` method to generate the contract code.
 
 ### Implementation Combinators
 
