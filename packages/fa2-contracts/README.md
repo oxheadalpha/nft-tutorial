@@ -31,7 +31,7 @@ contracts.
 
 ## Modular Contracts
 
-The FA2 interface is designed to support a wide range of token types and
+The FA2 interface is designed to support a wide range of token kinds and
 implementations. The developer has to choose from multiple options when implementing
 a specific FA2 contract. Besides choosing between fungible and non-fungible tokens,
 a developer needs to decide whether new tokens can be minted and burned, how the
@@ -83,7 +83,7 @@ admin feature implementation:
   invoked by any address.
 * `USE_SIMPLE_ADMIN` - contract has a single admin.
 * `USE_PAUSABLE_SIMPLE_ADMIN` - contract has a single admin. The admin can
-  pause and unpause the contract (a paused contract cannot transfer its tokens)
+  pause and unpause the contract. (A paused contract cannot transfer its tokens.)
 * `USE_MULTI_ADMIN` - contract can have multiple admins. An admin can pause and
   unpause the contract.
 
@@ -94,7 +94,7 @@ This feature defines access to mint and burn functionality defined by the
 
 * `USE_NULL_MINTER_ADMIN` - contract does not have a minter admin. When neither
   `CAN_MINT` nor `CAN_BURN` feature is selected, anyone can mint or burn tokens.
-  This is also the default option if no mint or burn feature are selected.
+  This is also the default option if neither mint nor burn feature is selected.
 * `USE_ADMIN_AS_MINTER` - contract admin can also mint and burn tokens.
 * `USE_MULTI_MINTER_ADMIN` - contract can have multiple minter admins that can
   mint and burn tokens. The minter admin list is separate from the contract admin(s).
@@ -108,7 +108,7 @@ Admin: USE_PAUSABLE_SIMPLE_ADMIN
 Minter Admin: USE_ADMIN_AS_MINTER
 ```
 
-The resulting FA2 contract will support NFTs, be able to mint new tokens and freeze
+The resulting FA2 contract will support NFTs, be able to mint new tokens, and freeze
 the token collection after minting. The contract will have a simple (single) admin
 that can pause and unpause it. Only the admin will be able to mint tokens
 and freeze the NFT collection.
