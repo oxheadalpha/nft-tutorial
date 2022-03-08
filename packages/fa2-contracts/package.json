@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/fa2-contracts",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Modular implementation of FA2 Tezos smart contracts in LIGO language",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "homepage": "https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md",
@@ -40,17 +40,17 @@
     "@jest/types": "^27.4.2",
     "@types/jest": "^27.0.3",
     "@types/rimraf": "^3.0.2",
+    "child_process": "^1.0.2",
     "jest": "^27.4.5",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.1.2",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.2",
-    "child_process": "^1.0.2"
+    "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@oxheadalpha/fa2-interfaces": "^3.1.0",
-    "@oxheadalpha/tezos-tools": "^3.1.0",
+    "@oxheadalpha/fa2-interfaces": "^4.0.0",
+    "@oxheadalpha/tezos-tools": "^4.0.0",
     "@taquito/signer": "^11.0.2",
     "@taquito/taquito": "^11.0.2",
     "bignumber": "^1.1.0",
