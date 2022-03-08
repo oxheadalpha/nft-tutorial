@@ -3,17 +3,21 @@ import { OperatorUpdate, OperatorUpdateParams } from './interfaces/fa2';
 
 export type OperatorUpdateBatch = {
   updates: OperatorUpdate[];
+
   addOperator: (
     owner: address,
     operator: address,
     tokenId: nat
   ) => OperatorUpdateBatch;
+
   addOperators: (additions: OperatorUpdateParams[]) => OperatorUpdateBatch;
+
   removeOperator: (
     owner: address,
     operator: address,
     tokenId: nat
   ) => OperatorUpdateBatch;
+
   removeOperators: (removals: OperatorUpdateParams[]) => OperatorUpdateBatch;
 };
 
@@ -49,10 +53,10 @@ export const operatorUpdateBatch = (
     ): OperatorUpdateBatch =>
       self.addOperators([{ owner, operator, token_id: tokenId }]),
 
-    addOperators: (additions: OperatorUpdateParams[]): OperatorUpdateBatch =>
-      operatorUpdateBatch(
-        additions.reduce((a, u) => [...a, { add_operator: u }], updates)
-      ),
+    addOperators: (additions: OperatorUpdateParams[]): OperatorUpdateBatch => {
+      additions.forEach(a => updates.push({ add_operator: a }));
+      return self;
+    },
 
     removeOperator: (
       owner: address,
@@ -61,10 +65,12 @@ export const operatorUpdateBatch = (
     ): OperatorUpdateBatch =>
       self.removeOperators([{ owner, operator, token_id: tokenId }]),
 
-    removeOperators: (removals: OperatorUpdateParams[]): OperatorUpdateBatch =>
-      operatorUpdateBatch(
-        removals.reduce((a, u) => [...a, { remove_operator: u }], updates)
-      )
+    removeOperators: (
+      removals: OperatorUpdateParams[]
+    ): OperatorUpdateBatch => {
+      removals.forEach(r => updates.push({ remove_operator: r }));
+      return self;
+    }
   };
 
   return self;

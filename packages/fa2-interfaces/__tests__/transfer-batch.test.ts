@@ -2,13 +2,14 @@ import { transferBatch } from '../src/transfer-batch';
 
 describe('Test building a batch of transfers', () => {
   test('Merging sources correctly', () => {
-    const transfers = transferBatch()
+    const batch = transferBatch()
       .withTransfer('tzFrom1', 'tzTo1', 1, 1)
       .withTransfer('tzFrom1', 'tzTo2', 2, 1)
-      .withTransfer('tzFrom2', 'tzTo1', 3, 1)
-      .withTransfer('tzFrom1', 'tzTo3', 3, 1).transfers;
+      .withTransfer('tzFrom2', 'tzTo1', 3, 1);
 
-    expect(transfers).toEqual([
+    batch.withTransfer('tzFrom1', 'tzTo3', 3, 1);
+
+    expect(batch.transfers).toEqual([
       {
         from_: 'tzFrom1',
         txs: [
