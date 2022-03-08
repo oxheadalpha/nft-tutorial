@@ -311,7 +311,6 @@ export async function updateOperators(
     .addOperators(resolvedAdd)
     .removeOperators(resolvedRemove)
     .updates;
-  console.log('UPDATES', updates);
 
   const nftAddress = await resolveAlias2Address(contract, config);
 
