@@ -302,21 +302,23 @@ export async function updateOperators(
     addOperators,
     config
   );
-  batch.addOperators(resolvedAdd);
-
   const resolvedRemove = await resolveOperators(
     ownerAddress,
     removeOperators,
     config
   );
-  batch.removeOperators(resolvedRemove);
+  const updates = batch
+    .addOperators(resolvedAdd)
+    .removeOperators(resolvedRemove)
+    .updates;
+  console.log('UPDATES', updates);
 
   const nftAddress = await resolveAlias2Address(contract, config);
 
   const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).withFa2();
 
   console.log(kleur.yellow('updating operators...'));
-  await fa2.runMethod(fa2Contract.updateOperators(batch.updates));
+  await fa2.runMethod(fa2Contract.updateOperators(updates));
   console.log(kleur.green('updated operators'));
 }
 
