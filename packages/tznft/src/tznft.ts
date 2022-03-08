@@ -29,10 +29,7 @@ program
 program
   .command('show-network')
   .alias('shn')
-  .description(
-    'show currently selected active network', 
-    {'a': 'also shows all available networks'}
-  )
+  .description('show currently selected active network')
   .option('-a --all', 'shows all available configured networks', false)
   .action(async options => networkConf.showActiveNetwork(options.all));
 
