@@ -1,9 +1,9 @@
 # Content
 
-This document describes how to use TypeScript/JavaScript FA2 API build on top of
-[Taquito](https://tezostaquito.io/). It simplifies operations required to work
-with NFT (Non-Fungible Token), Fungible Tokens and, when TypeScript is used,
-provide a type-safe API to the contracts.
+This document describes how to use the TypeScript/JavaScript FA2 API built on
+top of [Taquito](https://tezostaquito.io/). It simplifies operations required to
+work with Non-Fungible Tokens (NFT), Fungible Tokens and when TypeScript is
+used, provide a type-safe API to contracts.
 
 ## Table of Contents
 
@@ -20,23 +20,24 @@ provide a type-safe API to the contracts.
 ### Creating a Collection (Originating a Contract)
 
 Your collection of tokens (non-fungible or fungible) is represented on the Tezos
-Blockchain by a smart contract. To create a collection, we need to create
-(originate) a contract on the blockchain. Each contract has a code, representing
-its actions and storage. This package does not help you to create the code of
-the contract but it can simplify storage initialization. To create the contract
-code you can use
-[fa2-contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md)
-package. We will show here how to initialize the storage using storage combinators
-and originate the contract using [Taquito](https://tezostaquito.io/docs/originate).
+Blockchain by a smart contract. To create a collection, we need to originate
+(create) a contract on the blockchain. Each contract has a code representing its
+actions and storage. This package does not help you to create the code for the
+contract but it can simplify storage initialization. To create the contract code
+you can use the
+[@oxheadalpha/fa2-contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md)
+package. Here we will show how to initialize a storage using storage combinators
+and originate a contract using
+[Taquito](https://tezostaquito.io/docs/originate).
 
-The storage initialization combinators can be thought of as a function
-`(params: I) => S`, that takes an object representing the input parameters `I`
-and returns an object representing initial storage `S`. Storage S is a plain old
-JavaScript objects that can be used by
+The storage initialization combinators can be thought of as a `(params: I) => S`
+function, which takes an object representing input parameters `I` and returns an
+object representing an initial storage `S`. Storage S is a plain old JavaScript
+objects that can be used by the
 [Taquito](https://tezostaquito.io/docs/originate) `originate` method. Functions
-are wrapped into `StorageBuilder` type that allow to compose them together
-and receive more new functions. Here is an example of a very simple
-builder:
+are wrapped into the `StorageBuilder` type that allows functions to be composed
+together and receive new, more complicated functions. Here is an example of a
+very simple builder:
 
 ```typescript
 const simpleAdmin = storageBuilder(({ ownerAddress }: { owner: address }) => ({
@@ -45,33 +46,34 @@ const simpleAdmin = storageBuilder(({ ownerAddress }: { owner: address }) => ({
 }));
 ```
 
-The above creates a storage builder that requires one parameter `ownerAddress` and
-returns an initial storage with two fields: `admin` and `pending_admin`.
-To create storage using this builder, you can call `build` method:
+The above creates a storage builder that requires one parameter, `ownerAddress`,
+and returns an initial storage with two fields: `admin` and `pending_admin`. To
+create a storage using this builder, you can invoke the `build` method:
 
 ```typescript
   const storage = simpleAdmin.build({ownerAddress: 'tzAddress'})
 ```
 
-TypeScript will infer the type correctly and will not allow to call `build` with
-an inappropriate parameters. After calling `build` method TypeScript will
-also correctly infer the type of the `storage`.
+TypeScript will infer the type correctly and will not allow to invoke the
+`build` with inappropriate parameters. After invoking the `build` method,
+TypeScript will also correctly infer the type of `storage`.
 
-Storage builder has `.with` method that allows to combine two builders:
+The storage builder has the `.with` method that allows two builders to be combined:
 
 ```typescript
 const newBuilder = storageA.with(storageB)
 ```
 
-That above will create a builder that requires both input parameters for the
+The above code will create a builder that requires both input parameters for
 `storageA` and `storageB` and will return an initial storage that will have
 fields of `storageA` and `storageB`.
 
 In practice, you will only need to write builders if you use your own custom
-contracts that require a custom initial storage. For the predefined contracts
-you can create an initial storage just by composing existing storage builders
-together. You usually start by using `contractStorage` predefined builder that
-requires just one parameter `metadata` and use `.with` method multiple times.
+contracts that require a custom initial storage. For the predefined contracts,
+located in [fa2-contracts](../fa2-contracts/), you can create an initial storage
+just by composing existing storage builders together. We usually start by using
+the `contractStorage` predefined builder, which requires just one parameter
+`metadata` and uses the `.with` method multiple times.
 
 Here is an example:
 
@@ -83,13 +85,13 @@ const storageBuilder = contractStorage
 ```
 
 In the above example we create a contract initial storage by composing 3
-builders. This is for a contract that can pause, store NFT tokens and allow to
-freeze the storage.
+builders. This is for a contract that can pause, store NFT tokens, and freeze
+the storage.
 
 You can find out what kind of contract APIs you can create and how to initialize
 a storage for them [here](#beyond-nft-contracts).
 
-Now you can build the storage:
+Now we can build the storage:
 
 ```typescript
 const storage = storageBuilder.build({
@@ -98,10 +100,10 @@ const storage = storageBuilder.build({
 });
 ```
 
-You can also use
+We can also use
 [tzGen](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md#tzgen-cli-tool),
 a tool from
-[fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md),
+[@oxheadalpha/fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md),
 to automatically generate storage builders composition from the contract
 specification.
 
@@ -116,16 +118,16 @@ const op = await tz.contract.originate({ code: 'code...', storage })
 
 ### Creating Token Metadata
 
-In order to create a token, we first need to create a token metadata.
-Token metadata has to confirm to
+In order to create a token, we first need to create token metadata. Token
+metadata has to conform to
 [TZIP-21](https://gitlab.com/tezos/tzip/-/tree/master/proposals/tzip-21).
 
-There are two ways to create a metadata for your token: **on-chain** and
-**off-chain**. Artifact itself is always kept off-chain, usually in
-[IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/). However, the attributes
-off the token can be kept either **on-chain** or **off-chian**.
+There are two ways to create metadata for a token: **on-chain** and
+**off-chain**. The artifact itself is always kept off-chain, usually in
+[IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/). However, the token
+attributes can be kept either **on-chain** or **off-chian**.
 
-The simplest way to create **on-chain** metadata is using
+The simplest way to create **on-chain** metadata is by using the
 `createSimpleNftMetadata` function:
 
 ```typescript
@@ -136,7 +138,7 @@ createSimpleNftMetadata(
 );
 ```
 
-The metadata can have more attributes and look like this:
+The metadata can have more attributes and can look like this:
 
 ```json
 {
@@ -166,8 +168,8 @@ The metadata can have more attributes and look like this:
 There can be separate URIs for display and thumbnail images. To make sure that
 the format of metadata confirms to
 [TZIP-21](https://gitlab.com/tezos/tzip/-/tree/master/proposals/tzip-21)
-standard, it is a good idea to validate it before creation. It can be done with
-`validateTzip21` function as shown bellow:
+standard, it is a good idea to validate it before creation. This can be done
+with the `validateTzip21` function as shown below:
 
 ```typescript
 import { validateTzip16 } from '@oxheadalpha/fa2-interfaces';
@@ -177,9 +179,9 @@ const validationResults = validateTzip21(meta);
 const errorsOnly = validationResults.filter(r => r.startsWith('Error:'));
 ```
 
-Before creating **off-chain** metadata first we should create it in JSON format
-and upload to IPFS. Then, **off-chain** metadata can be created using a
-helper function:
+Before creating **off-chain** metadata, we should first create it in the
+JSON format and upload to IPFS. Then, **off-chain** metadata can be created
+using a helper function:
 
 ```typescript
 const tokenMetadata = createOffChainTokenMetadata(
@@ -188,11 +190,11 @@ const tokenMetadata = createOffChainTokenMetadata(
 )
 ```
 
-Now we are ready to interact with our contract.
+We are now ready to interact with our contract.
 
 ### Type-Safe Contract Abstraction
 
-To interact with a contract on blockchain we need to create an API object
+To interact with a contract on the blockchain we need to create an API object
 that represents your contract (collection). As it is a wrapper around
 [Taquito](https://tezostaquito.io/), first we will need to create Taquito
 `TezosToolkit`.
@@ -202,24 +204,24 @@ const tzt = new TezosToolkit(...);
 const myContract = await tezosApi(tz).at(contractAddress)
 ```
 
-At this point we can specify what kind of token and what methods we
+At this point we can specify what kind of tokens and what methods we
 have in our contract. It is done like this:
 
 ```typescript
 const nftContract = myContract.asNft().withMint()
 ```
 
-Depending on the type of a token, contract methods can have different
-implementations and require different parameters. You have to specify type of
-the token by using `asNft()` (as we are going to mint NFTs) and then the
-required methods, by using `withMint()`, `withBurn()`, `withFreeze()` or their
-combination. TypeScript will infer the right type of `nftContract` and validate
-method with their parameters at compile time. Now you are ready to interact with
-your contract.
+Depending on the type of token, contract methods can have different
+implementations and require different parameters. You have to specify the type
+of token by using `asNft()` (as we are going to mint NFTs), and then the
+required methods by using `withMint()`, `withBurn()`, `withFreeze()`, or a
+combination of methods. TypeScript will infer the right type of `nftContract`
+and validate the method with their parameters at compile time. Now we are ready
+to interact with our contract.
 
 ### Minting
 
-Minting (creating new tokens) can be done by calling method `mint`:
+Minting (creating new tokens) can be done by calling the `mint` method:
 
 ```typescript
 const op: TransactionOperation = await fa2.runMethod(
@@ -231,25 +233,25 @@ const op: TransactionOperation = await fa2.runMethod(
 );
 ```
 
-In order to save gas `mint` accepts a batch to be able to bundle multiple
-tokens creation into one request. Methods that call/invoke contract entry
-points return `Taquito` type `<ContractMethod<ContractProvider>>`.These methods
-can be sent and confirmed individually, or in a batch, directly using Taquito
-API. However, as they are frequently used operations, we have two helpers:
-`runMethod` & `runBatch`
+In order to save gas, `mint` accepts a batch of mint requests in order to be
+able to bundle multiple tokens creation into one request. Methods that
+call/invoke contract entry points return the `Taquito` type
+`<ContractMethod<ContractProvider>>`.These methods can be sent and confirmed
+individually, or in a batch, directly using the Taquito API. However, as they
+are frequently used operations, we have two helpers: `runMethod` & `runBatch`
 
-At this point it would be nice to inspect created tokens. According to
-[TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
-standard contract that handle tokens, weather it be non-fungible or fungible
-tokens has methods: `balance_of`, `transfer`, `update_operator`. For NFT we have
-`hasNftTokens` wrapper that returns boolean values. However, to use it we have
-to extends our contract abstraction with `.withFa2` methods:
+At this point it would be nice to inspect the created tokens. According to
+[TZIP-12](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md),
+standard contracts that handle tokens, weather they be non-fungible or fungible
+tokens have these methods: `balance_of`, `transfer`, `update_operator`. For NFTs
+we have the `hasNftTokens` wrapper that returns boolean values. However, to use
+it we have to extend our contract abstraction with the `.withFa2` method:
 
 ```typescript
 const fa2Contract = nftContract.withFa2()
 ```
 
-Now, we can use `hasNftTopkens` methods to inspect created tokens:
+Now, we can use the `hasNftTopkens` method to inspect the created tokens:
 
 ```typescript
 const results = fa2Contract.hasNftTokens([
@@ -260,17 +262,17 @@ const results = fa2Contract.hasNftTokens([
 const allGood = results.every(r => r === true)
 ```
 
-For fungible token you would use method `queryBalances` instead of
-`hasNftTokens` that will return the list of balances. For more information look
+For fungible tokens you would use the method, `queryBalances`, instead of
+`hasNftTokens` that will return a list of balances. For more information look
 [here](src/interfaces/fa2.ts#L140)
 
 ### Transferring Token Ownership
 
-Token ownership can be transferred using method `transferTokens`. This methods
-takes a list of transfers and executes them. Transfers can be constructed
+Token ownership can be transferred using the method, `transferTokens`. This
+method takes a list of transfers and executes them. Transfers can be constructed
 manually but it is easier to use "Transfers Batch API" to do that. It will
-merge automatically subsequent transaction from the same source in order
-to optimise gas usage. Here is how it can be done:
+automatically merge subsequent transactions from the same source in order to
+optimise gas usage. Here is how it can be done:
 
 ```typescript
 const transfers = transferBatch()
@@ -285,10 +287,10 @@ For NFT tokens the amount should always be 1.
 
 ### Update Operators
 
-Multiple operators can transfer tokens on behalf of the owner. Token owner can
-use `updateOperators` method to add or remove other addresses that can transfer
-owner's tokens. Updates can be built manually or, like transfers, can be built
-using the batch API like this:
+Multiple operators can transfer tokens on behalf of the owner. The token owner
+can use the `updateOperators` method to add or remove other addresses that can
+transfer the owner's tokens. Updates can be built manually or, like transfers,
+can be built using the batch API:
 
 ```typescript
 const batch = operatorUpdateBatch().
@@ -305,84 +307,86 @@ const batch = operatorUpdateBatch().
 
 ### Beyond NFT Contracts
 
-Besides interacting with the contracts representing **NFTs**, it is possible to
-interact with any FA2 contract representing **fungible tokens**,
-**multi-fungible tokens**, have the ability to freeze created tokens, give
-rights to other addresses to administer contracts etc. Many combinations of
-those traits of the contract can be expressed by using composable combinators on
+Besides interacting with contracts representing **NFTs**, it is possible to
+interact with any FA2 contract representing **fungible tokens** or
+**multi-fungible tokens**. It is also possible for a contract to have the
+ability to freeze created tokens, give rights to other addresses to administer
+contracts, etc. Many combinations of those contract traits can be expressed by
+using composable combinators on
 [the contract abstraction](#type-safe-contract-abstraction).
 
 **Contract Abstraction Combinators** and **Storage Combinators** are different
 and can be used independently. **Contract Abstraction Combinators** are used to
-describe the API to the contract and **Storage Combinators** are used to
-describe the shape of the storage and its initial values. Storage is mostly used
-for contract origination and rarely required for the interaction with the
-contract as **Lambda Views** are used to "read" the state of the contract.
+describe the API to the contract, while **Storage Combinators** are used to
+describe the shape of the storage and its initial values. A storage is mostly
+used for contract origination and is rarely required for the interaction with
+the contract as **Lambda Views** are used to "read" the state of the contract.
 However, storage and contract actions (API methods) are related - certain
-actions require contract to have certain data. For example, method `freeze`
-requires contract to have a flag in the storage that is described by
+actions require a contract to have certain data. For example, the `freeze`
+method requires a contract to have a flag in the storage that is described by
 `.with(mintFreezeStorage)`. We give the description of those combinators
 together.
 
-The combinators can be divided into groups, only one combinator from each of the
-groups can be used at a time on one contract.
+The combinators can be divided into groups. Only one combinator from each group
+can be used at a time on one contract.
 
 Below is the list of contract administration methods:
 
-* `.withSimpleAdmin` - adds the ability to set just one address to be an admin
-  of a contract. It allows you to call just 2 additional methods `setAdmin` and
-  `confirmAdmin`. For more information look
-  [here](src/interfaces/admin.ts#l10). To initialize the storage use
+* `.withSimpleAdmin` - adds the ability to set just one address to be the
+  administrator of a contract. It allows you to call just 2 additional methods,
+  `setAdmin` and `confirmAdmin`. For more information look
+  [here](src/interfaces/admin.ts#l10). 
+  To initialize the storage, use
   `.with(simpleAdminStorage)`
 
-* `.withPausableSimpleAdmin` - adds the ability to pause/unpause
-the  contract. For more information look [here](src/interfaces/admin.ts#l35)
-To initialize the storage use `.with(pausableSimpleAdminStorage)`
+* `.withPausableSimpleAdmin` - adds the ability to pause and unpause the
+  contract. For more information look [here](src/interfaces/admin.ts#l35) To
+  initialize the storage use `.with(pausableSimpleAdminStorage)`
 
-* `.withMultiAdmin` - adds the ability to have multiple administrators for the
-  same contract, add and remove them. For more information look
+* `.withMultiAdmin` - adds the ability to have multiple admins for the same
+  contract, as well as to add and remove admin. For more information look
   [here](src/interfaces/admin.ts#l42). To initialize the storage use
   `.with(multiAdminStorage)`
 
 Below is the list of combinators that specify what kind of tokens the contract
-holds. They do not add methods that can be used by the client but influence
-how the subsequent methods like `withMint`, `withBurn` will work and what
-parameters they take.
+holds. They do not add methods that can be used by a client, but they influence
+how subsequent methods like `withMint` or `withBurn` will work and what
+parameters they can take.
 
-* `.asNft` - specify that the contract represent **NFT**. To initialize the
+* `.asNft` - specifies that the contract represents **NFTs**. To initialize the
   storage use `with(nftStorage)`
 
-* `.asFungible` - specify that the contract represents a single **fungible
-  tokens**. To initialize the storage use `with(fungibleTokenStorage)`
+* `.asFungible` - specify that the contract represents a single type of
+  **fungible token**. To initialize the storage use `with(fungibleTokenStorage)`
 
-* `asMultiFungible` - specify that the contract represents multiple **fungible
-  tokens** and it can have more that one type of tokens, specified by token ID.
-  To initialize the storage use `with(multiFungibleTokenStorage)`
+* `asMultiFungible` - specifies that the contract represents multiple **fungible
+  tokens** and it can have more that one type of token, which is specified by
+  the token ID. To initialize the storage use `with(multiFungibleTokenStorage)`
 
-Below is the group of combinators that should be used on top of one of
-the combinators from the previous group. You can find more
-details about each method that they add to the contract
-[here](src/interfaces/minter-combinators.ts#L17)
+Below is the group of combinators that should be used on top of any one of the
+combinators from the previous group. You can find more details about each method
+that the combinators can add [here](src/interfaces/minter-combinators.ts#L17)
 
-* `withMint` - specify that the contract can mint new tokens.
+* `withMint` - specifies that the contract can mint new tokens.
 
-* `withBurn` - specify that the contract can burn (remove) previously
+* `withBurn` - specifies that the contract can burn (remove) previously
 created tokens.
 
-* `withFreeze` - specify that the contract can freeze the collation, after
-  certain number of tokens is created. To initialize the storage use
+* `withFreeze` - specifies that the contract can freeze the collection, after a
+  certain number of tokens are created. To initialize the storage use
   `with(mintFreezeStorage)`.
 
-There is also `withMultiMinterAdmin` that allows to add and remove addresses
-that can mint and burn token. [Here](src/interfaces/minter-admin.ts) are the
-details. To initialize the storage for it use `with(multiMinterAdminStorage)`.
+There is also `withMultiMinterAdmin`, which allows us to add and remove
+addresses that can mint and burn token. [Here](src/interfaces/minter-admin.ts)
+are the details. To initialize the storage for this type of contract use
+`with(multiMinterAdminStorage)`.
 
-Also, `withFa2` adds the methods specified by
+`withFa2` adds the methods specified by
 [TZIP-12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
-that every FA2 contract supposed to have. You can find the details
+that every FA2 contract is required to have. You can find the details
 [here](src/interfaces/fa2.ts#L135)
 
-Here is an examples a complete examples:
+Here is a complete example:
 
 ```typescript
 const tzt = new TezosToolkit(...);
@@ -397,9 +401,9 @@ const nftContract = myContract
     .withFreeze()
 ```
 
-In the above example we create an NFT contract that can mint, burn, freeze, that
-is pausable, and allows to use methods specified by FA2. If you need to
-initialize the storage for it you can do:
+In the above example we create an NFT contract that can mint, burn, and freeze.
+It is pausable, and can use methods specified by FA2. If you need to initialize
+the storage for it you can do this:
 
 ```typescript
   const storage = contractStorage
@@ -414,9 +418,9 @@ initialize the storage for it you can do:
 
 ### Custom Contracts
 
-If a custom contract and API to it is necessary, it can be accessed in
-a type-safe way using very little boilerplate.  The new API can be
-implemented just by providing one constructor function with the following
+Interaction with a custom contract in a type-safe way can be achieved
+with very little boilerplate code. A new API can be
+implemented by providing just one constructor function with the following
 signature:
 
 ```typescript
@@ -424,8 +428,8 @@ signature:
 ```
 
 The `T` type here is just an object(a record of functions) and can be
-implemented anyway possible, including using a TypeScript class. In this case
-it has to be wrapped in a function like this:
+implemented anyway possible, including using a TypeScript class. If it is a
+TypeScript class, it has to be wrapped in a function like this:
 
 ```typescript
 export const MyContractApi = (
@@ -434,22 +438,22 @@ export const MyContractApi = (
 ): Fa2Contract => new MyClass(contract, lambdaView)
 ```
 
-Now, you can extends your contract abstraction with generic `.with` combinator:
+Now, we can extend our contract abstraction with the generic `.with` combinator:
 
 ```typescript
 const myContractApi = contract.with(MyContractApi)
 ```
 
-`myContractApi` object will have all the API methods defined by MyClass.
+The `myContractApi` object will have all the API methods defined by MyClass.
 
 ### Executing Multiple Operations in One Batch
 
-While you can send information about multiple tokens in one `mint` call, send
-batch in one call to `transferTokens` as well as `updateOperators`, sometimes
-you might want to send multiple requests in one batch that deal with different
-contracts or use unrelated methods (actions) of one contract. That can be done
-using [Taquito](https://tezostaquito.io/) batch. We have a helper method
-`runBatch` in order to simplify sending batch and waiting for its confirmation.
+As described above, you can bundle multiple tokens in one `mint` request or
+batch requests to `transferTokens` & `updateOperators`. Sometimes, however, it
+is still not enough. You might want to send multiple requests that deal with
+different contracts or use unrelated methods in one batch. This can be done
+using the [Taquito](https://tezostaquito.io/) batch. We have a helper method,
+`runBatch`, that simplifies sending batches and waiting for their confirmations.
 
 Here is an example:
 
