@@ -25,7 +25,7 @@ Blockchain by a smart contract. To create a collection, we need to originate
 actions and storage. This package does not help you to create the code for the
 contract but it can simplify storage initialization. To create the contract code
 you can use the
-[fa2-contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md)
+[@oxheadalpha/fa2-contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md)
 package. Here we will show how to initialize a storage using storage combinators
 and originate a contract using
 [Taquito](https://tezostaquito.io/docs/originate).
@@ -103,7 +103,7 @@ const storage = storageBuilder.build({
 We can also use
 [tzGen](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md#tzgen-cli-tool),
 a tool from
-[fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md),
+[@oxheadalpha/fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md),
 to automatically generate storage builders composition from the contract
 specification.
 
@@ -179,7 +179,7 @@ const validationResults = validateTzip21(meta);
 const errorsOnly = validationResults.filter(r => r.startsWith('Error:'));
 ```
 
-Before creating **off-chain** metadata, first we should first create it in the
+Before creating **off-chain** metadata, we should first create it in the
 JSON format and upload to IPFS. Then, **off-chain** metadata can be created
 using a helper function:
 
