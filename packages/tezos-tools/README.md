@@ -27,6 +27,16 @@ Example:
 $ yarn kill-sandbox
 ```
 
+`compile-contract <source_ligo_file> <entry_points_function> <output_michelson_file>`
+compiles a ligo contract to Michelson. This script is an equivalent of
+`ligo compile contract <source_ligo_file> -e <entry_points_function> -o <output_michelson_file>`.
+
+Example:
+
+```sh
+$ yarn compile-contract ligo/examples/fa2_asset_use_example.mligo  asset_main fa2_asset.tz
+```
+
 ## API
 
 ### Ligo

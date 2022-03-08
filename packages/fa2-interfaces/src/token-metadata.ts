@@ -1,7 +1,6 @@
-import { BigNumber } from 'bignumber.js';
 import { MichelsonMap } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
-import { TokenMetadataInternal } from './fa2-interface';
+import { TokenMetadataInternal } from './interfaces/fa2';
 import { nat } from './type-aliases';
 import { TokenMetadata } from '@taquito/tzip12';
 

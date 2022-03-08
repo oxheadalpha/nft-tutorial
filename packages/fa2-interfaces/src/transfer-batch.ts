@@ -1,5 +1,16 @@
 import { address, nat } from './type-aliases';
-import { Transfer } from './fa2-interface';
+import { Transfer } from './interfaces/fa2';
+
+export type TransferBatch = {
+  transfers: Transfer[];
+
+  withTransfer: (
+    from: address,
+    to: address,
+    tokenId: nat,
+    amount: nat
+  ) => TransferBatch;
+};
 
 /**
  * A batch builder that can create transfers for the method Fa2Contract.transferTokens
@@ -20,31 +31,29 @@ import { Transfer } from './fa2-interface';
  *
  * @returns a batch of transfers that can be used in transferTokens
  */
-export const transferBatch = (transfers: Transfer[] = []) => ({
-  transfers,
+export const transferBatch = (transfers: Transfer[] = []): TransferBatch => {
+  const self = {
+    transfers,
 
-  withTransfer: (from: address, to: address, tokenId: nat, amount: nat) => {
-    const last = transfers[transfers.length - 1];
+    withTransfer: (from: address, to: address, tokenId: nat, amount: nat) => {
+      const last = transfers[transfers.length - 1];
 
-    const newBatch =
-      !last || last.from_ !== from
-        ? [
-            ...transfers,
-            {
-              from_: from,
-              txs: [{ to_: to, token_id: tokenId, amount }]
-            }
-          ]
-        : [
-            ...transfers.slice(0, -1),
-            {
-              from_: from,
-              txs: [...last.txs, { to_: to, token_id: tokenId, amount }]
-            }
-          ];
+      if (!last || last.from_ !== from) {
+        transfers.push({
+          from_: from,
+          txs: [{ to_: to, token_id: tokenId, amount }]
+        });
+      } else {
+        transfers[transfers.length - 1].txs.push({
+          to_: to,
+          token_id: tokenId,
+          amount
+        });
+      }
 
-    return transferBatch(newBatch);
-  }
-});
+      return self;
+    }
+  };
 
-export type TransferBatch = ReturnType<typeof transferBatch>;
+  return self;
+};

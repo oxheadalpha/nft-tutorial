@@ -2,17 +2,18 @@ import { operatorUpdateBatch } from '../src/operator-update-batch';
 
 describe('Test building a batch of operator updates.', () => {
   test('Mixing addOperator & removeOperator correctly.', () => {
-    const updates = operatorUpdateBatch()
+    const batch = operatorUpdateBatch()
       .addOperator('tzOwner1', 'tzOperator1', 1)
       .removeOperator('tzOwner2', 'tzOperator2', 2)
       .addOperators([
         { owner: 'tzOwner3', operator: 'tzOperator3', token_id: 3 }
-      ])
-      .removeOperators([
-        { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
-      ]).updates;
+      ]);
 
-    expect(updates).toEqual([
+    batch.removeOperators([
+      { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
+    ]);
+
+    expect(batch.updates).toEqual([
       {
         add_operator: {
           owner: 'tzOwner1',

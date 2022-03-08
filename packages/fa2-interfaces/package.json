@@ -3,6 +3,7 @@
   "version": "3.1.0",
   "description": "Typescript interfaces for FA2 Tezos smart contracts",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
+  "homepage": "https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_interfaces/README.md",
   "keywords": [
     "tezos",
     "smart contracts",
@@ -14,8 +15,7 @@
   "license": "MIT",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/*",
-    "ligo/*"
+    "dist/*"
   ],
   "publishConfig": {
     "access": "public"
@@ -25,12 +25,10 @@
   },
   "scripts": {
     "clear": "yarn rimraf dist",
-    "build": "tsc -p . && chmod +x ./dist/export-ligo.js",
+    "build:tests": "tsc -p tsconfig.test.json",
+    "build": "tsc -p .",
     "prepare": "yarn clear && yarn build",
     "test": "jest"
-  },
-  "bin": {
-    "export-ligo": "./dist/export-ligo.js"
   },
   "devDependencies": {
     "@jest/types": "^27.4.2",

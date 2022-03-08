@@ -14,12 +14,15 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p . && chmod +x dist/tznft.js && yarn compile-contract",
+    "build:tests": "tsc -p tsconfig.test.json",
+    "build": "tsc -p .",
     "clear": "yarn rimraf dist",
     "prepare": "yarn clear && yarn build",
-    "compile-contract": "ts-node ./src/compile-contract.ts",
+    "generate-contract": "yarn tzgen c contract_spec.json fa2_nft_asset",
+    "compile-contract": "yarn tzgen michelson fa2_nft_asset fa2_nft_asset",
+    "build-contract": "yarn generate-contract && yarn compile-contract",
     "test-contract": "jest --runInBand",
-    "test": "(yarn compile-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
+    "test": "(yarn build-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
     "tznft": "./dist/tznft.js"
   },
   "bin": {
@@ -33,6 +36,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@oxheadalpha/fa2-contracts": "^3.1.0",
     "@jest/types": "^27.4.2",
     "@types/async-retry": "^1.4.3",
     "@types/jest": "^27.0.3",
@@ -51,7 +55,7 @@
     "@taquito/taquito": "^11.0.2",
     "bignumber.js": "^9.0.1",
     "child_process": "^1.0.2",
-    "commander": "^6.0.0",
+    "commander": "^9.0.0",
     "fs": "^0.0.1-security",
     "kleur": "^4.1.4",
     "path": "^0.12.7",

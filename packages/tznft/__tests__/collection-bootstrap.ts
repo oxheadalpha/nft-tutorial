@@ -1,14 +1,16 @@
 import * as kleur from 'kleur';
 import * as path from 'path';
+
 import {
   address,
+  NftMintableContract,
   createOnChainTokenMetadata,
   createOffChainTokenMetadata,
   createSimpleNftMetadata
 } from '@oxheadalpha/fa2-interfaces';
 import { TezosToolkit } from '@taquito/taquito';
 import { loadFile } from '../src/config';
-import { createNftStorage, NftContract } from '../src/nft-interface';
+import { createNftStorage } from '../src/nft-util';
 import { originateContract } from '@oxheadalpha/tezos-tools';
 
 const tzip16Meta = {
@@ -75,7 +77,7 @@ const tokenSimpleMeta = (tokenId: number) =>
 
 export const tokenMeta = tokenOnChainMeta;
 
-export const mintTestTokens = (nft: NftContract, owner: address) => {
+export const mintTestTokens = (nft: NftMintableContract, owner: address) => {
   const tokens = [1, 2].map(tokenMeta);
-  return nft.mintTokens([{ owner, tokens }]);
+  return nft.mint([{ owner, tokens }]);
 };

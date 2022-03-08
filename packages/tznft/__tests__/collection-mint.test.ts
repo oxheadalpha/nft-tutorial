@@ -1,6 +1,5 @@
 import * as kleur from 'kleur';
-import { address, Fa2, runMethod, runBatch } from '@oxheadalpha/fa2-interfaces';
-import { Nft } from '../src/nft-interface';
+import { address, runMethod, runBatch } from '@oxheadalpha/fa2-interfaces';
 
 import { TestApi, bootstrap } from './test-bootstrap';
 import {
@@ -29,10 +28,10 @@ describe('NFT Collection Minting Tests', () => {
   });
 
   test('mint', async () => {
-    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+    const nft = (await api.bob.at(collectionAddress)).asNft().withMint();
     await runMethod(mintTestTokens(nft, bobAddress));
 
-    const fa2 = nft.with(Fa2);
+    const fa2 = nft.withFa2();
     const meta = await fa2.tokensMetadata([1, 2]);
     expect(meta.map(t => t.token_id)).toEqual([1, 2]);
 
@@ -44,33 +43,36 @@ describe('NFT Collection Minting Tests', () => {
   });
 
   test('mint and freeze', async () => {
-    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+    const nft = (await api.bob.at(collectionAddress))
+      .asNft()
+      .withMint()
+      .withFreeze();
 
     const batch = api.bob.toolkit.contract.batch();
     batch.withContractCall(mintTestTokens(nft, bobAddress));
-    batch.withContractCall(nft.freezeCollection());
+    batch.withContractCall(nft.mintFreeze());
     await runBatch(batch);
 
     const extraTokens = [tokenMeta(3)];
     const run = runMethod(
-      nft.mintTokens([{ owner: bobAddress, tokens: extraTokens }])
+      nft.mint([{ owner: bobAddress, tokens: extraTokens }])
     );
     await expect(run).rejects.toHaveProperty('message', 'FROZEN');
   });
 
   test('mint duplicate tokens', async () => {
-    const nft = (await api.bob.at(collectionAddress)).with(Nft);
+    const nft = (await api.bob.at(collectionAddress)).asNft().withMint();
     await runMethod(mintTestTokens(nft, bobAddress));
 
     const extraTokens = [tokenMeta(1)];
     const run = runMethod(
-      nft.mintTokens([{ owner: bobAddress, tokens: extraTokens }])
+      nft.mint([{ owner: bobAddress, tokens: extraTokens }])
     );
     await expect(run).rejects.toHaveProperty('message', 'USED_TOKEN_ID');
   });
 
   test('non-admin mint tokens', async () => {
-    const nft = (await api.alice.at(collectionAddress)).with(Nft);
+    const nft = (await api.alice.at(collectionAddress)).asNft().withMint();
     const run = runMethod(mintTestTokens(nft, bobAddress));
 
     await expect(run).rejects.toHaveProperty('message', 'NOT_AN_ADMIN');
