@@ -1,6 +1,16 @@
 import { address, nat } from './type-aliases';
 import { Transfer } from './interfaces/fa2';
 
+export type TransferBatch = {
+  transfers: Transfer[];
+  withTransfer: (
+    from: address,
+    to: address,
+    tokenId: nat,
+    amount: nat
+  ) => TransferBatch;
+};
+
 /**
  * A batch builder that can create transfers for the method Fa2Contract.transferTokens
  * It merges the subsequent transfers with the same source (from_ field)
@@ -20,7 +30,7 @@ import { Transfer } from './interfaces/fa2';
  *
  * @returns a batch of transfers that can be used in transferTokens
  */
-export const transferBatch = (transfers: Transfer[] = []) => ({
+export const transferBatch = (transfers: Transfer[] = []): TransferBatch => ({
   transfers,
 
   withTransfer: (from: address, to: address, tokenId: nat, amount: nat) => {
@@ -46,5 +56,3 @@ export const transferBatch = (transfers: Transfer[] = []) => ({
     return transferBatch(newBatch);
   }
 });
-
-export type TransferBatch = ReturnType<typeof transferBatch>;
