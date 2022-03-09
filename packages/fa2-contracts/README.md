@@ -333,7 +333,7 @@ await runMethod(fa2.mintFreeze());
 
 For more details about how to use and customize contract interface combinators
 please refer to
-[@oxheadalpha/fa2-interfaces](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_interfaces/README.md)
+[@oxheadalpha/fa2-interfaces](https://github.com/oxheadalpha/nft-tutorial/tree/master/packages/fa2-interfaces#readme)
 package documentation.
 
 ## Programmatic API

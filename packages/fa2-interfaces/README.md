@@ -25,7 +25,7 @@ Blockchain by a smart contract. To create a collection, we need to originate
 actions and storage. This package does not help you to create the code for the
 contract but it can simplify storage initialization. To create the contract code
 you can use the
-[@oxheadalpha/fa2-contract](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md)
+[@oxheadalpha/fa2-contract](https://github.com/oxheadalpha/nft-tutorial/tree/master/packages/fa2-contracts#readme)
 package. Here we will show how to initialize a storage using storage combinators
 and originate a contract using
 [Taquito](https://tezostaquito.io/docs/originate).
@@ -70,10 +70,11 @@ fields of `storageA` and `storageB`.
 
 In practice, you will only need to write builders if you use your own custom
 contracts that require a custom initial storage. For the predefined contracts,
-located in [fa2-contracts](../fa2-contracts/), you can create an initial storage
-just by composing existing storage builders together. We usually start by using
-the `contractStorage` predefined builder, which requires just one parameter
-`metadata` and uses the `.with` method multiple times.
+located in [fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/tree/master/packages/fa2-contracts#readme),
+you can create an initial storage just by composing existing storage builders
+together. We usually start by using the `contractStorage` predefined builder,
+which requires just one parameter `metadata` and uses the `.with` method multiple
+times.
 
 Here is an example:
 
@@ -101,9 +102,9 @@ const storage = storageBuilder.build({
 ```
 
 We can also use
-[tzGen](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md#tzgen-cli-tool),
+[tzGen](https://github.com/oxheadalpha/nft-tutorial/tree/master/packages/fa2-contracts#tzgen-cli-tool),
 a tool from
-[@oxheadalpha/fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/fa2_contracts/README.md),
+[@oxheadalpha/fa2-contracts](https://github.com/oxheadalpha/nft-tutorial/tree/master/packages/fa2-contracts#readme),
 to automatically generate storage builders composition from the contract
 specification.
 
@@ -335,7 +336,7 @@ Below is the list of contract administration methods:
 * `.withSimpleAdmin` - adds the ability to set just one address to be the
   administrator of a contract. It allows you to call just 2 additional methods,
   `setAdmin` and `confirmAdmin`. For more information look
-  [here](src/interfaces/admin.ts#l10). 
+  [here](src/interfaces/admin.ts#l10).
   To initialize the storage, use
   `.with(simpleAdminStorage)`
 
