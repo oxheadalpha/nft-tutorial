@@ -11,7 +11,7 @@ export const importLigo = (dir?: string) => {
   // __dirname is ./dist
   const srcPath = path.resolve(__dirname, '../ligo');
 
-  console.log(`exporting LIGO sources from ${srcPath} to ${destPath}`);
+  console.log(`importing LIGO sources from ${srcPath} to ${destPath}`);
   fs.cpSync(srcPath, destPath, { recursive: true, errorOnExist: true });
   console.log(kleur.green(`LIGO sources imported to ${destPath}`));
 };
@@ -21,9 +21,6 @@ const resolveDestination = (dir?: string): string => {
     return dir;
   } else {
     const config = configProvider();
-    if (!config.exists())
-      throw new Error(`Destination directory argument is missing.
-Either provide "dir" argument or create config file by running "tzgen init" command.`);
-    return config.load().ligoDir;
+    return config.exists() ? config.load().ligoDir : './ligo';
   }
 };
