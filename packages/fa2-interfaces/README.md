@@ -455,7 +455,7 @@ Let's assume that the contract has two custom entry points: `set_counter` that
 accepts a `nat` parameter and [CPS-style view](https://tezostaquito.io/docs/lambda_view/)
 `get_counter`.
 
-First we define a TypeScript interface for those contract entry points:
+First, we define a TypeScript interface for those contract entry points:
 
 ```typescript
 export interface MyContract {
@@ -464,7 +464,7 @@ export interface MyContract {
 }
 ```
 
-Second we define a constructor function with the contract calls implementation:
+Second, we define a constructor function with the contract calls implementation:
 
 ```typescript
 export const MyContractApi = (
