@@ -15,6 +15,7 @@ used, provide a type-safe API to contracts.
 * [Update Operators](#update-operators)
 * [Beyond NFT Contracts](#beyond-nft-contracts)
 * [Custom Contracts](#custom-contracts)
+  * [Custom Contract API Example](#custom-contract-api-example)
 * [Executing Multiple Operations in One Batch](#executing-multiple-operations-in-one-batch)
 
 ### Creating a Collection (Originating a Contract)
@@ -436,16 +437,44 @@ TypeScript class, it has to be wrapped in a function like this:
 export const MyContractApi = (
   contract: Tzip12Contract,
   lambdaView?: address
-): Fa2Contract => new MyClass(contract, lambdaView)
+): T => new MyClass(contract, lambdaView)
 ```
 
 Now, we can extend our contract abstraction with the generic `.with` combinator:
 
 ```typescript
-const myContractApi = contract.with(MyContractApi)
+const contract = await tezosApi(toolkit).at(contractAddress);
+const myContractApi = contract.with(MyContractApi);
 ```
 
 The `myContractApi` object will have all the API methods defined by MyClass.
+
+#### Custom Contract API Example
+
+Let's assume that the contract has two custom entry points: `set_counter` that
+accepts a `nat` parameter and [CPS-style view](https://tezostaquito.io/docs/lambda_view/)
+`get_counter`.
+
+First we define a TypeScript interface for those contract entry points:
+
+```typescript
+export interface MyContract {
+  setCounter(counter: nat): ContractMethod<ContractProvider>;
+  getCounter(): Promise<nat>;
+}
+```
+
+Second we define a constructor function with the contract calls implementation:
+
+```typescript
+export const MyContractApi = (
+  contract: Tzip12Contract,
+  lambdaView?: address
+): T => ({
+  setCounter: (counter: nat) => contract.methods.set_counter(counter),
+  getCounter: async () => contract.views.get_counter().read(lambdaView)
+});
+```
 
 ### Executing Multiple Operations in One Batch
 
