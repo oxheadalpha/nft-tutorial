@@ -470,7 +470,7 @@ Second, we define a constructor function with the contract calls implementation:
 export const MyContractApi = (
   contract: Tzip12Contract,
   lambdaView?: address
-): T => ({
+): MyContract => ({
   setCounter: (counter: nat) => contract.methods.set_counter(counter),
   getCounter: async () => contract.views.get_counter().read(lambdaView)
 });
