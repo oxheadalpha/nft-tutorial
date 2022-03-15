@@ -3,6 +3,7 @@ import {
   ContractMethod,
   ContractProvider,
   OperationBatch,
+  SendParams,
   TransactionOperation
 } from '@taquito/taquito';
 
@@ -17,9 +18,10 @@ import {
  * ```
  */
 export const runMethod = async (
-  cm: ContractMethod<ContractProvider>
+  cm: ContractMethod<ContractProvider>,
+  sendParams?: SendParams
 ): Promise<TransactionOperation> => {
-  const op = await cm.send();
+  const op = await cm.send(sendParams);
   await op.confirmation();
   return op;
 };
