@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/tznft",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "CLI tool and tutorial on how to create FA2 non-fungible tokens on Tezos",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "homepage": "https://github.com/oxheadalpha/nft-tutorial/blob/master/packages/tznft/README.md",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@jest/types": "^27.4.2",
-    "@oxheadalpha/fa2-contracts": "^4.1.0",
+    "@oxheadalpha/fa2-contracts": "^4.1.1",
     "@types/async-retry": "^1.4.3",
     "@types/jest": "^27.0.3",
     "@types/node": "^17.0.0",
