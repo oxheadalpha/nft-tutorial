@@ -24,7 +24,8 @@
     "build:tests": "yarn lerna run build:tests",
     "build:all": "yarn build && yarn build:tests",
     "clear": "yarn lerna run clear",
-    "test": "yarn lerna run test"
+    "test": "yarn lerna run test",
+    "publish": "yarn lerna publish --force-publish"
   },
   "devDependencies": {
     "lerna": "^4.0.0"
