@@ -55,11 +55,14 @@ const addInterfaceFunction = (
     .writeLine('export const createContractInterface = async (')
     .indent(() => {
       writer.writeLine('toolkit: TezosToolkit,');
-      writer.writeLine('address: address');
+      writer.writeLine('contractAddress: address,');
+      writer.writeLine('lambdaView?: address');
     })
     .writeLine(') =>')
     .indent(() => {
-      writer.writeLine('(await tezosApi(toolkit).at(address))');
+      writer.writeLine(
+        '(await tezosApi(toolkit, lambdaView).at(contractAddress))'
+      );
       writer.indent(() => {
         writer.writeLine('.withFa2()');
         withAdminInterfaceStatement(writer, params.admin);
