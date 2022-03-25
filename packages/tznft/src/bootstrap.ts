@@ -1,12 +1,11 @@
 import * as kleur from 'kleur';
-import { loadConfig, saveConfig, Config, activeNetwork } from './config';
-import { createToolkit, createToolkitWithoutSigner } from './contracts';
+import { loadConfig } from './config';
+import { createToolkitWithoutSigner } from './contracts';
 import {
   startSandbox,
   killSandbox,
   awaitForSandbox
 } from '@oxheadalpha/tezos-tools';
-import { TezosToolkit, VIEW_LAMBDA } from '@taquito/taquito';
 
 export async function bootstrap(): Promise<void> {
   try {
@@ -18,8 +17,6 @@ export async function bootstrap(): Promise<void> {
       console.log(kleur.yellow('starting sandbox...'));
       await awaitForNetwork();
       console.log(kleur.green('sandbox started'));
-
-      await originateLambdaViewContract(config, 'bob');
     }
   } catch (err) {
     console.log(kleur.red('failed to start. ' + JSON.stringify(err)));
@@ -37,42 +34,4 @@ async function awaitForNetwork(): Promise<void> {
   const config = await loadConfig();
   const toolkit = await createToolkitWithoutSigner(config);
   await awaitForSandbox(toolkit);
-}
-
-async function originateLambdaViewContract(
-  config: Config,
-  orig_alias: string
-): Promise<void> {
-  const tezos = await createToolkit(orig_alias, config);
-  const a = await lambdaViewAddressIfExists(config, tezos);
-  if (a) return;
-
-  console.log(kleur.yellow(`originating Taquito lambda view contract...`));
-  const op = await tezos.contract.originate({
-    code: VIEW_LAMBDA.code,
-    storage: VIEW_LAMBDA.storage
-  });
-  const lambdaContract = await op.contract();
-
-  activeNetwork(config).lambdaView = lambdaContract.address;
-  saveConfig(config);
-
-  console.log(
-    kleur.yellow(
-      `originated Taquito lambda view ${kleur.green(lambdaContract.address)}`
-    )
-  );
-}
-
-async function lambdaViewAddressIfExists(
-  config: Config,
-  tz: TezosToolkit
-): Promise<string | undefined> {
-  const existingAddress = activeNetwork(config).lambdaView;
-  if (!existingAddress) return undefined;
-
-  return tz.contract
-    .at(existingAddress)
-    .then(c => c.address)
-    .catch(() => undefined);
 }

@@ -61,7 +61,7 @@ let burn_tokens (txs, storage : mint_burn_param * token_storage) : token_storage
     dec_balance (tx.owner, tx.amount, ledger)
   ) txs storage.ledger in
   let supply_change = get_total_supply_change txs in
-  let new_supply_opt = Michelson.is_nat (storage.total_supply - supply_change) in
+  let new_supply_opt = is_nat (storage.total_supply - supply_change) in
   let new_supply = match new_supply_opt with
   | None -> (failwith fa2_insufficient_balance : nat)
   | Some s -> s

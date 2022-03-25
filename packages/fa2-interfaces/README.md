@@ -426,7 +426,7 @@ implemented by providing just one constructor function with the following
 signature:
 
 ```typescript
-<T>(contract: Tzip12Contract, lambdaView?: address) => T
+<T>(contract: Tzip12Contract) => T
 ```
 
 The `T` type here is just an object(a record of functions) and can be
@@ -434,10 +434,8 @@ implemented anyway possible, including using a TypeScript class. If it is a
 TypeScript class, it has to be wrapped in a function like this:
 
 ```typescript
-export const MyContractApi = (
-  contract: Tzip12Contract,
-  lambdaView?: address
-): T => new MyClass(contract, lambdaView)
+export const MyContractApi = (contract: Tzip12Contract): T =>
+  new MyClass(contract);
 ```
 
 Now, we can extend our contract abstraction with the generic `.with` combinator:
@@ -467,12 +465,9 @@ export interface MyContract {
 Second, we define a constructor function with the contract calls implementation:
 
 ```typescript
-export const MyContractApi = (
-  contract: Tzip12Contract,
-  lambdaView?: address
-): MyContract => ({
+export const MyContractApi = (contract: Tzip12Contract): MyContract => ({
   setCounter: (counter: nat) => contract.methods.set_counter(counter),
-  getCounter: async () => contract.views.get_counter().read(lambdaView)
+  getCounter: async () => contract.views.get_counter().read()
 });
 ```
 
