@@ -27,7 +27,7 @@
   "scripts": {
     "clear": "yarn rimraf dist",
     "build:tests": "tsc -p tsconfig.test.json",
-    "build": "tsc -p .",
+    "build": "tsc -p . && chmod +x dist/tzgen.js",
     "prepare": "yarn clear && yarn build",
     "test-contracts": "jest --runInBand",
     "test": "(yarn start-sandbox && yarn test-contracts) ; yarn kill-sandbox",
