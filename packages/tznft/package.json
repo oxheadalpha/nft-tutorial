@@ -15,7 +15,7 @@
   "license": "MIT",
   "scripts": {
     "build:tests": "tsc -p tsconfig.test.json",
-    "build": "tsc -p .",
+    "build": "tsc -p . && chmod +x dist/tznft.js",
     "clear": "yarn rimraf dist",
     "prepare": "yarn clear && yarn build",
     "generate-contract": "yarn tzgen c contract_spec.json fa2_nft_asset",
