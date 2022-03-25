@@ -337,17 +337,17 @@ Below is the list of contract administration methods:
 * `.withSimpleAdmin` - adds the ability to set just one address to be the
   administrator of a contract. It allows you to call just 2 additional methods,
   `setAdmin` and `confirmAdmin`. For more information look
-  [here](src/interfaces/admin.ts#l10).
+  [here](src/interfaces/admin.ts#L10-L21).
   To initialize the storage, use
   `.with(simpleAdminStorage)`
 
 * `.withPausableSimpleAdmin` - adds the ability to pause and unpause the
-  contract. For more information look [here](src/interfaces/admin.ts#l35) To
+  contract. For more information look [here](src/interfaces/admin.ts#L35) To
   initialize the storage use `.with(pausableSimpleAdminStorage)`
 
 * `.withMultiAdmin` - adds the ability to have multiple admins for the same
   contract, as well as to add and remove admin. For more information look
-  [here](src/interfaces/admin.ts#l42). To initialize the storage use
+  [here](src/interfaces/admin.ts#L42). To initialize the storage use
   `.with(multiAdminStorage)`
 
 Below is the list of combinators that specify what kind of tokens the contract
@@ -367,7 +367,7 @@ parameters they can take.
 
 Below is the group of combinators that should be used on top of any one of the
 combinators from the previous group. You can find more details about each method
-that the combinators can add [here](src/interfaces/minter-combinators.ts#L17)
+that the combinators can add [here](src/interfaces/minter-combinators.ts#L17-L49)
 
 * `withMint` - specifies that the contract can mint new tokens.
 
@@ -386,7 +386,7 @@ are the details. To initialize the storage for this type of contract use
 `withFa2` adds the methods specified by
 [TZIP-12 standard](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md)
 that every FA2 contract is required to have. You can find the details
-[here](src/interfaces/fa2.ts#L135)
+[here](src/interfaces/fa2.ts#L135-L200)
 
 Here is a complete example:
 
