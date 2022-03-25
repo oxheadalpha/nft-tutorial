@@ -12,13 +12,9 @@ import { Fa2Contract } from './fa2';
  * await fa2Contract.transfer(...);
  * ```
  */
- export const Fa2 = (
-  contract: Tzip12Contract,
-  lambdaView?: address
-): Fa2Contract => {
+export const Fa2 = (contract: Tzip12Contract): Fa2Contract => {
   const self: Fa2Contract = {
-    queryBalances: async requests =>
-      contract.views.balance_of(requests).read(lambdaView),
+    queryBalances: async requests => contract.views.balance_of(requests).read(),
 
     hasNftTokens: async requests => {
       const responses = await self.queryBalances(requests);

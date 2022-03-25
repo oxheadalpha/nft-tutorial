@@ -239,7 +239,7 @@ export interface ContractApi {
    */
   with: <I extends ContractApi, O>(
     this: I,
-    createApi: (contract: Tzip12Contract, lambdaView?: address) => O
+    createApi: (contract: Tzip12Contract) => O
   ) => I & O;
 }
 
@@ -257,23 +257,14 @@ export interface TezosApi {
   >;
 
   /**
-   * Specify Taquito lambda view contract address to access contract CPS style
-   * view entry points.
-   */
-  useLambdaView: (lambdaView?: address) => TezosApi;
-
-  /**
    * Underlying `TezosToolkit`
    */
   toolkit: TezosToolkit;
 }
 
-const contractApi = (
-  contract: Tzip12Contract,
-  lambdaView?: address
-): ContractApi => ({
+const contractApi = (contract: Tzip12Contract): ContractApi => ({
   with(createApi) {
-    return { ...this, ...createApi(contract, lambdaView) };
+    return { ...this, ...createApi(contract) };
   }
 });
 
@@ -293,28 +284,23 @@ const contractApi = (
  * await nftContract.transfer(...);
  * ```
  * @param tzt Taquito toolkit connecting to a block chain
- * @param lambdaView Taquito lambda view contract address to access contract CPS
- * style view entry points ([see](https://tezostaquito.io/docs/lambda_view/)).
- * You need to deploy lambda view contract and use it address with the sandbox.
  * @returns {@link TezosApi} object to build contract access proxies with specified
  * contract
  */
-export const tezosApi = (tzt: TezosToolkit, lambdaView?: address): TezosApi => {
+export const tezosApi = (tzt: TezosToolkit): TezosApi => {
   tzt.addExtension(new Tzip12Module());
 
   return {
     at: async (contractAddress: address) => {
       const contract = await tzt.contract.at(contractAddress, tzip12);
       return {
-        ...contractApi(contract, lambdaView),
+        ...contractApi(contract),
         ...adminApi(),
         ...minterAdminApi(),
         ...fa2Api(),
         ...implementationApi()
       };
     },
-
-    useLambdaView: (lambdaView?: address) => tezosApi(tzt, lambdaView),
 
     toolkit: tzt
   };

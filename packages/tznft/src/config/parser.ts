@@ -20,7 +20,6 @@ const alias = z
 const network = z
   .object({
     providerUrl: z.string().url(),
-    lambdaView: address().optional(),
     aliases: partialRecord(alias)
   })
   .strict();

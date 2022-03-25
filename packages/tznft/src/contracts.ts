@@ -1,7 +1,7 @@
 import * as kleur from 'kleur';
 import * as path from 'path';
 import { BigNumber } from 'bignumber.js';
-import { TezosToolkit } from '@taquito/taquito';
+import { PollingSubscribeProvider, TezosToolkit } from '@taquito/taquito';
 import { char2Bytes } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { TokenMetadata } from '@taquito/tzip12';
@@ -38,9 +38,11 @@ export function createToolkitFromSigner(
 export function createToolkitWithoutSigner(config: Config): TezosToolkit {
   const providerUrl = activeNetwork(config).providerUrl;
   const toolkit = new TezosToolkit(providerUrl);
-  toolkit.setProvider({
-    config: { confirmationPollingIntervalSecond: 5 }
-  });
+  toolkit.setStreamProvider(
+    toolkit.getFactory(PollingSubscribeProvider)({
+      pollingIntervalMilliseconds: 5000
+    })
+  );
   return toolkit;
 }
 
@@ -183,14 +185,11 @@ export async function showBalances(
   const tz = await createToolkit(signer, config);
   const ownerAddress = await resolveAlias2Address(owner, config);
   const nftAddress = await resolveAlias2Address(contract, config);
-  const lambdaView = activeNetwork(config).lambdaView;
   const requests: fa2.BalanceRequest[] = tokens.map(t => {
     return { token_id: new BigNumber(t), owner: ownerAddress };
   });
 
-  const fa2Contract = (
-    await fa2.tezosApi(tz).useLambdaView(lambdaView).at(nftAddress)
-  ).withFa2();
+  const fa2Contract = (await fa2.tezosApi(tz).at(nftAddress)).withFa2();
 
   console.log(kleur.yellow(`querying NFT contract ${kleur.green(nftAddress)}`));
   const balances = await fa2Contract.queryBalances(requests);
@@ -309,8 +308,7 @@ export async function updateOperators(
   );
   const updates = batch
     .addOperators(resolvedAdd)
-    .removeOperators(resolvedRemove)
-    .updates;
+    .removeOperators(resolvedRemove).updates;
 
   const nftAddress = await resolveAlias2Address(contract, config);
 
