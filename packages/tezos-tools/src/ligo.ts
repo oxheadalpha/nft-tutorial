@@ -37,7 +37,7 @@ const compileContractImpl = async (
   main: string,
   dstFilePath: string
 ): Promise<void> => {
-  const cmd = `${ligoCmd} compile contract ${srcFilePath} -e ${main} -o ${dstFilePath}`;
+  const cmd = `${ligoCmd} compile contract ${srcFilePath} -e ${main} -o ${dstFilePath} -p ithaca`;
   await runCmd(cwd, cmd);
 };
 
