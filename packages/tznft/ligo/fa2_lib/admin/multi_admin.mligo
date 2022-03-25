@@ -54,7 +54,7 @@ let set_admin (new_admin, storage : address * admin_storage) : admin_storage =
 (*Only callable by admin*)
 let remove_admin (old_admin, storage : address * admin_storage) : admin_storage =
   let _ = fail_if_not_admin storage in
-  if(Set.size storage.admins = 1n)
+  if(Set.cardinal storage.admins = 1n)
   then (failwith "LAST_ADMIN" : admin_storage)
   else { storage with admins = Set.remove old_admin storage.admins; }
     
