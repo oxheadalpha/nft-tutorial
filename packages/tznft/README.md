@@ -4,7 +4,7 @@ This tutorial shows how to originate and interact with the FA2 NFT contract.
 The tutorial uses an FA2 NFT contract written in [LIGO](https://ligolang.org/)
 smart contract language and a command line interface (CLI) to originate and
 interact with the NFT contracts either on the
-[Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Hangzhou2net).
+[Flextesa](https://tezos.gitlab.io/flextesa/) sandbox or Tezos testnet (Ithacanet).
 
 **Disclaimer:** We highly recommend users to take necessary precautions before
 following this tutorial and interacting with experimental technology. Use this
@@ -76,7 +76,7 @@ and [TZIP-21](https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-21/tzip
 
 - [Docker](https://www.docker.com/) must be installed. You need docker to run
   Flextesa sandbox. You might skip docker installation if you plan to run this
-  tutorial on the testnet (Hangzhou2net) only.
+  tutorial on the testnet (Ithacanet) only.
 
 ### The CLI Tool
 
@@ -700,7 +700,7 @@ Token `1` now belongs to `bob`.
 also configure address aliases to sign Tezos operations and/or use them as command
 parameters when addresses are required. The default configuration that is created
 by `tznft init` command includes two pre-configured networks: `sandbox`
-and `testnet` (Hangzhou2net). Each pre-configured network has two bootstrap aliases:
+and `testnet` (Ithacanet). Each pre-configured network has two bootstrap aliases:
 `bob` and `alice`.
 
 #### Network Configuration Commands

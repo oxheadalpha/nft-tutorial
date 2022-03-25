@@ -17,7 +17,7 @@ export const defaultConfig: Config = {
       }
     },
     testnet: {
-      providerUrl: 'https://hangzhounet.smartpy.io',
+      providerUrl: 'https://ithacanet.smartpy.io',
       aliases: {
         bob: {
           address: 'tz1TKc3zQBMv7Rez77sX4JNdqMvG33LQrURk',
