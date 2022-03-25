@@ -15,12 +15,13 @@
   "license": "MIT",
   "scripts": {
     "build:tests": "tsc -p tsconfig.test.json",
-    "build": "tsc -p . && chmod +x dist/tznft.js",
+    "build": "yarn build-contract && yarn build-ts",
     "clear": "yarn rimraf dist",
     "prepare": "yarn clear && yarn build",
     "generate-contract": "yarn tzgen c contract_spec.json fa2_nft_asset",
     "compile-contract": "yarn tzgen michelson fa2_nft_asset fa2_nft_asset",
     "build-contract": "yarn generate-contract && yarn compile-contract",
+    "build-ts": "tsc -p . && chmod +x dist/tznft.js",
     "test-contract": "jest --runInBand",
     "test": "(yarn build-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
     "tznft": "./dist/tznft.js"
