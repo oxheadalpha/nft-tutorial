@@ -37,7 +37,7 @@ let inc_balance (owner, amt, ledger
 let dec_balance (owner, amt, ledger
     : address * nat * ledger) : ledger =
   let bal = get_balance_amt (owner, ledger) in
-  match Michelson.is_nat (bal - amt) with
+  match is_nat (bal - amt) with
   | None -> (failwith fa2_insufficient_balance : ledger)
   | Some new_bal ->
     if new_bal = 0n

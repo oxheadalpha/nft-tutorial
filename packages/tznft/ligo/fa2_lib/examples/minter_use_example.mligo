@@ -39,7 +39,7 @@ let transfer (storage, tx : storage * tx) : storage =
   | None -> 0n
   | Some bal -> bal 
   in
-  let l1 = match Michelson.is_nat (src_bal - tx.amount) with
+  let l1 = match is_nat (src_bal - tx.amount) with
   |None -> (failwith "NO_FUNDS" : ledger)
   |Some new_bal -> 
       Big_map.update Tezos.sender (Some new_bal) storage.ledger

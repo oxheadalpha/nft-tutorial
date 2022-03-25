@@ -4,6 +4,8 @@ import * as child from 'child_process';
 import { allCombinations } from './contract-modules-combination';
 import { generateTsInterfaceFileContent } from '../src/ts-interface-generator';
 
+jest.setTimeout(500000);
+
 describe('generate TypeScript interface', () => {
   let counter = 0;
 
