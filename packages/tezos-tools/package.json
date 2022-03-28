@@ -1,7 +1,7 @@
 {
   "name": "@oxheadalpha/tezos-tools",
   "version": "5.0.1",
-  "description": "Ligo FA2 non-fungible token contracts on Tezos",
+  "description": "TypeScript API for LIGO, Flextesa, IPFS helper tools",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
     "tezos",
