@@ -26,7 +26,7 @@ The repo has three following yarn workspaces (packages):
 ## How to Install And Use CLI Tool
 
 Run the following command to install `tznft` CLI
-`npm intsall -g @oxheadalpha/tznft`
+`npm install -g @oxheadalpha/tznft`
 
 You can learn `tznft` command options by running `$ tznft --help` command or
 following the [tutorial](./packages/tznft/README.md) steps.
