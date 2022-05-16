@@ -31,7 +31,7 @@ Run the following command to install `tznft` CLI
 You can learn `tznft` command options by running `$ tznft --help` command or
 following the [tutorial](./packages/tznft/README.md) steps.
 
-## How to Buld The Project
+## How to Build The Project
 
 ```sh
 $ yarn install
