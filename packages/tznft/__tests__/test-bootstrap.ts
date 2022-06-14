@@ -1,11 +1,11 @@
-import { TezosToolkit } from '@taquito/taquito';
+import { ContractProvider, TezosToolkit } from '@taquito/taquito';
 import { InMemorySigner } from '@taquito/signer';
 import { awaitForSandbox } from '@oxheadalpha/tezos-tools';
 import { TezosApi, tezosApi } from '@oxheadalpha/fa2-interfaces';
 
 export type TestApi = {
-  bob: TezosApi;
-  alice: TezosApi;
+  bob: TezosApi<ContractProvider>;
+  alice: TezosApi<ContractProvider>;
 };
 
 export async function bootstrap(): Promise<TestApi> {

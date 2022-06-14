@@ -1,7 +1,8 @@
 import {
   ContractMethod,
   ContractProvider,
-  MichelsonMap
+  MichelsonMap,
+  Wallet
 } from '@taquito/taquito';
 import { TokenMetadata } from '@taquito/tzip12';
 import { address, nat, bytes } from '../type-aliases';
@@ -106,7 +107,7 @@ export interface AddOperator {
 /**
  * Describes a "Remove Operator" operation
  */
- export interface RemoveOperator {
+export interface RemoveOperator {
   remove_operator: OperatorUpdateParams;
 }
 
@@ -132,7 +133,7 @@ export interface TokenMetadataInternal {
 /**
  * API to access FA2 contract
  */
-export interface Fa2Contract {
+export interface Fa2Contract<TProvider extends ContractProvider | Wallet> {
   /**
    * Query balances for multiple tokens and token owners.
    * Invokes FA2 contract `balance_of` entry point
@@ -154,33 +155,33 @@ export interface Fa2Contract {
   /**
    * Transfer tokens. In default implementation, only token owner or its operator
    * can transfer tokens from the owner address.
-   * 
+   *
    * This methods takes a list of transfers and executes them. Transfers can be
    * constructed manually but it is easier to use "Transfers Batch API" to do that.
    * Here is an example of using the batch API:
-   * 
+   *
    * ```typescript
    * const transfers = transferBatch()
    *   .withTransfer('tzFromAccount1', 'tzToAccount1', 1, 1)
    *   .withTransfer('tzFromAccount1', 'tzToAccount2', 2, 1)
    *   .transfers;
-   * 
+   *
    * const op = await fa2.runMethod(fa2Contract.transferTokens(transfers));
    * ```
-   * 
+   *
    * It will merge automatically subsequent transaction from the same source in order
    * to optimise gas.
    */
-  transferTokens: (transfers: Transfer[]) => ContractMethod<ContractProvider>;
+  transferTokens: (transfers: Transfer[]) => ContractMethod<TProvider>;
 
   /**
    * Update list of operators who can transfer tokens on behalf of the token
    * owner. In default implementation, only the owner can update its own operators.
    *
    * @param updates a list of either add or remove operator commands
-   * 
+   *
    * Updates here can be built manually or using batch API like this:
-   * 
+   *
    * ```typescript
    * const batch = operatorUpdateBatch().
    *   .addOperator('tzOwner1', 'tzOperator1', 1)
@@ -190,11 +191,9 @@ export interface Fa2Contract {
    *     { owner: 'tzOwner4', operator: 'tzOperator4', token_id: 4 }
    *   ])
    *   .updates;
-   * 
+   *
    * const op = await fa2.runMethod(fa2Contract.updateOperators(batch));
    * ```
    */
-  updateOperators: (
-    updates: OperatorUpdate[]
-  ) => ContractMethod<ContractProvider>;
+  updateOperators: (updates: OperatorUpdate[]) => ContractMethod<TProvider>;
 }

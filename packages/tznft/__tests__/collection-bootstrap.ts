@@ -8,7 +8,7 @@ import {
   createOffChainTokenMetadata,
   createSimpleNftMetadata
 } from '@oxheadalpha/fa2-interfaces';
-import { TezosToolkit } from '@taquito/taquito';
+import { ContractProvider, TezosToolkit } from '@taquito/taquito';
 import { loadFile } from '../src/config';
 import { createNftStorage } from '../src/nft-util';
 import { originateContract } from '@oxheadalpha/tezos-tools';
@@ -77,7 +77,10 @@ const tokenSimpleMeta = (tokenId: number) =>
 
 export const tokenMeta = tokenOnChainMeta;
 
-export const mintTestTokens = (nft: NftMintableContract, owner: address) => {
+export const mintTestTokens = (
+  nft: NftMintableContract<ContractProvider>,
+  owner: address
+) => {
   const tokens = [1, 2].map(tokenMeta);
   return nft.mint([{ owner, tokens }]);
 };

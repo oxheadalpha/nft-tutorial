@@ -9,6 +9,7 @@ import {
 
 import { TestApi, bootstrap } from './test-bootstrap';
 import { mintTestTokens, originateCollection } from './collection-bootstrap';
+import { ContractProvider } from '@taquito/taquito';
 
 jest.setTimeout(240000);
 
@@ -43,7 +44,7 @@ describe('FA2 Token Transfer Tests', () => {
   }
 
   const testTokensOwnership = async (
-    fa2: Fa2Contract,
+    fa2: Fa2Contract<ContractProvider>,
     owner: address
   ): Promise<boolean[]> =>
     fa2.hasNftTokens([

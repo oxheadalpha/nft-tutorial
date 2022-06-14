@@ -1,3 +1,4 @@
+import { ContractProvider, Wallet } from '@taquito/taquito';
 import { BigNumber } from 'bignumber.js';
 import { Tzip12Contract, address } from '../type-aliases';
 import { Fa2Contract } from './fa2';
@@ -12,8 +13,10 @@ import { Fa2Contract } from './fa2';
  * await fa2Contract.transfer(...);
  * ```
  */
-export const Fa2 = (contract: Tzip12Contract): Fa2Contract => {
-  const self: Fa2Contract = {
+export const Fa2 = <TProvider extends ContractProvider | Wallet>(
+  contract: Tzip12Contract<TProvider>
+): Fa2Contract<TProvider> => {
+  const self: Fa2Contract<TProvider> = {
     queryBalances: async requests => contract.views.balance_of(requests).read(),
 
     hasNftTokens: async requests => {

@@ -4,8 +4,13 @@ import {
   ContractProvider,
   OperationBatch,
   SendParams,
-  TransactionOperation
+  TransactionOperation,
+  TransactionWalletOperation,
+  Wallet,
+  WalletOperation,
+  WalletOperationBatch
 } from '@taquito/taquito';
+import { BatchWalletOperation } from '@taquito/taquito/dist/types/wallet/batch-operation';
 
 /**
  * Run and confirms a Taquito ContractMethod
@@ -17,10 +22,10 @@ import {
  * const op: TransactionOperation = await fa2.runMethod(fa2Contract.transferTokens(txs));
  * ```
  */
-export const runMethod = async (
-  cm: ContractMethod<ContractProvider>,
+export const runMethod = async <TProvider extends ContractProvider | Wallet>(
+  cm: ContractMethod<TProvider>,
   sendParams?: SendParams
-): Promise<TransactionOperation> => {
+): Promise<TransactionWalletOperation | TransactionOperation> => {
   const op = await cm.send(sendParams);
   await op.confirmation();
   return op;
@@ -42,8 +47,8 @@ export const runMethod = async (
  * ```
  */
 export const runBatch = async (
-  batch: OperationBatch
-): Promise<BatchOperation> => {
+  batch: OperationBatch | WalletOperationBatch
+): Promise<BatchOperation | BatchWalletOperation> => {
   const op = await batch.send();
   await op.confirmation();
   return op;

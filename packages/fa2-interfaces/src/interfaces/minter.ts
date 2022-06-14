@@ -1,9 +1,6 @@
-import {
-  ContractMethod,
-  ContractProvider
-} from '@taquito/taquito';
+import { ContractMethod, ContractProvider, Wallet } from '@taquito/taquito';
 import { TokenMetadataInternal } from './fa2';
-import { address, unit, nat, Contract } from '../type-aliases';
+import { address, nat } from '../type-aliases';
 
 export interface NftMintParam {
   owner: address;
@@ -31,33 +28,45 @@ export interface CreateFungibleTokenParam {
   metadata: TokenMetadataInternal;
 }
 
-export interface FreezableContract {
-  mintFreeze(): ContractMethod<ContractProvider>;
+export interface FreezableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  mintFreeze(): ContractMethod<TProvider>;
 }
 
-export interface NftMintableContract {
-  mint(params: NftMintParam[]): ContractMethod<ContractProvider>;
+export interface NftMintableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  mint(params: NftMintParam[]): ContractMethod<TProvider>;
 }
 
-export interface NftBurnableContract {
-  burn(params: NftBurnParam[]): ContractMethod<ContractProvider>;
+export interface NftBurnableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  burn(params: NftBurnParam[]): ContractMethod<TProvider>;
 }
 
-export interface FungibleMintableContract {
-  mint(params: FungibleMintBurnParam[]): ContractMethod<ContractProvider>;
+export interface FungibleMintableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  mint(params: FungibleMintBurnParam[]): ContractMethod<TProvider>;
 }
 
-export interface FungibleBurnableContract {
-  burn(params: FungibleMintBurnParam[]): ContractMethod<ContractProvider>;
+export interface FungibleBurnableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  burn(params: FungibleMintBurnParam[]): ContractMethod<TProvider>;
 }
 
-export interface MultiFungibleMintableContract {
-  createTokens(
-    param: CreateFungibleTokenParam[]
-  ): ContractMethod<ContractProvider>;
-  mint(params: MultiFungibleMintBurnParam[]): ContractMethod<ContractProvider>;
+export interface MultiFungibleMintableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  createTokens(param: CreateFungibleTokenParam[]): ContractMethod<TProvider>;
+  mint(params: MultiFungibleMintBurnParam[]): ContractMethod<TProvider>;
 }
 
-export interface MultiFungibleBurnableContract {
-  burn(params: MultiFungibleMintBurnParam[]): ContractMethod<ContractProvider>;
+export interface MultiFungibleBurnableContract<
+  TProvider extends ContractProvider | Wallet
+> {
+  burn(params: MultiFungibleMintBurnParam[]): ContractMethod<TProvider>;
 }

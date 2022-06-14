@@ -1,6 +1,9 @@
 import * as kleur from 'kleur';
-import { TezosToolkit } from '@taquito/taquito';
-import { Contract } from '@oxheadalpha/fa2-interfaces';
+import {
+  ContractAbstraction,
+  ContractProvider,
+  TezosToolkit
+} from '@taquito/taquito';
 
 /**
  * Originate a contract on blockchain
@@ -17,7 +20,7 @@ export const originateContract = async (
   code: string,
   storage: string | object,
   name: string
-): Promise<Contract> => {
+): Promise<ContractAbstraction<ContractProvider>> => {
   try {
     const origParam =
       typeof storage === 'string' ? { code, init: storage } : { code, storage };
