@@ -57,10 +57,7 @@
     "bignumber.js": "^9.0.1",
     "child_process": "^1.0.2",
     "commander": "^9.0.0",
-    "fs": "^0.0.1-security",
     "kleur": "^4.1.4",
-    "path": "^0.12.7",
-    "process": "^0.11.10",
     "zod": "^3.11.6"
   },
   "gitHead": "1c80cc3e323b7dcadaf1ff8c3b80ebfe8d407369"
