@@ -426,16 +426,21 @@ implemented by providing just one constructor function with the following
 signature:
 
 ```typescript
-<T>(contract: Tzip12Contract) => T
+<TProvider extends ContractProvider | Wallet, TInterface<TProvider>>(
+    contract: Tzip12Contract<TProvider>) => TInterface<TProvider>
 ```
 
-The `T` type here is just an object(a record of functions) and can be
+Introducing `TProvider` type parameter lets you define one contract interface
+implementation to use with both regular and wallet Tezos toolkits.
+The `TInterface` type here is just an object(a record of functions) and can be
 implemented anyway possible, including using a TypeScript class. If it is a
 TypeScript class, it has to be wrapped in a function like this:
 
 ```typescript
-export const MyContractApi = (contract: Tzip12Contract): T =>
-  new MyClass(contract);
+export const MyContractApi = <
+  TProvider extends ContractProvider | Wallet, TInterface<TProvider>>(
+    contract: Tzip12Contract<TProvider>): TInterface<TProvider> =>
+  new MyClass<TProvider>(contract);
 ```
 
 Now, we can extend our contract abstraction with the generic `.with` combinator:
@@ -456,8 +461,8 @@ accepts a `nat` parameter and [CPS-style view](https://tezostaquito.io/docs/lamb
 First, we define a TypeScript interface for those contract entry points:
 
 ```typescript
-export interface MyContract {
-  setCounter(counter: nat): ContractMethod<ContractProvider>;
+export interface MyContract<TProvider extends ContractProvider | Wallet> {
+  setCounter(counter: nat): ContractMethod<TProvider>;
   getCounter(): Promise<nat>;
 }
 ```
@@ -465,7 +470,9 @@ export interface MyContract {
 Second, we define a constructor function with the contract calls implementation:
 
 ```typescript
-export const MyContractApi = (contract: Tzip12Contract): MyContract => ({
+export const MyContractApi = <
+  TProvider extends ContractProvider | Wallet>(
+    contract: Tzip12Contract<TProvider>): MyContract<TProvider> => ({
   setCounter: (counter: nat) => contract.methods.set_counter(counter),
   getCounter: async () => contract.views.get_counter().read()
 });
