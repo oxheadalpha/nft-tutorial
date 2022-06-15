@@ -297,6 +297,12 @@ export interface ContractApi<TProvider extends ContractProvider | Wallet> {
   ) => I & O;
 }
 
+export type ContractApiBuilder<TProvider extends ContractProvider | Wallet> =
+  ContractApi<TProvider> &
+    UseAdmin<TProvider> &
+    UseFa2<TProvider> &
+    UseImplementation<TProvider> &
+    UseMinterAdmin<TProvider>;
 /**
  * Interface to create contract APIs
  **/
@@ -304,15 +310,7 @@ export interface TezosApi<TProvider extends ContractProvider | Wallet> {
   /**
    * Create an API to the contract at the specified address
    */
-  at: (
-    contractAddress: address
-  ) => Promise<
-    ContractApi<TProvider> &
-      UseAdmin<TProvider> &
-      UseFa2<TProvider> &
-      UseImplementation<TProvider> &
-      UseMinterAdmin<TProvider>
-  >;
+  at: (contractAddress: address) => Promise<ContractApiBuilder<TProvider>>;
 
   /**
    * Underlying `TezosToolkit`
