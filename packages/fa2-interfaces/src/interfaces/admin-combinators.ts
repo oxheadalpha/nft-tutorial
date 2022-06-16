@@ -3,7 +3,7 @@ import {
   ContractProvider,
   Wallet
 } from '@taquito/taquito';
-import { PausableContract } from '..';
+import { PausableContract } from './admin';
 import { address } from '../type-aliases';
 import {
   MultiAdminContract,
