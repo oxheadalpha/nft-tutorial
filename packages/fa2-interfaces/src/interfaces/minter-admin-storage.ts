@@ -1,5 +1,5 @@
 import { MichelsonMap } from '@taquito/taquito';
-import { storageBuilder } from '..';
+import { storageBuilder } from './storage-builder';
 import { unit, address } from '../type-aliases';
 
 const addMinterAdminKey = <S>(s: S) => ({ minter_admin: s });
