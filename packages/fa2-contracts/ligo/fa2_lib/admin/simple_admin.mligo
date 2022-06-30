@@ -13,27 +13,28 @@ let confirm_new_admin (storage : admin_storage) : admin_storage =
   match storage.pending_admin with
   | None -> (failwith "NO_PENDING_ADMIN" : admin_storage)
   | Some pending ->
-    if Tezos.sender = pending
+    if Tezos.get_sender () = pending
     then { storage with
       pending_admin = (None : address option);
-      admin = Tezos.sender;
+      admin = Tezos.get_sender ();
     }
     else (failwith "NOT_A_PENDING_ADMIN" : admin_storage)
 
 (* Fails if sender is not admin *)
 let fail_if_not_admin_ext (storage, extra_msg : admin_storage * string) : unit =
-  if Tezos.sender <> storage.admin
+  if Tezos.get_sender () <> storage.admin
   then failwith ("NOT_AN_ADMIN" ^  " "  ^ extra_msg)
   else unit
 
 (* Fails if sender is not admin *)
 let fail_if_not_admin (storage : admin_storage) : unit =
-  if Tezos.sender <> storage.admin
+  if Tezos.get_sender () <> storage.admin
   then failwith "NOT_AN_ADMIN"
   else unit
 
 (* Returns true if sender is admin *)
-let is_admin (storage : admin_storage) : bool = Tezos.sender = storage.admin
+let is_admin (storage : admin_storage) : bool =
+  Tezos.get_sender () = storage.admin
 
 [@inline]
 let fail_if_paused (_storage : admin_storage) : unit = unit

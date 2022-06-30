@@ -14,7 +14,7 @@ type minter_admin_entrypoints =
 (* True if sender is a minter *)
 [@inline]
 let is_minter (storage : minter_admin_storage) : bool =
-  Big_map.mem Tezos.sender storage
+  Big_map.mem (Tezos.get_sender ()) storage
 
 
 let minter_admin_main(param, storage : minter_admin_entrypoints * minter_admin_storage)

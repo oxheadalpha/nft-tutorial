@@ -13,30 +13,30 @@ type admin_entrypoints =
   | Pause of bool
 
 let confirm_new_admin (storage : admin_storage) : admin_storage =
-  if Big_map.mem Tezos.sender storage.pending_admins
+  if Big_map.mem (Tezos.get_sender ()) storage.pending_admins
   then 
   { storage with
-    admins = Set.add Tezos.sender storage.admins;
-    pending_admins = Big_map.remove Tezos.sender storage.pending_admins;
+    admins = Set.add (Tezos.get_sender ()) storage.admins;
+    pending_admins = Big_map.remove (Tezos.get_sender ()) storage.pending_admins;
   }
   else (failwith "NOT_A_PENDING_ADMIN" : admin_storage)
 
 (* Fails if sender is not admin *)
 let fail_if_not_admin_ext (storage, extra_msg : admin_storage * string) : unit =
-  if not Set.mem Tezos.sender storage.admins
+  if not Set.mem (Tezos.get_sender ()) storage.admins
   then failwith ("NOT_AN_ADMIN" ^  " "  ^ extra_msg)
   else unit
 
 (* Fails if sender is not admin *)
 let fail_if_not_admin (storage : admin_storage) : unit =
-  if not Set.mem Tezos.sender storage.admins
+  if not Set.mem (Tezos.get_sender ()) storage.admins
   then failwith "NOT_AN_ADMIN"
   else unit
 
 (* Returns true if sender is admin *)
 [@inline]
 let is_admin (storage : admin_storage) : bool =
-  Set.mem Tezos.sender storage.admins
+  Set.mem (Tezos.get_sender ()) storage.admins
 
 [@inline]
 let fail_if_paused (storage : admin_storage) : unit =
