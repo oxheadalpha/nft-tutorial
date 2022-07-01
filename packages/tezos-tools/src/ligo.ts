@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as child from 'child_process';
 import * as kleur from 'kleur';
 
-const ligoVersion = '0.38.1';
+const ligoVersion = '0.45.0';
 const ligoCmd = `docker run --rm -v "$PWD":"$PWD" -w "$PWD" ligolang/ligo:${ligoVersion} "$@"`;
 
 const resolveFilePath = (cwd: string, filePath: string) =>
@@ -37,7 +37,7 @@ const compileContractImpl = async (
   main: string,
   dstFilePath: string
 ): Promise<void> => {
-  const cmd = `${ligoCmd} compile contract ${srcFilePath} -e ${main} -o ${dstFilePath} -p ithaca`;
+  const cmd = `${ligoCmd} compile contract ${srcFilePath} -e ${main} -o ${dstFilePath}`;
   await runCmd(cwd, cmd);
 };
 

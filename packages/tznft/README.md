@@ -865,5 +865,4 @@ commands:
 
 ### TBD
 
-- Support custom NFT contracts
 - Support TZIP-16 off-chain views

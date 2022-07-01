@@ -59,7 +59,8 @@ let transfer (txs, validate_op, ops_storage, ledger
         if dst.token_id <> 0n
         then (failwith fa2_token_undefined : ledger)
         else
-          let _ = validate_op (tx.from_, Tezos.sender, dst.token_id, ops_storage) in
+          let _ = validate_op
+            (tx.from_, (Tezos.get_sender ()), dst.token_id, ops_storage) in
           let lll = dec_balance (tx.from_, dst.amount, ll)
         in 
         inc_balance(dst.to_, dst.amount, lll) 

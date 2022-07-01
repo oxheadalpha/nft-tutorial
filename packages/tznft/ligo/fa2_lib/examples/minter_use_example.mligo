@@ -28,21 +28,21 @@ let fail_if_not_minter(storage : storage) : unit =
 
 
 let mint (ledger, amt : ledger * nat) : ledger =
-  let old_bal = match Big_map.find_opt Tezos.sender ledger with
+  let old_bal = match Big_map.find_opt (Tezos.get_sender ()) ledger with
   | None -> 0n
   | Some bal -> bal
   in
-  Big_map.update Tezos.sender (Some (old_bal + amt)) ledger
+  Big_map.update (Tezos.get_sender ()) (Some (old_bal + amt)) ledger
 
 let transfer (storage, tx : storage * tx) : storage =
-  let src_bal = match Big_map.find_opt Tezos.sender storage.ledger with
+  let src_bal = match Big_map.find_opt (Tezos.get_sender ()) storage.ledger with
   | None -> 0n
   | Some bal -> bal 
   in
   let l1 = match is_nat (src_bal - tx.amount) with
   |None -> (failwith "NO_FUNDS" : ledger)
   |Some new_bal -> 
-      Big_map.update Tezos.sender (Some new_bal) storage.ledger
+      Big_map.update (Tezos.get_sender ()) (Some new_bal) storage.ledger
   in
 
   let dst_bal = match Big_map.find_opt tx.to_ storage.ledger with
