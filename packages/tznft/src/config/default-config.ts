@@ -17,17 +17,17 @@ export const defaultConfig: Config = {
       }
     },
     testnet: {
-      providerUrl: 'https://ithacanet.smartpy.io',
+      providerUrl: 'https://rpc.ghostnet.teztnets.xyz',
       aliases: {
         bob: {
-          address: 'tz1MwszbozUX5nwYLBVkzkroxar2Ac38MfVR',
+          address: 'tz1Miryg4mYhjwdpgvJwhx2qbxg7P5yFnXMZ',
           secret:
-            'edskRmmCnZ5pDJf1wMff6FN3VPsB9XFDQJYC8uVnYSwNYERvYXcmH6FFQH4ZBou2kLe3FPSSYWK5uW6YX8JtxPKqJsvYTFCoQf'
+            'edskS7aL2vKFKULbDtEUJMf4DEsF9z3UKHx7cHuzmoxy1bpkSwUwnzPANzo2rzH5k47V9rYNSvXxMdLndHYV5FKVTtaVJMAEKz'
         },
         alice: {
-          address: 'tz1TszbzQL5UUy5SH8dNf1cGZrtJ7F7RfFvo',
+          address: 'tz1SaYjmWWmH18iagKoFnbz843X9Zuyshi5e',
           secret:
-            'edskRhuVzh7pG7VEHKFyn2xDUUGHHuWmjQRVRA8KNentDBKE8Konmb1joaUsiCZFzZdXKNB3cA6F8gQU8WpMcrXrqDj9T5rUCC'
+            'edskS16XUWLW9iqJkFL5YHcTghZQAT6zf3JGrwtpvnZCbwJD9qZaMNDQUcDozHAU6fNQ1PfFKZ3JQZ1MKDH9TXMM6GJr1NXKLU'
         }
       }
     },
