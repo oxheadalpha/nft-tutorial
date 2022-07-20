@@ -52,8 +52,8 @@
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^6.1.0",
     "@oxheadalpha/tezos-tools": "^6.1.0",
-    "@taquito/signer": "13.0.0",
-    "@taquito/taquito": "13.0.0",
+    "@taquito/signer": "^13.0.1",
+    "@taquito/taquito": "^13.0.1",
     "bignumber.js": "^9.0.1",
     "child_process": "^1.0.2",
     "commander": "^9.0.0",
