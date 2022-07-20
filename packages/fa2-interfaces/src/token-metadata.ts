@@ -34,7 +34,8 @@ export const createOnChainTokenMetadata = (
   Object.entries(metadata)
     .filter(([k, v]) => k !== 'token_id' && v !== undefined && v !== null)
     .forEach(([k, v]) => {
-      const stringValue = JSON.stringify(v, null, 2);
+      const stringValue =
+        typeof v === 'string' ? v : JSON.stringify(v, null, 2);
       m.token_info.set(k, char2Bytes(stringValue));
     });
   return m;
