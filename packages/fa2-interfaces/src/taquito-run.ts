@@ -7,7 +7,6 @@ import {
   TransactionOperation,
   TransactionWalletOperation,
   Wallet,
-  WalletOperation,
   WalletOperationBatch
 } from '@taquito/taquito';
 import { BatchWalletOperation } from '@taquito/taquito/dist/types/wallet/batch-operation';
