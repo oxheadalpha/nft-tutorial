@@ -224,7 +224,7 @@ standards for more details.
 the following parameters:
 
 - `<metadata_file>` path to a metadata JSON file
-- `--errors-only` optional flag to suppress validation warning messages
+- `--errors_only` optional flag to suppress validation warning messages
 
 Example:
 
@@ -332,7 +332,7 @@ standard for more details.
 following parameters:
 
 - `<metadata_file>` path to a metadata JSON file
-- `--errors-only` optional flag to suppress validation warning messages
+- `--errors_only` optional flag to suppress validation warning messages
 
 Example:
 

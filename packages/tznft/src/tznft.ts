@@ -107,7 +107,7 @@ program
   .arguments('<metadata_file>')
   .option(
     '-e, --errors_only', 
-    'show only validation error and suppres warnings')
+    'show only validation error and suppress warnings')
   .action(async (metaFile, options) =>
     metadata.validateCollectionMeta(metaFile, options.errors_only));
 
