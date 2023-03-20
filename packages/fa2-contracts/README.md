@@ -257,7 +257,7 @@ Example:
 
 ```sh
 $ yarn tzgen michelson my_contract.mligo my_contract.tz
-ligo version 0.38.1
+ligo version 0.62.0
 
 compiled contract to ~/my_project/dist/my_contract.tz file
 ```
