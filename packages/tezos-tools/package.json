@@ -24,7 +24,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p .  && chmod +x dist/compile-contract.js",
+    "build": "yarn tsc -p .  && chmod +x dist/compile-contract.js",
     "clear": "yarn rimraf dist",
     "prepare": "yarn clear && yarn build",
     "compile-contract": "./dist/compile-contract.js"
