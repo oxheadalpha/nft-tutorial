@@ -23,20 +23,28 @@ describe('generate TypeScript interface', () => {
       const code = generateTsInterfaceFileContent(params);
       const fileName = './src/test.ts';
       fs.writeFileSync(fileName, code);
-      await compileFile(fileName);
+      // ./src/test.ts is configured in tsconfig.test.generated.json
+      await compileFile();
       fs.unlinkSync(fileName);
     }
   );
 });
 
-const compileFile = async (fileName: string): Promise<string> =>
+/**
+ * Compiles ./src/test.ts file configured in tsconfig.test.generated.json
+ */
+const compileFile = async (): Promise<string> =>
   new Promise<string>((resolve, reject) =>
-    child.exec(`yarn tsc ${fileName} --noEmit`, {}, (err, stdout, errout) => {
-      if (errout || err) {
-        console.log(`Compilation error ${errout} ${stdout}`);
-        reject(err?.message + '\n' + stdout);
-      } else {
-        resolve(stdout);
+    child.exec(
+      `yarn tsc -p tsconfig.test.generated.json --noEmit`,
+      {},
+      (err, stdout, errout) => {
+        if (errout || err) {
+          console.log(`Compilation error ${errout} ${stdout}`);
+          reject(err?.message + '\n' + stdout);
+        } else {
+          resolve(stdout);
+        }
       }
-    })
+    )
   );
