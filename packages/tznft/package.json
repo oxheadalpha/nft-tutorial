@@ -14,14 +14,14 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build:tests": "tsc -p tsconfig.test.json",
+    "build:tests": "yarn tsc -p tsconfig.test.json",
     "build": "yarn build-contract && yarn build-ts",
     "clear": "yarn rimraf dist",
     "prepare": "yarn clear && yarn build",
     "generate-contract": "yarn tzgen c contract_spec.json fa2_nft_asset",
     "compile-contract": "yarn tzgen michelson fa2_nft_asset fa2_nft_asset",
     "build-contract": "yarn generate-contract && yarn compile-contract",
-    "build-ts": "tsc -p . && chmod +x dist/tznft.js",
+    "build-ts": "yarn tsc -p . && chmod +x dist/tznft.js",
     "test-contract": "jest --runInBand",
     "test": "(yarn build-contract && yarn start-sandbox && yarn test-contract) ; yarn kill-sandbox",
     "tznft": "./dist/tznft.js"
@@ -52,8 +52,8 @@
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^7.2.0",
     "@oxheadalpha/tezos-tools": "^7.2.0",
-    "@taquito/signer": "^15.0.0",
-    "@taquito/taquito": "^15.0.0",
+    "@taquito/signer": "^16.0.0",
+    "@taquito/taquito": "^16.0.0",
     "bignumber.js": "^9.1.1",
     "child_process": "^1.0.2",
     "commander": "^9.0.0",
