@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as child from 'child_process';
 import * as kleur from 'kleur';
 
-const ligoVersion = '0.62.0';
+const ligoVersion = '0.67.1';
 const ligoCmd = `docker run --rm -v "$PWD":"$PWD" -w "$PWD" ligolang/ligo:${ligoVersion} "$@"`;
 
 const resolveFilePath = (cwd: string, filePath: string) =>
