@@ -6,16 +6,21 @@ Null minter - everyone can mint
 #if !NULL_MINTER_ADMIN
 #define NULL_MINTER_ADMIN
 
-type minter_admin_storage = unit
-type minter_admin_entrypoints = never
+#include "minter_admin_sig.mligo"
 
-(* True if sender is a minter *)
-[@inline]
-let is_minter (_storage : minter_admin_storage) : bool = true
+module MinterAdmin : MinterAdminSig = struct
+
+  type storage = unit
+  type entrypoints = never
+
+  (* True if sender is a minter *)
+  [@inline]
+  let is_minter (_storage : storage) : bool = true
 
 
-let minter_admin_main(_param, storage : minter_admin_entrypoints * minter_admin_storage)
-    : (operation list) * minter_admin_storage =
-  ([] : operation list), storage
+  let main(_param, storage : entrypoints * storage) : (operation list) * storage =
+    ([] : operation list), storage
+
+end
 
 #endif

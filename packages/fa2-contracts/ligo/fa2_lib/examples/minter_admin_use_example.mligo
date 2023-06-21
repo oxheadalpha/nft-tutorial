@@ -2,8 +2,8 @@ type ledger = (address, nat) big_map
 
 type storage = {
   ledger : ledger;
-  admin : admin_storage;
-  minter_admin : minter_admin_storage;
+  admin : Admin.storage;
+  minter_admin : MinterAdmin.storage;
 }
 
 type tx = {
@@ -14,15 +14,15 @@ type tx = {
 type entrypoints =
   | Transfer of tx
   | Mint of nat
-  | Admin of admin_entrypoints
-  | MinterAdmin of minter_admin_entrypoints
+  | Admin of Admin.entrypoints
+  | MinterAdmin of MinterAdmin.entrypoints
 
 
 [@inline]
 let fail_if_not_minter(storage : storage) : unit =
-  if is_admin(storage.admin)
+  if Admin.is_admin(storage.admin)
   then unit (* admin can always mint *)
-  else if is_minter(storage.minter_admin)
+  else if MinterAdmin.is_minter(storage.minter_admin)
   then unit (* minter can mint *)
   else failwith "NOT_A_MINTER"
 
@@ -55,24 +55,24 @@ let transfer (storage, tx : storage * tx) : storage =
 let main(p, s : entrypoints * storage) : (operation list) * storage =
   match p with
   | Transfer t ->
-    let _ = fail_if_paused s.admin in
+    let _ = Admin.fail_if_paused s.admin in
     let new_s = transfer (s, t) in
     ([] : operation list), new_s
 
 
   | Mint amt -> 
-    let _ = fail_if_paused s.admin in
+    let _ = Admin.fail_if_paused s.admin in
     let _ = fail_if_not_minter s in
     let new_ledger = mint (s.ledger, amt) in
     ([] : operation list), {s with ledger = new_ledger; }
 
   | Admin a ->
-    let _ = fail_if_not_admin s.admin in
-    let ops, new_admin = admin_main (a, s.admin) in
+    let _ = Admin.fail_if_not_admin s.admin in
+    let ops, new_admin = Admin.main (a, s.admin) in
     ops, {s with admin = new_admin; }
 
   | MinterAdmin a -> 
-    let _ = fail_if_not_admin_ext (s.admin, "ONLY_ADMIN_CAN_CHANGE_MINTER") in
-    let ops, new_admin = minter_admin_main (a, s.minter_admin) in
+    let _ = Admin.fail_if_not_admin_ext (s.admin, "ONLY_ADMIN_CAN_CHANGE_MINTER") in
+    let ops, new_admin = MinterAdmin.main (a, s.minter_admin) in
     ops, {s with minter_admin = new_admin; }
 
