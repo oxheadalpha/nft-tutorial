@@ -3,19 +3,19 @@
 
 module type AdminSig = sig
 
-type admin_storage
+type storage
 
-type admin_entrypoints
+type entrypoints
 
-val fail_if_not_admin : admin_storage -> unit
+val fail_if_not_admin : storage -> unit
 
-val fail_if_not_admin_ext : admin_storage * string -> unit
+val fail_if_not_admin_ext : storage * string -> unit
 
-val is_admin : admin_storage -> bool
+val is_admin : storage -> bool
 
-val fail_if_paused : admin_storage -> unit
+val fail_if_paused : storage -> unit
 
-val admin_main : admin_entrypoints * admin_storage -> (operation list) * admin_storage
+val main : entrypoints * storage -> (operation list) * storage
 
 end
 
