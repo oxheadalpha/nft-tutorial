@@ -57,17 +57,17 @@ A generic implemenation of the asset contract.
 
 type asset_storage = {
   metadata : contract_metadata;
-  assets : token_storage;
-  admin : admin_storage;
-  minter_admin : minter_admin_storage;
-  minter : minter_storage;
+  assets : Token.storage;
+  admin : Admin.storage;
+  minter_admin : MinterAdmin.storage;
+  minter : Minter.storage;
 }
 
 type asset_entrypoints =
   | Assets of fa2_entry_points
-  | Admin of admin_entrypoints
-  | Minter_admin of minter_admin_entrypoints
-  | Minter of minter_entrypoints
+  | Admin of Admin.entrypoints
+  | Minter_admin of minterAdmin.entrypoints
+  | Minter of Minter.entrypoints
 
 
 #if USE_ADMIN_AS_MINTER
