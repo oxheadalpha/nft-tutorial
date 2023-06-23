@@ -9,7 +9,7 @@ type ledger
 
 type storage
 
-val fa2_main fa2_entry_points * storage -> (operation  list) * storage
+val fa2_main : fa2_entry_points * storage -> (operation  list) * storage
 
 end
 
