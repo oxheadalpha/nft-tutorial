@@ -8,6 +8,8 @@
 
 module Minter : MinterSig = struct
 
+ type token_storage = Token.storage
+
   #if CAN_FREEZE
 
   type storage = bool
@@ -134,7 +136,7 @@ module Minter : MinterSig = struct
 
 
   let main (param, _tokens, _minter
-    : minter_entrypoints * Token.storage * storage)
+    : entrypoints * Token.storage * storage)
     : Token.storage * storage =
     match param with
     | Never _ -> (failwith "INVALID_INVOCATION" : Token.storage * storage)

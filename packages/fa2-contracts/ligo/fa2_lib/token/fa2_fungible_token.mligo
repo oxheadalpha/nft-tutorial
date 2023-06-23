@@ -11,12 +11,12 @@ Implementation of the FA2 interface for the single fungible token contract.
 #include "../fa2/fa2_errors.mligo"
 #include "../fa2/lib/fa2_operator_lib.mligo"
 
-type Token : TokenSig = struct
+module Token : TokenSig = struct
 
   (**  owner address -> balance *)
   type ledger = (address, nat) big_map
 
-  type token_storage = {
+  type storage = {
     ledger : ledger;
     operators : operator_storage;
     token_metadata : (nat, token_metadata) big_map;
@@ -93,14 +93,14 @@ type Token : TokenSig = struct
       if id = 0n then unit else failwith fa2_token_undefined
     ) tokens
 
-  let fa2_transfer (txs, storage : (transfer list) * token_storage)
-      : token_storage =
-    let new_ledger = transfer (txs, default_operator_validator, storage.operators, storage.ledger) in
+  let fa2_transfer (txs, storage : (transfer list) * storage) : storage =
+    let new_ledger = transfer
+      (txs, default_operator_validator, storage.operators, storage.ledger) in
     let new_storage = { storage with ledger = new_ledger; } in
     new_storage
 
-  let fa2_main (param, storage : fa2_entry_points * token_storage)
-      : (operation  list) * token_storage =
+  let fa2_main (param, storage : fa2_entry_points * storage)
+      : (operation  list) * storage =
     match param with
     | Transfer txs -> 
       (* 

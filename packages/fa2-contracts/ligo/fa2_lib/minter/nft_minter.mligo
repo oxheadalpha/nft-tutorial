@@ -9,6 +9,8 @@
 
 module Minter : MinterSig = struct
 
+  type token_storage = Token.storage
+
   #if CAN_FREEZE
 
   type storage = bool

@@ -66,7 +66,7 @@ type asset_storage = {
 type asset_entrypoints =
   | Assets of fa2_entry_points
   | Admin of Admin.entrypoints
-  | Minter_admin of minterAdmin.entrypoints
+  | Minter_admin of MinterAdmin.entrypoints
   | Minter of Minter.entrypoints
 
 
@@ -74,14 +74,15 @@ type asset_entrypoints =
 
 [@inline]
 let fail_if_not_minter (storage : asset_storage) : unit =
-  let _ = fail_if_not_admin storage.admin in
+  let _ = Admin.fail_if_not_admin storage.admin in
   unit
 
 #else
 
 [@inline]
 let fail_if_not_minter (storage : asset_storage) : unit =
-  if is_minter storage.minter_admin then unit else failwith "NOT_MINTER"
+  if MinterAdmin.is_minter storage.minter_admin
+  then unit else failwith "NOT_MINTER"
 
 #endif
 
@@ -89,26 +90,26 @@ let asset_main (param, storage : asset_entrypoints * asset_storage)
     : (operation list) * asset_storage =
   match param with
   | Assets a ->
-    let _ = fail_if_paused storage.admin in
-    let ops, new_assets = fa2_main (a, storage.assets) in
+    let _ = Admin.fail_if_paused storage.admin in
+    let ops, new_assets = Token.fa2_main (a, storage.assets) in
     let new_s = { storage with assets = new_assets; } in
     (ops, new_s)
 
   | Admin a ->
-    let ops, new_admin = admin_main (a, storage.admin) in
+    let ops, new_admin = Admin.main (a, storage.admin) in
     let new_s = { storage with admin = new_admin; } in
     (ops, new_s)
 
   | Minter_admin a -> 
-    let _ = fail_if_not_admin storage.admin in
-    let ops, new_minter = minter_admin_main (a, storage.minter_admin) in
+    let _ = Admin.fail_if_not_admin storage.admin in
+    let ops, new_minter = MinterAdmin.main (a, storage.minter_admin) in
     let new_s = { storage with minter_admin = new_minter; } in
     (ops, new_s)
 
   | Minter m ->
-    let _ = fail_if_paused storage.admin in
+    let _ = Admin.fail_if_paused storage.admin in
     let _ = fail_if_not_minter storage in
-    let new_assets, new_minter = minter_main (m, storage.assets, storage.minter) in
+    let new_assets, new_minter = Minter.main (m, storage.assets, storage.minter) in
     let new_s = { storage with assets = new_assets; minter = new_minter; } in
     ([] : operation list), new_s
 
