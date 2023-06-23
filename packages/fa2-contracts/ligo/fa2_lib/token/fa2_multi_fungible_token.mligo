@@ -6,7 +6,16 @@
 #include "../fa2/fa2_errors.mligo"
 #include "../fa2/lib/fa2_operator_lib.mligo"
 
-module Token : TokenSig = struct
+module type MutiFungibleTokenSig = sig
+  type ledger
+  type storage
+  type total_supply
+
+  val inc_balance : address * token_id * nat * ledger -> ledger
+  val dec_balance : address * token_id * nat * ledger -> ledger
+end 
+
+module TokenImpl = struct
 
   (* (owner,token_id) -> balance *)
   type ledger = ((address * token_id), nat) big_map
@@ -107,5 +116,8 @@ module Token : TokenSig = struct
       ([] : operation list), new_storage
 
 end
+
+module Token : TokenSig = TokenImpl
+module MutiFungibleToken : MutiFungibleTokenSig = TokenImpl
 
 #endif

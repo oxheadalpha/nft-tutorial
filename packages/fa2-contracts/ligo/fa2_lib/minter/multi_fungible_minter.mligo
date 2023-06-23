@@ -72,20 +72,23 @@ module Minter : MinterSig = struct
         total_supply = new_supply;
       }
 
-  let create_tokens (txs, storage : create_token_param * Token.storage) : Token.storage =
+  let create_tokens (txs, storage : create_token_param * Token.storage)
+      : Token.storage =
     List.fold create_token txs storage
 
-  let  mint_update_balances (txs, ledger : mint_burn_param * ledger) : ledger =
-    let mint = fun (l, tx : ledger * mint_burn_tx) ->
-      inc_balance (tx.owner, tx.token_id, tx.amount, l) in
+  let  mint_update_balances (txs, ledger : mint_burn_param * Token.ledger)
+      : Token.ledger =
+    let mint = fun (l, tx : Token.ledger * mint_burn_tx) ->
+      MutiFungibleToken.inc_balance (tx.owner, tx.token_id, tx.amount, l) in
     List.fold mint txs ledger
 
   let mint_update_total_supply (txs, total_supplies
-      : mint_burn_param * total_supply) : total_supply =
-    let update = fun (supplies, tx : total_supply * mint_burn_tx) ->
+      : mint_burn_param * MutiFungibleToken.total_supply)
+      : MutiFungibleToken.total_supply =
+    let update = fun (supplies, tx : MutiFungibleToken.total_supply * mint_burn_tx) ->
       let supply_opt = Big_map.find_opt tx.token_id supplies in
       match supply_opt with
-      | None -> (failwith fa2_token_undefined : total_supply)
+      | None -> (failwith fa2_token_undefined : MutiFungibleToken.total_supply)
       | Some ts ->
         let new_s = ts + tx.amount in
         Big_map.update tx.token_id (Some new_s) supplies in
@@ -93,27 +96,28 @@ module Minter : MinterSig = struct
     List.fold update txs total_supplies
 
   let mint_tokens (param, storage : mint_burn_param * Token.storage) 
-      : token_storage =
-      let new_ledger = mint_update_balances (param, storage.ledger) in
-      let new_supply = mint_update_total_supply (param, storage.total_supply) in
-      let new_s = { storage with
-        ledger = new_ledger;
-        total_supply = new_supply;
-      } in
-      new_s
+      : Token.storage =
+    let new_ledger = mint_update_balances (param, storage.ledger) in
+    let new_supply = mint_update_total_supply (param, storage.total_supply) in
+    let new_s = { storage with
+      ledger = new_ledger;
+      total_supply = new_supply;
+    } in
+    new_s
 
   let burn_update_balances(txs, ledger : (mint_burn_tx list) * Token.ledger)
       : Token.ledger =
     let burn = fun (l, tx : Token.ledger * mint_burn_tx) ->
-      dec_balance (tx.owner, tx.token_id, tx.amount, l) in
+      MutiFungibleToken.dec_balance (tx.owner, tx.token_id, tx.amount, l) in
     List.fold burn txs ledger
 
   let burn_update_total_supply (txs, total_supplies
-      : mint_burn_param * total_supply) : total_supply =
-    let update = fun (supplies, tx : total_supply * mint_burn_tx) ->
+      : mint_burn_param * MutiFungibleToken.total_supply)
+      : MutiFungibleToken.total_supply =
+    let update = fun (supplies, tx : MutiFungibleToken.total_supply * mint_burn_tx) ->
       let supply_opt = Big_map.find_opt tx.token_id supplies in
       match supply_opt with
-      | None -> (failwith fa2_token_undefined : total_supply)
+      | None -> (failwith fa2_token_undefined : MutiFungibleToken.total_supply)
       | Some ts ->
         let new_s = match is_nat (ts - tx.amount) with
         | None -> (failwith fa2_insufficient_balance : nat)
