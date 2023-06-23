@@ -439,10 +439,30 @@ const contractCode =
 
 ### Common LIGO Admin Module Signature
 
-* `admin_storage` type of the admin storage (used as a part of the whole
+```ocaml
+module type AdminSig = sig
+
+  type storage
+
+  type entrypoints
+
+  val fail_if_not_admin : storage -> unit
+
+  val fail_if_not_admin_ext : storage * string -> unit
+
+  val is_admin : storage -> bool
+
+  val fail_if_paused : storage -> unit
+
+  val main : entrypoints * storage -> (operation list) * storage
+
+end
+```
+
+* `storage` type of the admin storage (used as a part of the whole
   contract storage).
-* `admin_entrypoints` type of the admin entry points
-* `admin_main` implementation of the admin entry points (used by the contract
+* `entrypoints` type of the admin entry points
+* `main` implementation of the admin entry points (used by the contract
   main entry point).
 * `is_admin`, `fail_if_not_admin`, `fail_if_not_admin_ext` functions to guard
   privileged operations in the contract implementation.
@@ -450,9 +470,23 @@ const contractCode =
 
 ### Common LIGO Minter Admin Module Signature
 
-* `minter_admin_storage` type of the minter admin storage (used as a part of the
+```ocaml
+module type MinterAdminSig = sig
+
+  type storage
+
+  type entrypoints
+
+  val is_minter : storage -> bool
+
+  val main : entrypoints * storage -> (operation list) * storage
+
+end
+```
+
+* `storage` type of the minter admin storage (used as a part of the
   whole contract storage).
-* `minter_admin_entrypoints` type of the minter admin entry points.
-* `minter_admin_main` implementation of the minter admin entry points (used by the
+* `entrypoints` type of the minter admin entry points.
+* `main` implementation of the minter admin entry points (used by the
   contract main entry point).
 * `is_minter` function to guard access to mint tokens operation(s).

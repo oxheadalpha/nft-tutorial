@@ -3,13 +3,13 @@
 
 module type MinterAdminSig = sig
 
-type storage
+  type storage
 
-type entrypoints
+  type entrypoints
 
-val is_minter : storage -> bool
+  val is_minter : storage -> bool
 
-val main : entrypoints * storage -> (operation list) * storage
+  val main : entrypoints * storage -> (operation list) * storage
 
 end
 
