@@ -14,7 +14,7 @@ module Token : TokenSig = struct
   (* token_id -> total_supply *)
   type total_supply = (token_id, nat) big_map
 
-  type token_storage = {
+  type storage = {
     ledger : ledger;
     operators : operator_storage;
     total_supply : total_supply;
@@ -54,7 +54,7 @@ module Token : TokenSig = struct
   @param validate_op function that validates of the tokens from the particular owner can be transferred. 
   *)
   let transfer (txs, validate_op, storage
-      : (transfer list) * operator_validator * token_storage)
+      : (transfer list) * operator_validator * storage)
       : ledger =
     let make_transfer = fun (l, tx : ledger * transfer) ->
       List.fold 
@@ -85,8 +85,8 @@ module Token : TokenSig = struct
     Tezos.transaction responses 0mutez p.callback
 
 
-  let fa2_main (param, storage : fa2_entry_points * token_storage)
-      : (operation  list) * token_storage =
+  let fa2_main (param, storage : fa2_entry_points * storage)
+      : (operation  list) * storage =
     match param with
     | Transfer txs -> 
       (* 
