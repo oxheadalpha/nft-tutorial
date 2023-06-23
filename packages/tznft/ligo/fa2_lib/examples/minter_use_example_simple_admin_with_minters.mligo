@@ -7,6 +7,6 @@
 (* #include "../minter_admin/null_minter_admin.mligo" *)
 #include "../minter_admin/multi_minter_admin.mligo"
 
-#include "minter_use_example.mligo"
+#include "minter_admin_use_example.mligo"
 
-(* uses main function from  minter_use_example.mligo *)
+(* uses main function from minter_use_example.mligo *)

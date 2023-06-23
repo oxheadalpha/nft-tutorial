@@ -1,58 +1,63 @@
 #if !SIMPLE_ADMIN
 #define SIMPLE_ADMIN
 
-type admin_storage = {
-  admin : address;
-  pending_admin : address option;
-}
-type admin_entrypoints =
-  | Set_admin of address
-  | Confirm_admin of unit
+#include "./admin_sig.mligo"
 
-let confirm_new_admin (storage : admin_storage) : admin_storage =
-  match storage.pending_admin with
-  | None -> (failwith "NO_PENDING_ADMIN" : admin_storage)
-  | Some pending ->
-    if Tezos.get_sender () = pending
-    then { storage with
-      pending_admin = (None : address option);
-      admin = Tezos.get_sender ();
+module Admin : AdminSig = struct
+
+    type storage = {
+    admin : address;
+    pending_admin : address option;
     }
-    else (failwith "NOT_A_PENDING_ADMIN" : admin_storage)
+    type entrypoints =
+    | Set_admin of address
+    | Confirm_admin of unit
 
-(* Fails if sender is not admin *)
-let fail_if_not_admin_ext (storage, extra_msg : admin_storage * string) : unit =
-  if Tezos.get_sender () <> storage.admin
-  then failwith ("NOT_AN_ADMIN" ^  " "  ^ extra_msg)
-  else unit
+    let confirm_new_admin (storage : storage) : storage =
+    match storage.pending_admin with
+    | None -> (failwith "NO_PENDING_ADMIN" : storage)
+    | Some pending ->
+      if Tezos.get_sender () = pending
+      then { storage with
+        pending_admin = (None : address option);
+        admin = Tezos.get_sender ();
+      }
+      else (failwith "NOT_A_PENDING_ADMIN" : storage)
 
-(* Fails if sender is not admin *)
-let fail_if_not_admin (storage : admin_storage) : unit =
-  if Tezos.get_sender () <> storage.admin
-  then failwith "NOT_AN_ADMIN"
-  else unit
+    (* Fails if sender is not admin *)
+    let fail_if_not_admin_ext (storage, extra_msg : storage * string) : unit =
+    if Tezos.get_sender () <> storage.admin
+    then failwith ("NOT_AN_ADMIN" ^  " "  ^ extra_msg)
+    else unit
 
-(* Returns true if sender is admin *)
-let is_admin (storage : admin_storage) : bool =
-  Tezos.get_sender () = storage.admin
+    (* Fails if sender is not admin *)
+    let fail_if_not_admin (storage : storage) : unit =
+    if Tezos.get_sender () <> storage.admin
+    then failwith "NOT_AN_ADMIN"
+    else unit
 
-[@inline]
-let fail_if_paused (_storage : admin_storage) : unit = unit
+    (* Returns true if sender is admin *)
+    let is_admin (storage : storage) : bool =
+    Tezos.get_sender () = storage.admin
 
-(*Only callable by admin*)
-let set_admin (new_admin, storage : address * admin_storage) : admin_storage =
-  let _ = fail_if_not_admin storage in
-  { storage with pending_admin = Some new_admin; }
+    [@inline]
+    let fail_if_paused (_storage : storage) : unit = unit
 
-let admin_main(param, storage : admin_entrypoints * admin_storage)
-    : (operation list) * admin_storage =
-  match param with
-  | Set_admin new_admin ->
-      let new_s = set_admin (new_admin, storage) in
-      (([] : operation list), new_s)
+    (*Only callable by admin*)
+    let set_admin (new_admin, storage : address * storage) : storage =
+    let _ = fail_if_not_admin storage in
+    { storage with pending_admin = Some new_admin; }
 
-  | Confirm_admin _ ->
-      let new_s = confirm_new_admin storage in
-      (([]: operation list), new_s)
+    let main(param, storage : entrypoints * storage) : (operation list) * storage =
+    match param with
+    | Set_admin new_admin ->
+        let new_s = set_admin (new_admin, storage) in
+        (([] : operation list), new_s)
+
+    | Confirm_admin _ ->
+        let new_s = confirm_new_admin storage in
+        (([]: operation list), new_s)
+
+end
 
 #endif

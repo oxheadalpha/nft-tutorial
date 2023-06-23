@@ -6,26 +6,27 @@ This is an example how to incorporate admin module into a contract
 #include "../admin/simple_admin.mligo"
 (* #include "../admin/pausable_simple_admin.mligo" *)
 (* #include "../admin/multi_admin.mligo" *)
+(* #include "../admin/no_admin.mligo" *)
 
 
 type storage = {
   number : nat;
-  admin : admin_storage;
+  admin : Admin.storage;
 }
 
 type entrypoints =
   | Increment of nat
-  | Admin of admin_entrypoints
+  | Admin of Admin.entrypoints
 
 let main(p, s : entrypoints * storage) =
   match p with
   | Increment n ->
-    let _ = fail_if_paused s.admin in
+    let _ = Admin.fail_if_paused s.admin in
     let new_s = { s with number = s.number + n; } in
     ([] : operation list), new_s
 
   | Admin a ->
-    let _ = fail_if_not_admin s.admin in
+    let _ = Admin.fail_if_not_admin s.admin in
     (* let _ = fail_if_not_admin_ext (s.admin, "BOO") in *)
-    let ops, new_admin = admin_main (a, s.admin) in
-    ops, {s with admin = new_admin; }
+    let ops, new_admin = Admin.main (a, s.admin) in
+    ops, { s with admin = new_admin; }

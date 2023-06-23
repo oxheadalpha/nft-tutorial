@@ -6,25 +6,31 @@ No admin - everyone is an admin
 #if !NO_ADMIN
 #define NO_ADMIN
 
-type admin_storage = unit
-type admin_entrypoints = never
+#include "./admin_sig.mligo"
 
-(* Fails if sender is not admin*)
-[@inline]
-let fail_if_not_admin (_storage : admin_storage) : unit = unit
+module Admin : AdminSig = struct
 
-[@inline]
-let fail_if_not_admin_ext (_storage, _extra_msg : admin_storage * string) : unit = unit
+  type storage = unit
+  type entrypoints = never
 
-(* Returns true if sender is admin *)
-[@inline]
-let is_admin (_storage : admin_storage) : bool = true
+  (* Fails if sender is not admin*)
+  [@inline]
+  let fail_if_not_admin (_storage : storage) : unit = unit
 
-[@inline]
-let fail_if_paused (_storage : admin_storage) : unit = unit
+  [@inline]
+  let fail_if_not_admin_ext (_storage, _extra_msg : storage * string) : unit = unit
 
-let admin_main(_param, storage : admin_entrypoints * admin_storage)
-    : (operation list) * admin_storage = ([] : operation list), storage
+  (* Returns true if sender is admin *)
+  [@inline]
+  let is_admin (_storage : storage) : bool = true
+
+  [@inline]
+  let fail_if_paused (_storage : storage) : unit = unit
+
+  let main(_param, storage : entrypoints * storage)
+      : (operation list) * storage = ([] : operation list), storage
+
+end
 
 #endif
 
