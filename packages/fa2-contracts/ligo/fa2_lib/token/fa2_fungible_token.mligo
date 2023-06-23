@@ -11,7 +11,15 @@ Implementation of the FA2 interface for the single fungible token contract.
 #include "../fa2/fa2_errors.mligo"
 #include "../fa2/lib/fa2_operator_lib.mligo"
 
-module Token : TokenSig = struct
+module type FungibleTokenSig = sig
+  type ledger
+  type storage
+
+  val inc_balance : address * nat * ledger -> ledger
+  val dec_balance : address * nat * ledger -> ledger
+end
+
+module TokenImpl = struct
 
   (**  owner address -> balance *)
   type ledger = (address, nat) big_map
@@ -120,5 +128,8 @@ module Token : TokenSig = struct
       ([] : operation list), new_storage
 
 end
+
+module Token : TokenSig = TokenImpl
+module FungibleToken : FungibleTokenSig = TokenImpl 
 
 #endif

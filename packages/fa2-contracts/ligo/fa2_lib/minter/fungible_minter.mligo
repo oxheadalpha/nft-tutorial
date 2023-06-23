@@ -8,10 +8,11 @@
 
 module Minter : MinterSig = struct
 
+  type token_storage = Token.storage
+
   #if CAN_FREEZE
 
   type storage = bool
-  type token_storage = Token.storage
 
   [@inline]
   let fail_if_frozen (storage: storage) : unit =
@@ -52,7 +53,7 @@ module Minter : MinterSig = struct
 
   let mint_tokens (txs, storage : mint_burn_param * Token.storage) : Token.storage =
     let new_ledger = List.fold (fun (ledger, tx: Token.ledger * mint_burn_tx) ->
-      Token.inc_balance (tx.owner, tx.amount, ledger)
+      FungibleToken.inc_balance (tx.owner, tx.amount, ledger)
     ) txs storage.ledger in
     let supply_change = get_total_supply_change txs in
     { storage with
@@ -61,8 +62,8 @@ module Minter : MinterSig = struct
     }
     
   let burn_tokens (txs, storage : mint_burn_param * Token.storage) : Token.storage =
-    let new_ledger = List.fold (fun (ledger, tx: ledger * mint_burn_tx) ->
-      Token.dec_balance (tx.owner, tx.amount, ledger)
+    let new_ledger = List.fold (fun (ledger, tx: Token.ledger * mint_burn_tx) ->
+      FungibleToken.dec_balance (tx.owner, tx.amount, ledger)
     ) txs storage.ledger in
     let supply_change = get_total_supply_change txs in
     let new_supply_opt = is_nat (storage.total_supply - supply_change) in
