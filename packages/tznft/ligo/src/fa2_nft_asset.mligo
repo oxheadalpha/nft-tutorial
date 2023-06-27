@@ -33,6 +33,8 @@ make sense if at least one of "CAN_MINT", "CAN_BURN" is selected.
 (* #define USE_FUNGIBLE_TOKEN *)
 (* #define USE_MULTI_FUNGIBLE_TOKEN *)
 
-(** Contract entry point is "asset_main" function *)
+(** Contract entry point is "Asset.main" function *)
 #include "../fa2_lib/fa2_asset.mligo"
+
+let asset_main = Asset.main
 

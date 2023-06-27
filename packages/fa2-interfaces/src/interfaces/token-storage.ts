@@ -14,13 +14,13 @@ const common = storageBuilder(
   }
 );
 
-const addAssetsKey = <S>(s: S) => ({ assets: s });
+const addTokensKey = <S>(s: S) => ({ tokens: s });
 
 export const nftStorage = common
   .withF(() => ({
     ledger: new MichelsonMap<nat, address>()
   }))
-  .transformResult(addAssetsKey);
+  .transformResult(addTokensKey);
 
 export type NftStorage = ReturnType<typeof nftStorage.build>;
 
@@ -37,7 +37,7 @@ export const fungibleTokenStorage = common
     ledger: new MichelsonMap<address, nat>()
   }))
   .withF(fungibleTotalSupply)
-  .transformResult(addAssetsKey);
+  .transformResult(addTokensKey);
 
 export type FungibleTokenStorage = ReturnType<
   typeof fungibleTokenStorage.build
@@ -57,7 +57,7 @@ const addMultiFungibleTotalSupply = (
 export const multiFungibleTokenStorage = common
   .withF(multiFungibleLedger)
   .transformResult(addMultiFungibleTotalSupply)
-  .transformResult(addAssetsKey);
+  .transformResult(addTokensKey);
 
 export type MultiFungibleTokenStorage = ReturnType<
   typeof multiFungibleTokenStorage.build
