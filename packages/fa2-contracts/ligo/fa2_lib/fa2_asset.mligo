@@ -54,63 +54,66 @@ A generic implemenation of the asset contract.
 #include "./minter/multi_fungible_minter.mligo"
 #endif
 
+module Asset = struct
 
-type asset_storage = {
-  metadata : contract_metadata;
-  assets : Token.storage;
-  admin : Admin.storage;
-  minter_admin : MinterAdmin.storage;
-  minter : Minter.storage;
-}
+  type storage = {
+    metadata : contract_metadata;
+    tokens : Token.storage;
+    admin : Admin.storage;
+    minter_admin : MinterAdmin.storage;
+    minter : Minter.storage;
+  }
 
-type asset_entrypoints =
-  | Assets of fa2_entry_points
-  | Admin of Admin.entrypoints
-  | Minter_admin of MinterAdmin.entrypoints
-  | Minter of Minter.entrypoints
+  type entrypoints =
+    | Tokens of fa2_entry_points
+    | Admin of Admin.entrypoints
+    | Minter_admin of MinterAdmin.entrypoints
+    | Minter of Minter.entrypoints
 
 
 #if USE_ADMIN_AS_MINTER
 
-[@inline]
-let fail_if_not_minter (storage : asset_storage) : unit =
-  let _ = Admin.fail_if_not_admin storage.admin in
-  unit
+  [@inline]
+  let fail_if_not_minter (storage : storage) : unit =
+    let _ = Admin.fail_if_not_admin storage.admin in
+    unit
 
 #else
 
-[@inline]
-let fail_if_not_minter (storage : asset_storage) : unit =
-  if MinterAdmin.is_minter storage.minter_admin
-  then unit else failwith "NOT_MINTER"
+  [@inline]
+  let fail_if_not_minter (storage : storage) : unit =
+    if MinterAdmin.is_minter storage.minter_admin
+    then unit else failwith "NOT_MINTER"
 
 #endif
 
-let asset_main (param, storage : asset_entrypoints * asset_storage)
-    : (operation list) * asset_storage =
-  match param with
-  | Assets a ->
-    let _ = Admin.fail_if_paused storage.admin in
-    let ops, new_assets = Token.fa2_main (a, storage.assets) in
-    let new_s = { storage with assets = new_assets; } in
-    (ops, new_s)
+  let main (param, storage : entrypoints * storage)
+      : (operation list) * storage =
+    match param with
+    | Tokens a ->
+      let _ = Admin.fail_if_paused storage.admin in
+      let ops, new_tokens = Token.fa2_main (a, storage.tokens) in
+      let new_s = { storage with tokens = new_tokens; } in
+      (ops, new_s)
 
-  | Admin a ->
-    let ops, new_admin = Admin.main (a, storage.admin) in
-    let new_s = { storage with admin = new_admin; } in
-    (ops, new_s)
+    | Admin a ->
+      let ops, new_admin = Admin.main (a, storage.admin) in
+      let new_s = { storage with admin = new_admin; } in
+      (ops, new_s)
 
-  | Minter_admin a -> 
-    let _ = Admin.fail_if_not_admin storage.admin in
-    let ops, new_minter = MinterAdmin.main (a, storage.minter_admin) in
-    let new_s = { storage with minter_admin = new_minter; } in
-    (ops, new_s)
+    | Minter_admin a -> 
+      let _ = Admin.fail_if_not_admin storage.admin in
+      let ops, new_minter = MinterAdmin.main (a, storage.minter_admin) in
+      let new_s = { storage with minter_admin = new_minter; } in
+      (ops, new_s)
 
-  | Minter m ->
-    let _ = Admin.fail_if_paused storage.admin in
-    let _ = fail_if_not_minter storage in
-    let new_assets, new_minter = Minter.main (m, storage.assets, storage.minter) in
-    let new_s = { storage with assets = new_assets; minter = new_minter; } in
-    ([] : operation list), new_s
+    | Minter m ->
+      let _ = Admin.fail_if_paused storage.admin in
+      let _ = fail_if_not_minter storage in
+      let new_tokens, new_minter = Minter.main (m, storage.tokens, storage.minter) in
+      let new_s = { storage with tokens = new_tokens; minter = new_minter; } in
+      ([] : operation list), new_s
+
+end
 
 #endif
