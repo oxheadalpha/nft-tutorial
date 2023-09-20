@@ -865,6 +865,10 @@ commands:
   alias sarah has been added tznft.json config file was updated
   ```
 
+  Warning: If you choose to store a new private key in tznft.json file in the
+  working directory. Use extreme caution when using private keys for the Tezos
+  mainnet.
+
 - `remove-alias <alias>` remove alias from the selected network configuration.
 
   Example:
@@ -874,10 +878,6 @@ commands:
 
   alias john has been deleted
   ```
-
-  Warning: If you choose to store a new private key in tznft.json file in the
-  working directory. Use extreme caution when using private keys for the Tezos
-  mainnet.
 
 - `show-tz-balance <owner>` show Tezos account balance in mutez. `<owner>` is
   an address or configured account alias.
