@@ -2,8 +2,12 @@ import * as kleur from 'kleur';
 import { validateAddress, ValidationResult } from '@taquito/utils';
 import { InMemorySigner } from '@taquito/signer';
 import { loadFile } from './config';
-import { createToolkitFromSigner } from './contracts';
+import {
+  createToolkitFromSigner,
+  createToolkitWithoutSigner
+} from './contracts';
 import { loadConfig, activeNetwork, Config, Alias, saveConfig } from './config';
+import { newKeys } from '@oxheadalpha/tezos-tools';
 
 export async function showAlias(alias: string): Promise<void> {
   const config = await loadConfig();
@@ -90,6 +94,27 @@ async function activateFaucet(
     await op.confirmation();
     console.log(kleur.yellow('faucet account activated'));
   }
+}
+
+export async function generateKeys(alias?: string): Promise<void> {
+  const { pkh, secret } = await newKeys();
+  console.log(
+    kleur.green('new keys generated:') +
+      formatAlias('', { secret, address: pkh })
+  );
+  if (alias) addAlias(alias, secret);
+}
+
+export async function showTezosBalance(owner: string): Promise<void> {
+  const config = await loadConfig();
+  const toolkit = createToolkitWithoutSigner(config);
+  const ownerAddress = await resolveAlias2Address(owner, config);
+  const balance = await toolkit.tz.getBalance(ownerAddress);
+  console.log(
+    `Owner ${kleur.green(ownerAddress)} has ${kleur.green(
+      balance.toFormat()
+    )} mutez`
+  );
 }
 
 interface AliasDef {

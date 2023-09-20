@@ -853,6 +853,22 @@ commands:
   john	tz1NfTBQM9QpZpEY6GSvdw3XBpyEjLLGhcEU	edskRzaCrGEDr1Ras1U55U73dXoLfQQJyuwE95rSkqbydxUS4oS3fGmWywbaVcYw7DLH34zedoJzwMQxzAXQdixi5QzYC5pGJ6
   ```
 
+- `gen-keys --alias <alias>` generate a new set of Tezos account keys. If `alias`
+  option is specified, add newly generated keys to config.
+
+  Example:
+
+  ```sh
+  $ tznft gen-keys --alias sarah
+
+  new keys generated:	tz1VHJ4U4WyF58VWDyFCQ76EFV9BcFkzMPr2 edsk4M6wiX4pKX9SfgB6HDdSsYXtMuki4ryn6q3fHv3Vj5DSit9Ghn
+  alias sarah has been added tznft.json config file was updated
+  ```
+
+  **Warning**: If you choose to store a new private key in `tznft.json` file
+  in the working directory. Use extreme caution when using private keys for
+  the Tezos mainnet.
+
 - `remove-alias <alias>` remove alias from the selected network configuration.
 
   Example:
@@ -861,6 +877,17 @@ commands:
   $ tznft remove-alias john
 
   alias john has been deleted
+  ```
+
+- `show-tz-balance <owner>` show Tezos account balance in mutez. `<owner>` is
+  an address or configured account alias.
+
+  Example:
+
+  ```sh
+  $ tznft show-tz-balance sarah
+
+  Owner tz1VHJ4U4WyF58VWDyFCQ76EFV9BcFkzMPr2 has 100,000,000 mutez
   ```
 
 ### TBD

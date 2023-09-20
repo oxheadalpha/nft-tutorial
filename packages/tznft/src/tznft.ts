@@ -83,6 +83,25 @@ program
 
 //prettier-ignore
 program
+  .command('gen-keys')
+  .alias('gk')
+  .description('generate new Tezos account keys')
+  .option(
+    '-a, --alias <alias>',
+    'optional alias to add to the configuration'
+  )
+  .action(({alias}) => aliasConf.generateKeys(alias));
+
+//prettier-ignore
+program
+  .command('show-tz-balance')
+  .alias('shtzb')
+  .description('show address Tezos balance for the owner address')
+  .argument('<owner>')
+  .action(aliasConf.showTezosBalance);
+
+//prettier-ignore
+program
   .command('remove-alias')
   .alias('rma')
   .description('remove address alias from the configuration')

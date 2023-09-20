@@ -9,6 +9,8 @@ TypeScript API for
 
 * Pinning files and directories to Pinata IPFS.
 
+* Generate Tezos keys.
+
 ## Scripts
 
 `start-sandbox` starts Flextesa sandbox.
@@ -35,6 +37,19 @@ Example:
 
 ```sh
 $ yarn compile-contract ligo/examples/fa2_asset_use_example.mligo  asset_main fa2_asset.tz
+```
+
+
+`gen-keys` generates a pair of a new secret key and public key hash (tz address).
+
+Example:
+
+```sh
+$ yarn gen-keys
+{
+  pkh: 'tz1cxxQ75tknhruvyweB1tndLD4r1EkvCfMA',
+  secret: 'edsk3gCeSu8F1vGuJYWrxHCN2nvYgSn3wTRJmFSwG1TgWSEJWrCLv4'
+}
 ```
 
 ## API
@@ -174,6 +189,24 @@ import { originateContract } from '@oxheadalpha/tezos-tools';
 
 const contract = await originateContract(tz, code, storage, 'nft');
 return contract.address;
+```
+
+### Generate Tezos Keys
+
+``` typescript
+/**
+ * @param keyType prefix to append to a generated key. The default value is 'edsk2'
+ * @returns `{pkh, secret}` where `pkh` if a public key hash (tz address) and
+ * `secret` is a secret key.
+ */
+async function newKeys(): Promise<{pkh, secret}>
+```
+
+Usage example:
+
+```typescript
+  import { newKeys } from '@oxheadalpha/tezos-tools';
+  const {pkh, secret} = await newKeys();
 ```
 
 ### Pinata IPFS
