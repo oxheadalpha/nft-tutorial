@@ -4,6 +4,7 @@ import { InMemorySigner } from '@taquito/signer';
 import { loadFile } from './config';
 import { createToolkitFromSigner } from './contracts';
 import { loadConfig, activeNetwork, Config, Alias, saveConfig } from './config';
+import { newKeys } from '@oxheadalpha/tezos-tools';
 
 export async function showAlias(alias: string): Promise<void> {
   const config = await loadConfig();
@@ -90,6 +91,15 @@ async function activateFaucet(
     await op.confirmation();
     console.log(kleur.yellow('faucet account activated'));
   }
+}
+
+export async function generateKeys(alias?: string): Promise<void> {
+  const { pkh, secret } = await newKeys();
+  console.log(
+    kleur.green('new keys generated:') +
+      formatAlias('', { secret, address: pkh })
+  );
+  if (alias) addAlias(alias, secret);
 }
 
 interface AliasDef {
