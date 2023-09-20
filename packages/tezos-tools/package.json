@@ -24,20 +24,24 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "yarn tsc -p .  && chmod +x dist/compile-contract.js",
+    "build": "yarn tsc -p .  && chmod +x dist/compile-contract.js && chmod +x dist/gen-keys.js",
     "clear": "yarn rimraf dist",
     "prepare": "yarn clear && yarn build",
-    "compile-contract": "./dist/compile-contract.js"
+    "compile-contract": "./dist/compile-contract.js",
+    "gen-keys": "./dist/gen-keys.js"
   },
   "bin": {
     "kill-sandbox": "./flextesa/kill-sandbox.sh",
     "start-sandbox": "./flextesa/start-sandbox.sh",
-    "compile-contract": "./dist/compile-contract.js"
+    "compile-contract": "./dist/compile-contract.js",
+    "gen-keys": "./dist/gen-keys.js"
   },
   "dependencies": {
     "@oxheadalpha/fa2-interfaces": "^9.0.0",
     "@pinata/sdk": "^1.1.23",
     "@taquito/taquito": "^17.0.0",
+    "@taquito/signer": "^17.0.0",
+    "@taquito/utils": "^17.0.0",
     "async-retry": "^1.3.3",
     "child_process": "^1.0.2",
     "kleur": "^4.1.4"
