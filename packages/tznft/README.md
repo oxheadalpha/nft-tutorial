@@ -865,9 +865,9 @@ commands:
   alias sarah has been added tznft.json config file was updated
   ```
 
-  Warning: If you choose to store a new private key in tznft.json file in the
-  working directory. Use extreme caution when using private keys for the Tezos
-  mainnet.
+  **Warning**: If you choose to store a new private key in `tznft.json` file
+  in the working directory. Use extreme caution when using private keys for
+  the Tezos mainnet.
 
 - `remove-alias <alias>` remove alias from the selected network configuration.
 
