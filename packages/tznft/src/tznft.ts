@@ -94,6 +94,14 @@ program
 
 //prettier-ignore
 program
+  .command('show-tz-balance')
+  .alias('shtzb')
+  .description('show address Tezos balance for the owner address')
+  .argument('<owner>')
+  .action(aliasConf.showTezosBalance);
+
+//prettier-ignore
+program
   .command('remove-alias')
   .alias('rma')
   .description('remove address alias from the configuration')
