@@ -42,7 +42,7 @@ describe('test compilation for contract module combinations', () => {
 
       const code = await ligoEnv.compileAndLoadContract(
         contractFile,
-        'asset_main',
+        'Asset',
         outputFile
       );
       const storage = generateStorage(param);

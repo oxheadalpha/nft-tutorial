@@ -67,7 +67,7 @@ program
   .description('compile LIGO contract code to Michelson')
   .argument('<contract_file>', 'name of the LIGO contract source file')
   .argument('<michelson_file>', 'name of the Michelson code file to be compiled')
-  .option('-m --main <main_function>', 'name of the contract main entry point function. The default is "asset_main"')
+  .option('-m --main <main_module>', 'name of the main module defining entry points. The default is "Asset"')
   .action((contractFile, michelsonFile, options) => compileContract(
     contractFile, michelsonFile, options.main
   ));

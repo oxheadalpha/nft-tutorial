@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as child from 'child_process';
 import * as kleur from 'kleur';
 
-const ligoVersion = '0.68.0';
+const ligoVersion = '1.0.0';
 const ligoCmd = `docker run --rm -v "$PWD":"$PWD" -w "$PWD" ligolang/ligo:${ligoVersion} "$@"`;
 
 const resolveFilePath = (cwd: string, filePath: string) =>
@@ -37,7 +37,7 @@ const compileContractImpl = async (
   main: string,
   dstFilePath: string
 ): Promise<void> => {
-  const cmd = `${ligoCmd} compile contract ${srcFilePath} -e ${main} -o ${dstFilePath}`;
+  const cmd = `${ligoCmd} compile contract ${srcFilePath} -m ${main} -o ${dstFilePath}`;
   await runCmd(cwd, cmd);
 };
 
@@ -83,7 +83,7 @@ export interface Ligo {
   /**
    * Compile contract from Ligo language to Michelson and loads Michelson code
    * @param srcFile path to the contract source file
-   * @param main name of the main entry point function for the contract
+   * @param main name of the main module declaring entry points for the contract
    * @param dstFile path to the compiled contract resulting file
    * @returns compiled Michelson code of the contract
    */
