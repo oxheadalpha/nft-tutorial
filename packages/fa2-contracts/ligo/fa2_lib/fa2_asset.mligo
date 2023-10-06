@@ -111,6 +111,22 @@ module Asset = struct
     let new_s = { storage with tokens = new_tokens; minter = new_minter; } in
     ([] : operation list), new_s
 
+(* for integration into custom contracts *)
+
+type entrypoints =
+    | Tokens of fa2_entry_points
+    | Admin of Admin.entrypoints
+    | Minter_admin of MinterAdmin.entrypoints
+    | Minter of Minter.entrypoints
+
+let main (param, storage : entrypoints * storage) : return =
+  match param with
+  | Tokens t -> tokens t storage
+  | Admin a -> admin a storage
+  | Minter_admin a -> minter_admin a storage
+  | Minter m -> minter m storage
+
+
 end
 
 #endif
