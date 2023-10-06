@@ -17,7 +17,7 @@ export const compileContract = async (
     throw new Error(`Contract LIGO source file ${ligoFilePath} does not exist`);
   const michelsonFilePath = resolveMichelsonFilePath(michelsonFile);
   ensureDirectory(michelsonFilePath);
-  const mainEntrypoint = main ? main : 'asset_main';
+  const mainEntrypoint = main ? main : 'Asset';
   const ligoEnv = ligo();
   await ligoEnv.printLigoVersion();
   await ligoEnv.compileContract(

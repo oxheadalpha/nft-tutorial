@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/tezos-tools",
-  "version": "9.1.0",
+  "version": "10.0.0",
   "description": "TypeScript API for LIGO, Flextesa, IPFS helper tools",
   "repository": "https://github.com/oxheadalpha/nft-tutorial.git",
   "keywords": [
@@ -37,7 +37,7 @@
     "gen-keys": "./dist/gen-keys.js"
   },
   "dependencies": {
-    "@oxheadalpha/fa2-interfaces": "^9.1.0",
+    "@oxheadalpha/fa2-interfaces": "^10.0.0",
     "@pinata/sdk": "^1.1.23",
     "@taquito/signer": "^17.0.0",
     "@taquito/taquito": "^17.0.0",
